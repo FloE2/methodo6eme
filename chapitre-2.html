@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapitre 2 · Comprendre son emploi du temps — Heure Bleue 6ème B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #eef3f8;
+    --surface: #ffffff;
+    --border: #dbe4ee;
+    --border-light: #e9eff5;
+    --text-primary: #172431;
+    --text-secondary: #5c6b7a;
+    --text-muted: #a2afba;
+    --blue: #2d6ca8;
+    --blue-light: #e5eff9;
+    --amber: #d98e2b;
+    --amber-light: #fbf1e2;
+    --green: #1d9e75;
+    --green-light: #e8f5ef;
+    --red: #c0392b;
+    --red-light: #fbeae8;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background-color: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
+    color: var(--text-muted); text-decoration: none; margin-bottom: 1.5rem;
+  }
+  .back-link:hover { color: var(--blue); }
+
+  .chapter-head {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 26px; margin-bottom: 1.75rem;
+  }
+  .chapter-head .badge {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--blue); margin-bottom: 8px;
+  }
+  .chapter-head h1 { font-size: 26px; font-weight: 500; margin-bottom: 10px; }
+  .chapter-head p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+  .mode-note {
+    margin-top: 14px; background: var(--amber-light); color: #8a5c14;
+    border-radius: 8px; padding: 10px 14px; font-size: 12.5px; line-height: 1.5;
+  }
+
+  .section-lbl {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-muted);
+    display: flex; align-items: center; gap: 10px; margin: 2rem 0 1rem;
+  }
+  .section-lbl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* QUIZ */
+  .quiz-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 26px;
+  }
+  .quiz-progress { display: flex; gap: 6px; margin-bottom: 20px; }
+  .quiz-dot { flex: 1; height: 4px; border-radius: 4px; background: var(--border-light); }
+  .quiz-dot.done { background: var(--blue); }
+  .quiz-dot.active { background: var(--amber); }
+
+  .q-count {
+    font-family: var(--mono); font-size: 10.5px; color: var(--text-muted);
+    letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .q-text { font-size: 16.5px; font-weight: 500; margin-bottom: 18px; line-height: 1.45; }
+
+  .vote-row {
+    display: flex; align-items: center; gap: 12px;
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 11px 14px; margin-bottom: 10px; background: var(--bg);
+  }
+  .vote-row.is-correct-reveal { border-color: var(--green); background: var(--green-light); }
+  .vote-label { flex: 1; font-size: 13.5px; line-height: 1.4; }
+  .vote-counter { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .vote-btn {
+    width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--border);
+    background: var(--surface); font-size: 15px; font-weight: 600; cursor: pointer;
+    color: var(--text-secondary); line-height: 1; display: flex; align-items: center; justify-content: center;
+  }
+  .vote-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .vote-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .vote-num {
+    font-family: var(--mono); font-size: 15px; font-weight: 500; width: 26px; text-align: center;
+  }
+
+  .vote-total {
+    font-size: 12px; color: var(--text-muted); margin: 8px 0 18px; text-align: right;
+  }
+
+  .btn {
+    font-family: var(--font); font-size: 13.5px; font-weight: 500;
+    background: var(--blue); color: #fff; border: none;
+    border-radius: 9px; padding: 11px 22px; cursor: pointer;
+    transition: background .15s, opacity .15s;
+  }
+  .btn:hover { background: #235682; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.ghost { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); }
+  .btn.ghost:hover { border-color: var(--blue); color: var(--blue); }
+
+  .quiz-nav { display: flex; justify-content: flex-end; gap: 10px; }
+
+  .reveal-panel {
+    margin-top: 6px; margin-bottom: 18px; padding: 14px 16px;
+    border-radius: 10px; background: var(--blue-light);
+  }
+  .reveal-stat { font-size: 22px; font-weight: 700; color: var(--blue); margin-bottom: 4px; }
+  .reveal-detail { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; }
+  .reveal-explain { font-size: 13px; color: var(--text-primary); line-height: 1.5; }
+
+  /* QUIZ RESULT / BILAN */
+  .bilan-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  .bilan-table th, .bilan-table td {
+    text-align: left; padding: 8px 6px; font-size: 12.5px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .bilan-table th {
+    font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--text-muted); font-weight: 500;
+  }
+  .bilan-bar-wrap { width: 90px; height: 8px; background: var(--border-light); border-radius: 4px; overflow: hidden; }
+  .bilan-bar { height: 100%; background: var(--blue); }
+  .quiz-result { text-align: center; padding: 6px 0 10px; }
+  .quiz-result .score { font-size: 40px; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
+  .quiz-result .msg { font-size: 14px; color: var(--text-secondary); margin-bottom: 22px; }
+
+  /* RECAP CHECKLIST */
+  .recap-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; }
+  .recap-card h2 { font-size: 18px; font-weight: 500; margin-bottom: 4px; }
+  .recap-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 18px; }
+
+  .check-group { margin-bottom: 18px; }
+  .check-group-title {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--amber); margin-bottom: 10px;
+  }
+  .check-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 0; border-bottom: 1px solid var(--border-light);
+    cursor: pointer; user-select: none;
+  }
+  .check-item:last-child { border-bottom: none; }
+  .check-box {
+    width: 19px; height: 19px; border-radius: 5px; border: 1.5px solid var(--border);
+    flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: transparent; transition: background .15s, border-color .15s;
+  }
+  .check-item.checked .check-box { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .check-item.checked .check-text { color: var(--text-muted); text-decoration: line-through; }
+  .check-text { font-size: 13.5px; line-height: 1.4; }
+
+  .finish-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.75rem; gap: 12px; flex-wrap: wrap; }
+  .finish-hint { font-size: 12px; color: var(--text-muted); }
+
+  .hidden { display: none; }
+
+  .foot { text-align: center; padding: 2.5rem 0 0; font-family: var(--mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.05em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a href="index.html" class="back-link">← Retour au sommaire</a>
+
+  <div class="chapter-head">
+    <div class="badge">Chapitre 2</div>
+    <h1>📅 Comprendre son emploi du temps</h1>
+    <p>Savoir lire son emploi du temps, c'est la base pour ne jamais être pris au dépourvu : bonne salle, bon cahier, bonne semaine (A ou B)... et savoir aussi organiser son temps en dehors du collège pour dégager de vrais moments de devoirs. On commence par un quiz collectif à main levée, puis on construit ta fiche récap.</p>
+    <div class="mode-note">👋 <strong>Mode vote à main levée :</strong> pour chaque question, le prof affiche les propositions, compte les mains levées par les élèves puis rentre les chiffres. La bonne réponse et le pourcentage de la classe qui a trouvé s'affichent ensuite.</div>
+  </div>
+
+  <!-- ================= QUIZ ================= -->
+  <div id="quizSection">
+    <div class="section-lbl">Étape 1 · Quiz collectif</div>
+    <div class="quiz-card">
+      <div class="quiz-progress" id="quizProgress"></div>
+      <div id="quizBody"></div>
+    </div>
+  </div>
+
+  <!-- ================= RECAP (caché au départ) ================= -->
+  <div id="recapSection" class="hidden">
+    <div class="section-lbl">Étape 2 · Fiche récap</div>
+    <div class="recap-card">
+      <h2>Ma checklist emploi du temps</h2>
+      <div class="recap-sub">Coche au fur et à mesure — ta progression est enregistrée sur cet ordinateur.</div>
+
+      <div class="check-group">
+        <div class="check-group-title">Lire mon emploi du temps du collège</div>
+        <div class="check-item" data-id="c1"><div class="check-box">✓</div><div class="check-text">Je sais dire si aujourd'hui ou demain on est en semaine A ou en semaine B</div></div>
+        <div class="check-item" data-id="c2"><div class="check-box">✓</div><div class="check-text">Je sais lire l'heure de début et de fin de chaque créneau de la journée</div></div>
+        <div class="check-item" data-id="c3"><div class="check-box">✓</div><div class="check-text">J'ai repéré les salles qui changent souvent, pour ne pas me perdre entre deux cours</div></div>
+        <div class="check-item" data-id="c4"><div class="check-box">✓</div><div class="check-text">Je vérifie mon emploi du temps du lendemain chaque soir avant de préparer mon cartable</div></div>
+        <div class="check-item" data-id="c5"><div class="check-box">✓</div><div class="check-text">Je repère à l'avance les jours où j'ai EPS ou piscine pour préparer les affaires nécessaires</div></div>
+      </div>
+
+      <div class="check-group">
+        <div class="check-group-title">Organiser mon temps en dehors du collège</div>
+        <div class="check-item" data-id="c6"><div class="check-box">✓</div><div class="check-text">J'ai rempli ma fiche "Mon emploi du temps perso" avec les couleurs : noir (repas), bleu (préparation), rouge (loisirs), vert (devoirs)</div></div>
+        <div class="check-item" data-id="c7"><div class="check-box">✓</div><div class="check-text">J'ai au moins une case verte "devoirs" chaque soir de la semaine</div></div>
+        <div class="check-item" data-id="c8"><div class="check-box">✓</div><div class="check-text">Je prévois environ 15 à 45 minutes de devoirs par soir, pas plus, pas moins</div></div>
+        <div class="check-item" data-id="c9"><div class="check-box">✓</div><div class="check-text">Si un contrôle approche, je repère les créneaux libres des jours qui précèdent pour réviser un peu chaque jour</div></div>
+      </div>
+
+      <div class="check-group">
+        <div class="check-group-title">Prendre soin de mon rythme</div>
+        <div class="check-item" data-id="c10"><div class="check-box">✓</div><div class="check-text">Je me couche à une heure qui me permet d'être en forme et concentré le lendemain</div></div>
+      </div>
+
+      <div class="finish-row">
+        <div class="finish-hint" id="checkCount">0 / 10 cochées</div>
+        <button class="btn" id="finishBtn" onclick="finishChapter()">Terminer le chapitre</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">Heure Bleue · 6ème B · Chapitre 2/4</div>
+</div>
+
+<script>
+  // ---------- QUESTIONS (mode vote de classe) ----------
+  const QUESTIONS = [
+    {
+      q: "Sur ton emploi du temps de classe, à quoi correspondent les cases grisées ?",
+      options: [
+        "Aux heures où tu es en cours au collège",
+        "Aux heures libres dans la semaine",
+        "Aux heures de devoirs à la maison",
+        "Aux heures de repas"
+      ],
+      correct: 0,
+      explain: "Les cases grisées représentent les créneaux occupés par les cours au collège — le reste correspond à ton temps en dehors."
+    },
+    {
+      q: "Le lundi à 10h, tu as \"Français\" en semaine A et \"Anglais\" en semaine B. Comment savoir quelle matière préparer un lundi donné ?",
+      options: [
+        "Je regarde la couleur de la case sur mon emploi du temps",
+        "Je vérifie si on est en semaine A ou B (Pronote, panneau d'affichage...)",
+        "Je prends les deux cahiers dans tous les cas",
+        "Je demande à un camarade juste avant le cours"
+      ],
+      correct: 1,
+      explain: "Seule la vérification de la semaine A ou B est fiable à 100% — la couleur ou la mémoire d'un camarade peuvent induire en erreur."
+    },
+    {
+      q: "Sur la fiche \"Mon emploi du temps\" personnel, à quoi sert le code couleur (noir, bleu, rouge, vert) ?",
+      options: [
+        "À décorer la fiche pour la rendre plus jolie",
+        "À visualiser comment ton temps est réparti entre repas, préparation, loisirs et devoirs",
+        "À indiquer les matières scolaires du collège",
+        "À noter les jours fériés de l'année"
+      ],
+      correct: 1,
+      explain: "Le code couleur permet de voir d'un coup d'œil si ton temps libre est équilibré, et surtout s'il reste un vrai moment pour les devoirs."
+    },
+    {
+      q: "D'après la méthode conseillée, combien de temps devrais-tu environ consacrer à tes devoirs chaque soir en 6ème ?",
+      options: [
+        "15 à 45 minutes",
+        "Aucune limite, le plus longtemps possible",
+        "2 à 3 heures",
+        "Uniquement le week-end"
+      ],
+      correct: 0,
+      explain: "Un temps raisonnable et régulier (15 à 45 minutes) est plus efficace qu'un très long moment isolé ou pas de devoirs du tout en semaine."
+    },
+    {
+      q: "Tu remarques qu'il ne te reste aucune case verte \"devoirs\" libre certains soirs de la semaine. Que devrais-tu faire ?",
+      options: [
+        "Ne rien changer, ça finira par s'arranger",
+        "Revoir la répartition de mon temps (réduire un peu les loisirs par exemple) pour dégager un vrai moment de devoirs",
+        "Faire tous mes devoirs le dimanche soir",
+        "Laisser tomber certains devoirs"
+      ],
+      correct: 1,
+      explain: "Si aucun créneau n'est prévu pour les devoirs, il faut ajuster son emploi du temps perso plutôt que de tout reporter à la dernière minute."
+    },
+    {
+      q: "Pourquoi est-il conseillé de faire ses devoirs \"un peu chaque soir\" plutôt que tout d'un coup un seul jour ?",
+      options: [
+        "C'est une règle sans raison particulière",
+        "Répartir l'effort évite la fatigue et aide à mieux mémoriser sur la durée",
+        "Parce que les professeurs l'exigent",
+        "Ça ne change rien, l'essentiel est de tout faire un jour ou l'autre"
+      ],
+      correct: 1,
+      explain: "Le cerveau retient mieux quand l'apprentissage est réparti dans le temps plutôt que concentré en une seule fois (on l'a vu au chapitre \"apprendre une leçon\")."
+    },
+    {
+      q: "Tu as un contrôle de SVT vendredi. Ton emploi du temps perso montre des créneaux verts libres mardi et jeudi soir. Quelle est la meilleure utilisation de ces créneaux ?",
+      options: [
+        "Regarder la télévision, je réviserai vendredi matin",
+        "Utiliser une partie de ces créneaux pour réviser un peu chaque soir avant le contrôle",
+        "Ne rien faire, un contrôle de SVT n'est pas si important",
+        "Attendre jeudi soir pour tout réviser d'un coup"
+      ],
+      correct: 1,
+      explain: "Anticiper avec les créneaux déjà prévus pour les devoirs permet de réviser progressivement, sans tout accumuler la veille."
+    },
+    {
+      q: "Que représente précisément une \"case\" ou un \"créneau\" sur un emploi du temps ?",
+      options: [
+        "Une journée entière",
+        "Une plage horaire précise (par exemple 14h-15h) associée à une activité ou un cours",
+        "Une semaine complète",
+        "Une matière au choix, sans horaire fixe"
+      ],
+      correct: 1,
+      explain: "Chaque créneau correspond à un horaire de début et de fin bien précis — c'est la base pour lire n'importe quel emploi du temps."
+    },
+    {
+      q: "Le document conseille de te coucher assez tôt. En quoi cela concerne-t-il ton organisation scolaire ?",
+      options: [
+        "Le sommeil n'a aucun rapport avec les résultats scolaires",
+        "Bien récupérer la nuit aide à être concentré en cours et plus efficace pour apprendre",
+        "Se coucher tôt permet seulement d'être en forme le week-end",
+        "C'est juste une habitude, sans lien avec l'organisation"
+      ],
+      correct: 1,
+      explain: "Un manque de sommeil réduit la concentration et la mémorisation — se coucher tôt fait donc partie intégrante d'une bonne organisation."
+    },
+    {
+      q: "Deux cours qui se suivent ont lieu dans des salles ou bâtiments différents et éloignés. Quel est le bon réflexe ?",
+      options: [
+        "Ne pas s'en soucier, je trouverai bien sur le moment",
+        "Repérer à l'avance ces salles pour ne pas arriver en retard, et prévoir le temps de trajet",
+        "Demander systématiquement de l'aide à un surveillant",
+        "Rester dans la même salle en espérant que le professeur vienne"
+      ],
+      correct: 1,
+      explain: "Repérer à l'avance les changements de salle évite le stress et les retards entre deux cours."
+    }
+  ];
+
+
+  let currentQ = 0;
+  const results = []; // { total, correctCount, pct }
+
+  function renderProgress() {
+    const bar = document.getElementById('quizProgress');
+    bar.innerHTML = '';
+    QUESTIONS.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'quiz-dot';
+      if (results[i]) d.classList.add('done');
+      else if (i === currentQ) d.classList.add('active');
+      bar.appendChild(d);
+    });
+  }
+
+  let votes = [];
+
+  function renderQuestion() {
+    renderProgress();
+    const body = document.getElementById('quizBody');
+    if (currentQ >= QUESTIONS.length) { renderFinalBilan(); return; }
+
+    const item = QUESTIONS[currentQ];
+    votes = item.options.map(() => 0);
+
+    let html = `<div class="q-count">Question ${currentQ + 1} / ${QUESTIONS.length}</div>
+      <div class="q-text">${item.q}</div>`;
+
+    item.options.forEach((opt, i) => {
+      html += `
+        <div class="vote-row" id="voteRow-${i}">
+          <div class="vote-label">${opt}</div>
+          <div class="vote-counter">
+            <button class="vote-btn" onclick="changeVote(${i}, -1)">−</button>
+            <div class="vote-num" id="voteNum-${i}">0</div>
+            <button class="vote-btn" onclick="changeVote(${i}, 1)">+</button>
+          </div>
+        </div>`;
+    });
+
+    html += `<div class="vote-total" id="voteTotal">0 élève(s) ont voté</div>
+      <div id="revealPanel"></div>
+      <div class="quiz-nav">
+        <button class="btn" id="validateBtn" onclick="validateVotes()">Valider les votes</button>
+        <button class="btn hidden" id="nextBtn" onclick="nextQuestion()">Question suivante →</button>
+      </div>`;
+
+    body.innerHTML = html;
+  }
+
+  function changeVote(i, delta) {
+    votes[i] = Math.max(0, votes[i] + delta);
+    document.getElementById('voteNum-' + i).textContent = votes[i];
+    const total = votes.reduce((a, b) => a + b, 0);
+    document.getElementById('voteTotal').textContent = total + " élève(s) ont voté";
+  }
+
+  function validateVotes() {
+    const item = QUESTIONS[currentQ];
+    const total = votes.reduce((a, b) => a + b, 0);
+    if (total === 0) {
+      alert("Entre au moins un vote avant de valider.");
+      return;
+    }
+    const correctCount = votes[item.correct];
+    const pct = Math.round((correctCount / total) * 100);
+    results[currentQ] = { total, correctCount, pct };
+
+    // Lock counters
+    document.querySelectorAll('.vote-btn').forEach(b => b.setAttribute('disabled', 'true'));
+    document.getElementById('voteRow-' + item.correct).classList.add('is-correct-reveal');
+    document.getElementById('validateBtn').classList.add('hidden');
+    document.getElementById('nextBtn').classList.remove('hidden');
+
+    document.getElementById('revealPanel').innerHTML = `
+      <div class="reveal-panel">
+        <div class="reveal-stat">${pct}% de la classe</div>
+        <div class="reveal-detail">${correctCount} / ${total} élèves avaient trouvé la bonne réponse (surlignée en vert).</div>
+        <div class="reveal-explain">${item.explain}</div>
+      </div>`;
+
+    renderProgress();
+  }
+
+  function nextQuestion() {
+    currentQ++;
+    renderQuestion();
+  }
+
+  function renderFinalBilan() {
+    const body = document.getElementById('quizBody');
+    const avg = Math.round(results.reduce((a, r) => a + r.pct, 0) / results.length);
+
+    let msg;
+    if (avg >= 85) msg = "Bravo à toute la classe, l'organisation du cartable n'a plus de secrets !";
+    else if (avg >= 60) msg = "Bon niveau collectif — la fiche récap va aider à consolider les points restants.";
+    else msg = "Pas de souci, c'est justement l'objectif de la séance : direction la fiche récap pour progresser ensemble !";
+
+    let rows = '';
+    results.forEach((r, i) => {
+      rows += `<tr>
+        <td>Q${i + 1}</td>
+        <td>${r.total}</td>
+        <td>${r.correctCount}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="bilan-bar-wrap"><div class="bilan-bar" style="width:${r.pct}%"></div></div>
+            <span>${r.pct}%</span>
+          </div>
+        </td>
+      </tr>`;
+    });
+
+    body.innerHTML = `
+      <div class="quiz-result">
+        <div class="score">${avg}%</div>
+        <div class="msg">Moyenne de réussite de la classe · ${msg}</div>
+      </div>
+      <table class="bilan-table">
+        <thead><tr><th>Question</th><th>Votants</th><th>Bonnes rép.</th><th>% réussite</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="quiz-nav">
+        <button class="btn" onclick="showRecap()">Voir la fiche récap →</button>
+      </div>`;
+  }
+
+  function showRecap() {
+    document.getElementById('quizSection').classList.add('hidden');
+    document.getElementById('recapSection').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ---------- CHECKLIST ----------
+  const CHECK_KEY = 'hvc_ch2_checks_v1';
+  function loadChecks() {
+    try { const r = localStorage.getItem(CHECK_KEY); return r ? JSON.parse(r) : {}; }
+    catch(e) { return {}; }
+  }
+  function saveChecks(c) { try { localStorage.setItem(CHECK_KEY, JSON.stringify(c)); } catch(e) {} }
+
+  let checks = loadChecks();
+
+  function renderChecks() {
+    document.querySelectorAll('.check-item').forEach(el => {
+      const id = el.getAttribute('data-id');
+      if (checks[id]) el.classList.add('checked');
+      else el.classList.remove('checked');
+    });
+    const total = document.querySelectorAll('.check-item').length;
+    const done = Object.values(checks).filter(Boolean).length;
+    document.getElementById('checkCount').textContent = done + ' / ' + total + ' cochées';
+  }
+
+  document.querySelectorAll('.check-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const id = el.getAttribute('data-id');
+      checks[id] = !checks[id];
+      saveChecks(checks);
+      renderChecks();
+    });
+  });
+
+  function finishChapter() {
+    window.location.href = 'index.html?done=2';
+  }
+
+  renderQuestion();
+  renderChecks();
+</script>
+</body>
+</html>
