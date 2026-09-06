@@ -143,6 +143,34 @@
   .quiz-result .score { font-size: 40px; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
   .quiz-result .msg { font-size: 14px; color: var(--text-secondary); margin-bottom: 22px; }
 
+  /* TROUVE L'ERREUR */
+  .error-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; }
+  .error-intro { font-size: 13.5px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 20px; }
+  .error-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+  @media (max-width: 640px) { .error-grid { grid-template-columns: 1fr; } }
+  .error-item {
+    border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 16px;
+    font-size: 13px; line-height: 1.45; cursor: pointer; position: relative;
+    transition: border-color .15s, background .15s;
+  }
+  .error-item:hover { border-color: var(--blue); }
+  .error-item.selected { border-color: var(--amber); background: var(--amber-light); }
+  .error-item.selected::before {
+    content: '🚩 suspect'; position: absolute; top: -9px; right: 10px;
+    font-family: var(--mono); font-size: 9.5px; background: var(--amber); color: #fff;
+    padding: 2px 7px; border-radius: 5px;
+  }
+  .error-item.reveal-error { border-color: var(--red); background: var(--red-light); cursor: default; }
+  .error-item.reveal-ok { border-color: var(--green); background: var(--green-light); cursor: default; }
+  .error-item .error-tag { display: block; font-size: 12px; margin-top: 8px; line-height: 1.4; }
+  .error-item.reveal-error .error-tag { color: #8f2a1d; }
+  .error-item.reveal-ok .error-tag { color: #146a4e; }
+  .error-summary {
+    background: var(--blue-light); border-radius: 10px; padding: 14px 16px;
+    margin-bottom: 18px; font-size: 13px; color: var(--text-primary); line-height: 1.5;
+  }
+  .error-summary .big { font-size: 22px; font-weight: 700; color: var(--blue); }
+
   /* RECAP CHECKLIST */
   .recap-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; }
   .recap-card h2 { font-size: 18px; font-weight: 500; margin-bottom: 4px; }
@@ -184,22 +212,36 @@
   <div class="chapter-head">
     <div class="badge">Chapitre 2</div>
     <h1>📅 Comprendre son emploi du temps</h1>
-    <p>Savoir lire son emploi du temps, c'est la base pour ne jamais être pris au dépourvu : bonne salle, bon cahier, bonne semaine (A ou B)... et savoir aussi organiser son temps en dehors du collège pour dégager de vrais moments de devoirs. On commence par un quiz collectif à main levée, puis on construit ta fiche récap.</p>
-    <div class="mode-note">👋 <strong>Mode vote à main levée :</strong> demande "qui vote A ?", "qui vote B ?"... et tape directement le nombre de mains levées dans chaque case, puis appuie sur <strong>Entrée</strong> pour passer à la réponse suivante — la validation se fait automatiquement après la dernière.</div>
+    <p>Savoir lire son emploi du temps, c'est la base pour ne jamais être pris au dépourvu : bonne salle, bon cahier, bonne semaine (A ou B)... et savoir aussi organiser son temps en dehors du collège pour dégager de vrais moments de devoirs. Deux activités collectives aujourd'hui : un Vrai ou Faux à main levée, puis un jeu "Trouve l'erreur", avant la fiche récap.</p>
+    <div class="mode-note">👋 <strong>Mode vote à main levée :</strong> demande "qui vote Vrai ?", "qui vote Faux ?"... et tape directement le nombre de mains levées dans chaque case, puis appuie sur <strong>Entrée</strong> pour passer à la suite — la validation se fait automatiquement après la dernière réponse.</div>
   </div>
 
   <!-- ================= QUIZ ================= -->
   <div id="quizSection">
-    <div class="section-lbl">Étape 1 · Quiz collectif</div>
+    <div class="section-lbl">Étape 1 · Vrai ou Faux</div>
     <div class="quiz-card">
       <div class="quiz-progress" id="quizProgress"></div>
       <div id="quizBody"></div>
     </div>
   </div>
 
+  <!-- ================= TROUVE L'ERREUR (caché au départ) ================= -->
+  <div id="errorSection" class="hidden">
+    <div class="section-lbl">Étape 2 · Trouve l'erreur</div>
+    <div class="error-card">
+      <div class="error-intro">Léo, élève de 6ème, a préparé sa semaine. Certaines de ses habitudes sont de bonnes pratiques, d'autres sont de vraies erreurs. Débattez à l'oral de chaque proposition, puis cliquez sur celles qui vous semblent être des <strong>erreurs</strong>. Cliquez ensuite sur "Révéler les erreurs" pour la correction !</div>
+      <div class="error-grid" id="errorGrid"></div>
+      <div id="errorSummary"></div>
+      <div class="quiz-nav">
+        <button class="btn" id="revealErrorsBtn" onclick="revealErrors()">Révéler les erreurs</button>
+        <button class="btn hidden" id="toRecapBtn" onclick="showRecap()">Voir la fiche récap →</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= RECAP (caché au départ) ================= -->
   <div id="recapSection" class="hidden">
-    <div class="section-lbl">Étape 2 · Fiche récap</div>
+    <div class="section-lbl">Étape 3 · Fiche récap</div>
     <div class="recap-card">
       <h2>Ma checklist emploi du temps</h2>
       <div class="recap-sub">Coche au fur et à mesure — ta progression est enregistrée sur cet ordinateur.</div>
@@ -240,116 +282,49 @@
   // ---------- QUESTIONS (mode vote de classe) ----------
   const QUESTIONS = [
     {
-      q: "Sur ton emploi du temps de classe, à quoi correspondent les cases grisées ?",
-      options: [
-        "Aux heures où tu es en cours au collège",
-        "Aux heures libres dans la semaine",
-        "Aux heures de devoirs à la maison",
-        "Aux heures de repas"
-      ],
+      q: "Sur l'emploi du temps du collège, les heures de cours sont indiquées par des cases grisées.",
+      options: ["Vrai", "Faux"],
+      letters: ["V", "F"],
       correct: 0,
-      explain: "Les cases grisées représentent les créneaux occupés par les cours au collège — le reste correspond à ton temps en dehors."
+      explain: "Vrai : les cases grisées représentent les créneaux occupés par les cours au collège."
     },
     {
-      q: "Le lundi à 10h, tu as \"Français\" en semaine A et \"Anglais\" en semaine B. Comment savoir quelle matière préparer un lundi donné ?",
-      options: [
-        "Je regarde la couleur de la case sur mon emploi du temps",
-        "Je vérifie si on est en semaine A ou B (Pronote, panneau d'affichage...)",
-        "Je prends les deux cahiers dans tous les cas",
-        "Je demande à un camarade juste avant le cours"
-      ],
+      q: "Si tu ne sais pas si tu es en semaine A ou B, deviner est aussi fiable que de vérifier sur Pronote ou le panneau d'affichage.",
+      options: ["Vrai", "Faux"],
+      letters: ["V", "F"],
       correct: 1,
-      explain: "Seule la vérification de la semaine A ou B est fiable à 100% — la couleur ou la mémoire d'un camarade peuvent induire en erreur."
+      explain: "Faux : deviner expose à l'erreur. Vérifier reste le seul réflexe fiable à 100%."
     },
     {
-      q: "Sur la fiche \"Mon emploi du temps\" personnel, à quoi sert le code couleur (noir, bleu, rouge, vert) ?",
-      options: [
-        "À décorer la fiche pour la rendre plus jolie",
-        "À visualiser comment ton temps est réparti entre repas, préparation, loisirs et devoirs",
-        "À indiquer les matières scolaires du collège",
-        "À noter les jours fériés de l'année"
-      ],
-      correct: 1,
-      explain: "Le code couleur permet de voir d'un coup d'œil si ton temps libre est équilibré, et surtout s'il reste un vrai moment pour les devoirs."
-    },
-    {
-      q: "D'après la méthode conseillée, combien de temps devrais-tu environ consacrer à tes devoirs chaque soir en 6ème ?",
-      options: [
-        "15 à 45 minutes",
-        "Aucune limite, le plus longtemps possible",
-        "2 à 3 heures",
-        "Uniquement le week-end"
-      ],
+      q: "Il est conseillé de faire environ 15 à 45 minutes de devoirs chaque soir en 6ème, plutôt que plusieurs heures d'un coup.",
+      options: ["Vrai", "Faux"],
+      letters: ["V", "F"],
       correct: 0,
-      explain: "Un temps raisonnable et régulier (15 à 45 minutes) est plus efficace qu'un très long moment isolé ou pas de devoirs du tout en semaine."
+      explain: "Vrai : un temps raisonnable et régulier est plus efficace qu'une session trop longue et isolée."
     },
     {
-      q: "Tu remarques qu'il ne te reste aucune case verte \"devoirs\" libre certains soirs de la semaine. Que devrais-tu faire ?",
-      options: [
-        "Ne rien changer, ça finira par s'arranger",
-        "Revoir la répartition de mon temps (réduire un peu les loisirs par exemple) pour dégager un vrai moment de devoirs",
-        "Faire tous mes devoirs le dimanche soir",
-        "Laisser tomber certains devoirs"
-      ],
+      q: "Réviser un contrôle uniquement la veille au soir est aussi efficace que réviser un peu chaque jour de la semaine.",
+      options: ["Vrai", "Faux"],
+      letters: ["V", "F"],
       correct: 1,
-      explain: "Si aucun créneau n'est prévu pour les devoirs, il faut ajuster son emploi du temps perso plutôt que de tout reporter à la dernière minute."
+      explain: "Faux : étaler ses révisions sur plusieurs jours aide bien mieux la mémorisation qu'une révision de dernière minute."
     },
     {
-      q: "Pourquoi est-il conseillé de faire ses devoirs \"un peu chaque soir\" plutôt que tout d'un coup un seul jour ?",
-      options: [
-        "C'est une règle sans raison particulière",
-        "Répartir l'effort évite la fatigue et aide à mieux mémoriser sur la durée",
-        "Parce que les professeurs l'exigent",
-        "Ça ne change rien, l'essentiel est de tout faire un jour ou l'autre"
-      ],
-      correct: 1,
-      explain: "Le cerveau retient mieux quand l'apprentissage est réparti dans le temps plutôt que concentré en une seule fois (on l'a vu au chapitre \"apprendre une leçon\")."
+      q: "Le code couleur (noir/bleu/rouge/vert) sur la fiche \"Mon emploi du temps perso\" sert à vérifier qu'un vrai créneau de devoirs est prévu chaque jour.",
+      options: ["Vrai", "Faux"],
+      letters: ["V", "F"],
+      correct: 0,
+      explain: "Vrai : le code couleur permet justement de repérer d'un coup d'œil si un moment vert (devoirs) existe bien chaque jour."
     },
     {
-      q: "Tu as un contrôle de SVT vendredi. Ton emploi du temps perso montre des créneaux verts libres mardi et jeudi soir. Quelle est la meilleure utilisation de ces créneaux ?",
-      options: [
-        "Regarder la télévision, je réviserai vendredi matin",
-        "Utiliser une partie de ces créneaux pour réviser un peu chaque soir avant le contrôle",
-        "Ne rien faire, un contrôle de SVT n'est pas si important",
-        "Attendre jeudi soir pour tout réviser d'un coup"
-      ],
+      q: "Le sommeil n'a aucun lien avec la capacité à se concentrer en classe le lendemain.",
+      options: ["Vrai", "Faux"],
+      letters: ["V", "F"],
       correct: 1,
-      explain: "Anticiper avec les créneaux déjà prévus pour les devoirs permet de réviser progressivement, sans tout accumuler la veille."
-    },
-    {
-      q: "Que représente précisément une \"case\" ou un \"créneau\" sur un emploi du temps ?",
-      options: [
-        "Une journée entière",
-        "Une plage horaire précise (par exemple 14h-15h) associée à une activité ou un cours",
-        "Une semaine complète",
-        "Une matière au choix, sans horaire fixe"
-      ],
-      correct: 1,
-      explain: "Chaque créneau correspond à un horaire de début et de fin bien précis — c'est la base pour lire n'importe quel emploi du temps."
-    },
-    {
-      q: "Le document conseille de te coucher assez tôt. En quoi cela concerne-t-il ton organisation scolaire ?",
-      options: [
-        "Le sommeil n'a aucun rapport avec les résultats scolaires",
-        "Bien récupérer la nuit aide à être concentré en cours et plus efficace pour apprendre",
-        "Se coucher tôt permet seulement d'être en forme le week-end",
-        "C'est juste une habitude, sans lien avec l'organisation"
-      ],
-      correct: 1,
-      explain: "Un manque de sommeil réduit la concentration et la mémorisation — se coucher tôt fait donc partie intégrante d'une bonne organisation."
-    },
-    {
-      q: "Deux cours qui se suivent ont lieu dans des salles ou bâtiments différents et éloignés. Quel est le bon réflexe ?",
-      options: [
-        "Ne pas s'en soucier, je trouverai bien sur le moment",
-        "Repérer à l'avance ces salles pour ne pas arriver en retard, et prévoir le temps de trajet",
-        "Demander systématiquement de l'aide à un surveillant",
-        "Rester dans la même salle en espérant que le professeur vienne"
-      ],
-      correct: 1,
-      explain: "Repérer à l'avance les changements de salle évite le stress et les retards entre deux cours."
+      explain: "Faux : un manque de sommeil réduit directement la concentration et la mémorisation."
     }
   ];
+
 
 
   let currentQ = 0;
@@ -380,7 +355,7 @@
     let html = `<div class="q-count">Question ${currentQ + 1} / ${QUESTIONS.length}</div>
       <div class="q-text">${item.q}</div>`;
 
-    const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+    const letters = item.letters || ['A', 'B', 'C', 'D', 'E', 'F'];
     item.options.forEach((opt, i) => {
       html += `
         <div class="vote-row" id="voteRow-${i}">
@@ -466,9 +441,9 @@
     const avg = Math.round(results.reduce((a, r) => a + r.pct, 0) / results.length);
 
     let msg;
-    if (avg >= 85) msg = "Bravo à toute la classe, l'organisation du cartable n'a plus de secrets !";
-    else if (avg >= 60) msg = "Bon niveau collectif — la fiche récap va aider à consolider les points restants.";
-    else msg = "Pas de souci, c'est justement l'objectif de la séance : direction la fiche récap pour progresser ensemble !";
+    if (avg >= 85) msg = "Bravo à toute la classe, l'emploi du temps n'a plus de secrets !";
+    else if (avg >= 60) msg = "Bon niveau collectif — le jeu qui suit va aider à consolider les points restants.";
+    else msg = "Pas de souci, c'est justement l'objectif de la séance : direction le jeu suivant pour progresser ensemble !";
 
     let rows = '';
     results.forEach((r, i) => {
@@ -495,12 +470,107 @@
         <tbody>${rows}</tbody>
       </table>
       <div class="quiz-nav">
-        <button class="btn" onclick="showRecap()">Voir la fiche récap →</button>
+        <button class="btn" onclick="showErrorGame()">Passer au jeu : Trouve l'erreur →</button>
       </div>`;
   }
 
-  function showRecap() {
+  // ---------- TROUVE L'ERREUR ----------
+  const ERROR_ITEMS = [
+    {
+      text: "Léo prépare son sac sans avoir vérifié si demain est en semaine A ou en semaine B.",
+      isError: true,
+      explain: "Sans vérifier la semaine, Léo risque de prendre le mauvais cahier — un réflexe à corriger."
+    },
+    {
+      text: "Léo a prévu une case verte « devoirs » de 17h30 à 18h chaque soir de la semaine.",
+      isError: false,
+      explain: "Prévoir un créneau devoirs fixe chaque jour est exactement la bonne pratique."
+    },
+    {
+      text: "Léo compte réviser son contrôle de SVT seulement le jeudi soir, la veille du contrôle du vendredi.",
+      isError: true,
+      explain: "Réviser uniquement la veille est moins efficace que d'étaler ses révisions sur plusieurs jours."
+    },
+    {
+      text: "Léo a repéré à l'avance qu'il change de bâtiment entre Techno et EPS, et prévoit un peu de marge.",
+      isError: false,
+      explain: "Anticiper les trajets entre les salles évite le stress et les retards."
+    },
+    {
+      text: "Léo se couche à minuit tous les soirs de la semaine, même les jours de classe.",
+      isError: true,
+      explain: "Un coucher trop tardif réduit la concentration et la mémorisation le lendemain en cours."
+    },
+    {
+      text: "Léo joue aux jeux vidéo 3 heures chaque soir et n'a plus de temps du tout pour les devoirs.",
+      isError: true,
+      explain: "Un déséquilibre entre loisirs et devoirs empêche de dégager un vrai moment de travail."
+    },
+    {
+      text: "Léo prévoit environ 30 minutes de devoirs par soir en semaine.",
+      isError: false,
+      explain: "C'est dans la fourchette conseillée de 15 à 45 minutes par soir."
+    },
+    {
+      text: "Chaque soir, Léo relit son emploi du temps du lendemain avant de préparer son cartable.",
+      isError: false,
+      explain: "C'est exactement la bonne habitude vue au chapitre 1 !"
+    }
+  ];
+
+  let errorSelected = [];
+
+  function renderErrorGame() {
+    errorSelected = ERROR_ITEMS.map(() => false);
+    const grid = document.getElementById('errorGrid');
+    grid.innerHTML = ERROR_ITEMS.map((it, i) =>
+      `<div class="error-item" id="errorItem-${i}" onclick="toggleErrorItem(${i})">${it.text}</div>`
+    ).join('');
+    document.getElementById('errorSummary').innerHTML = '';
+    document.getElementById('revealErrorsBtn').classList.remove('hidden');
+    document.getElementById('toRecapBtn').classList.add('hidden');
+  }
+
+  function toggleErrorItem(i) {
+    errorSelected[i] = !errorSelected[i];
+    document.getElementById('errorItem-' + i).classList.toggle('selected', errorSelected[i]);
+  }
+
+  function revealErrors() {
+    let totalErrors = 0, foundErrors = 0, falseAlarms = 0;
+    ERROR_ITEMS.forEach((it, i) => {
+      const el = document.getElementById('errorItem-' + i);
+      el.onclick = null;
+      el.classList.remove('selected');
+      if (it.isError) totalErrors++;
+      if (it.isError && errorSelected[i]) foundErrors++;
+      if (!it.isError && errorSelected[i]) falseAlarms++;
+      el.classList.add(it.isError ? 'reveal-error' : 'reveal-ok');
+      const tag = document.createElement('div');
+      tag.className = 'error-tag';
+      tag.textContent = (it.isError ? '❌ Erreur — ' : '✅ Bonne pratique — ') + it.explain;
+      el.appendChild(tag);
+    });
+
+    const pct = Math.round((foundErrors / totalErrors) * 100);
+    document.getElementById('errorSummary').innerHTML = `
+      <div class="error-summary">
+        <span class="big">${foundErrors} / ${totalErrors}</span> erreurs repérées par la classe (${pct}%)${falseAlarms > 0 ? ` · ${falseAlarms} fausse(s) alerte(s) sur des pratiques pourtant correctes` : ''}
+      </div>`;
+
+    document.getElementById('revealErrorsBtn').classList.add('hidden');
+    document.getElementById('toRecapBtn').classList.remove('hidden');
+  }
+
+  function showErrorGame() {
     document.getElementById('quizSection').classList.add('hidden');
+    document.getElementById('errorSection').classList.remove('hidden');
+    renderErrorGame();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showRecap() {
+    document.getElementById('errorSection').classList.add('hidden');
     document.getElementById('recapSection').classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
