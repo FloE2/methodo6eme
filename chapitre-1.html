@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapitre 1 · Organiser son cartable — Heure Bleue 6ème B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #eef3f8;
+    --surface: #ffffff;
+    --border: #dbe4ee;
+    --border-light: #e9eff5;
+    --text-primary: #172431;
+    --text-secondary: #5c6b7a;
+    --text-muted: #a2afba;
+    --blue: #2d6ca8;
+    --blue-light: #e5eff9;
+    --amber: #d98e2b;
+    --amber-light: #fbf1e2;
+    --green: #1d9e75;
+    --green-light: #e8f5ef;
+    --red: #c0392b;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background-color: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
+    color: var(--text-muted); text-decoration: none; margin-bottom: 1.5rem;
+  }
+  .back-link:hover { color: var(--blue); }
+
+  .chapter-head {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 26px; margin-bottom: 1.75rem;
+  }
+  .chapter-head .badge {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--blue); margin-bottom: 8px;
+  }
+  .chapter-head h1 { font-size: 26px; font-weight: 500; margin-bottom: 10px; }
+  .chapter-head p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+  .section-lbl {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-muted);
+    display: flex; align-items: center; gap: 10px; margin: 2rem 0 1rem;
+  }
+  .section-lbl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* QUIZ */
+  .quiz-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 26px;
+  }
+  .quiz-progress {
+    display: flex; gap: 6px; margin-bottom: 20px;
+  }
+  .quiz-dot { flex: 1; height: 4px; border-radius: 4px; background: var(--border-light); }
+  .quiz-dot.active { background: var(--blue); }
+  .quiz-dot.correct { background: var(--green); }
+  .quiz-dot.wrong { background: var(--red); }
+
+  .q-text { font-size: 17px; font-weight: 500; margin-bottom: 18px; line-height: 1.4; }
+  .q-options { display: flex; flex-direction: column; gap: 10px; }
+  .q-option {
+    text-align: left; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 13px 16px; font-family: var(--font);
+    font-size: 14px; color: var(--text-primary); cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .q-option:hover { border-color: var(--blue); }
+  .q-option.selected-correct { background: var(--green-light); border-color: var(--green); }
+  .q-option.selected-wrong { background: #fbeae8; border-color: var(--red); }
+  .q-option.reveal-correct { border-color: var(--green); }
+  .q-option[disabled] { cursor: default; }
+
+  .q-feedback {
+    margin-top: 14px; font-size: 13px; padding: 10px 14px; border-radius: 8px;
+    display: none;
+  }
+  .q-feedback.show { display: block; }
+  .q-feedback.ok { background: var(--green-light); color: #146a4e; }
+  .q-feedback.ko { background: #fbeae8; color: #8f2a1d; }
+
+  .quiz-nav { display: flex; justify-content: flex-end; margin-top: 20px; }
+  .btn {
+    font-family: var(--font); font-size: 13.5px; font-weight: 500;
+    background: var(--blue); color: #fff; border: none;
+    border-radius: 9px; padding: 11px 22px; cursor: pointer;
+    transition: background .15s, opacity .15s;
+  }
+  .btn:hover { background: #235682; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.ghost {
+    background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border);
+  }
+  .btn.ghost:hover { border-color: var(--blue); color: var(--blue); }
+
+  /* QUIZ RESULT */
+  .quiz-result { text-align: center; padding: 10px 0; }
+  .quiz-result .score { font-size: 40px; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
+  .quiz-result .msg { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  /* RECAP CHECKLIST */
+  .recap-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 26px;
+  }
+  .recap-card h2 { font-size: 18px; font-weight: 500; margin-bottom: 4px; }
+  .recap-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 18px; }
+
+  .check-group { margin-bottom: 18px; }
+  .check-group-title {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--amber); margin-bottom: 10px;
+  }
+  .check-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 0; border-bottom: 1px solid var(--border-light);
+    cursor: pointer; user-select: none;
+  }
+  .check-item:last-child { border-bottom: none; }
+  .check-box {
+    width: 19px; height: 19px; border-radius: 5px; border: 1.5px solid var(--border);
+    flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: transparent; transition: background .15s, border-color .15s;
+  }
+  .check-item.checked .check-box { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .check-item.checked .check-text { color: var(--text-muted); text-decoration: line-through; }
+  .check-text { font-size: 13.5px; line-height: 1.4; }
+
+  .finish-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 1.75rem; gap: 12px; flex-wrap: wrap;
+  }
+  .finish-hint { font-size: 12px; color: var(--text-muted); }
+
+  .hidden { display: none; }
+
+  .foot {
+    text-align: center; padding: 2.5rem 0 0; font-family: var(--mono);
+    font-size: 10px; color: var(--text-muted); letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a href="index.html" class="back-link">← Retour au sommaire</a>
+
+  <div class="chapter-head">
+    <div class="badge">Chapitre 1</div>
+    <h1>🎒 Organiser son cartable</h1>
+    <p>Un cartable bien préparé, c'est moins de stress le matin et l'assurance de ne rien oublier. Dans cette séance, tu vas d'abord tester tes réflexes avec un petit quiz, puis on construira ensemble ta fiche récap à garder toute l'année.</p>
+  </div>
+
+  <!-- ================= QUIZ ================= -->
+  <div id="quizSection">
+    <div class="section-lbl">Étape 1 · Quiz</div>
+    <div class="quiz-card">
+      <div class="quiz-progress" id="quizProgress"></div>
+      <div id="quizBody"></div>
+    </div>
+  </div>
+
+  <!-- ================= RECAP (caché au départ) ================= -->
+  <div id="recapSection" class="hidden">
+    <div class="section-lbl">Étape 2 · Fiche récap</div>
+    <div class="recap-card">
+      <h2>Ma checklist du cartable</h2>
+      <div class="recap-sub">Coche au fur et à mesure — ta progression est enregistrée sur cet ordinateur.</div>
+
+      <div class="check-group">
+        <div class="check-group-title">Le soir, avant de refaire mon sac</div>
+        <div class="check-item" data-id="c1"><div class="check-box">✓</div><div class="check-text">J'ai regardé mon emploi du temps (ou Pronote) pour savoir les cours de demain</div></div>
+        <div class="check-item" data-id="c2"><div class="check-box">✓</div><div class="check-text">J'ai mis les cahiers et livres des matières du lendemain, pas plus</div></div>
+        <div class="check-item" data-id="c3"><div class="check-box">✓</div><div class="check-text">J'ai vérifié si j'ai sport, piscine ou une sortie particulière demain</div></div>
+        <div class="check-item" data-id="c4"><div class="check-box">✓</div><div class="check-text">J'ai regardé si des devoirs ou affaires spéciales sont demandés</div></div>
+      </div>
+
+      <div class="check-group">
+        <div class="check-group-title">Toujours dans mon cartable</div>
+        <div class="check-item" data-id="c5"><div class="check-box">✓</div><div class="check-text">Ma trousse complète (stylos, crayon, gomme, colle, ciseaux)</div></div>
+        <div class="check-item" data-id="c6"><div class="check-box">✓</div><div class="check-text">Mon agenda ou carnet de correspondance</div></div>
+        <div class="check-item" data-id="c7"><div class="check-box">✓</div><div class="check-text">Une bouteille d'eau et éventuellement mon goûter</div></div>
+      </div>
+
+      <div class="check-group">
+        <div class="check-group-title">Le matin, dernier réflexe</div>
+        <div class="check-item" data-id="c8"><div class="check-box">✓</div><div class="check-text">Je vérifie une dernière fois qu'il ne manque rien avant de partir</div></div>
+      </div>
+
+      <div class="finish-row">
+        <div class="finish-hint" id="checkCount">0 / 8 cochées</div>
+        <button class="btn" id="finishBtn" onclick="finishChapter()">Terminer le chapitre</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">Heure Bleue · 6ème B · Chapitre 1/4</div>
+</div>
+
+<script>
+  // ---------- QUIZ ----------
+  const QUESTIONS = [
+    {
+      q: "Quand est-ce le meilleur moment pour préparer son cartable ?",
+      options: [
+        "Le matin, juste avant de partir",
+        "La veille au soir, tranquillement",
+        "Je ne le prépare jamais, je prends tout"
+      ],
+      correct: 1,
+      feedbackOk: "Exactement ! Le soir, tu as le temps de bien vérifier sans être pressé.",
+      feedbackKo: "Pas tout à fait : le matin, on est pressé et on oublie des choses. Mieux vaut préparer son sac la veille au soir."
+    },
+    {
+      q: "Comment savoir quels cours tu as demain ?",
+      options: [
+        "Je devine ou je demande à un copain le matin",
+        "Je regarde mon emploi du temps ou Pronote",
+        "Je prends tous mes cahiers de la semaine"
+      ],
+      correct: 1,
+      feedbackOk: "Bravo, ton emploi du temps (ou Pronote) est ta meilleure source d'information.",
+      feedbackKo: "Le plus fiable, c'est de consulter ton emploi du temps ou Pronote, pas de deviner."
+    },
+    {
+      q: "Tu as piscine ou sport demain, que fais-tu ?",
+      options: [
+        "Rien de spécial, j'improviserai",
+        "Je prépare le sac de sport la veille en vérifiant l'EDT",
+        "Je demanderai à emprunter des affaires sur place"
+      ],
+      correct: 1,
+      feedbackOk: "Parfait réflexe : anticiper la veille évite le stress du matin !",
+      feedbackKo: "Il vaut mieux vérifier ton emploi du temps la veille et préparer ton sac de sport à l'avance."
+    },
+    {
+      q: "Ton cartable est très lourd tous les jours. Que peux-tu faire ?",
+      options: [
+        "Rien, il faut tout porter par sécurité",
+        "Ne prendre que les cahiers et livres des cours du jour",
+        "Enlever ma trousse pour gagner de la place"
+      ],
+      correct: 1,
+      feedbackOk: "Exact ! En suivant ton emploi du temps, tu ne prends que ce dont tu as besoin.",
+      feedbackKo: "La trousse reste indispensable ! La vraie solution, c'est de ne prendre que le nécessaire selon ton emploi du temps."
+    },
+    {
+      q: "Que dois-tu vérifier juste avant de fermer ton cartable le matin ?",
+      options: [
+        "Rien, si j'ai préparé la veille ça suffit",
+        "Un dernier coup d'œil pour être sûr de rien oublier",
+        "Juste que mon téléphone est chargé"
+      ],
+      correct: 1,
+      feedbackOk: "Bien vu ! Un dernier contrôle rapide te met à l'abri des oublis de dernière minute.",
+      feedbackKo: "Même bien préparé la veille, un dernier coup d'œil le matin est toujours utile."
+    }
+  ];
+
+  let currentQ = 0;
+  let score = 0;
+  const results = [];
+
+  function renderProgress() {
+    const bar = document.getElementById('quizProgress');
+    bar.innerHTML = '';
+    QUESTIONS.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'quiz-dot';
+      if (results[i] === true) d.classList.add('correct');
+      else if (results[i] === false) d.classList.add('wrong');
+      else if (i === currentQ) d.classList.add('active');
+      bar.appendChild(d);
+    });
+  }
+
+  function renderQuestion() {
+    renderProgress();
+    const body = document.getElementById('quizBody');
+    if (currentQ >= QUESTIONS.length) {
+      renderResult();
+      return;
+    }
+    const item = QUESTIONS[currentQ];
+    let html = `<div class="q-text">${currentQ + 1}. ${item.q}</div><div class="q-options">`;
+    item.options.forEach((opt, i) => {
+      html += `<button class="q-option" data-i="${i}" onclick="answer(${i})">${opt}</button>`;
+    });
+    html += `</div><div class="q-feedback" id="qFeedback"></div>
+      <div class="quiz-nav"><button class="btn" id="nextBtn" disabled onclick="nextQuestion()">Question suivante</button></div>`;
+    body.innerHTML = html;
+  }
+
+  function answer(i) {
+    const item = QUESTIONS[currentQ];
+    const buttons = document.querySelectorAll('.q-option');
+    buttons.forEach(b => b.setAttribute('disabled', 'true'));
+    const isCorrect = (i === item.correct);
+    results[currentQ] = isCorrect;
+    if (isCorrect) score++;
+
+    buttons[i].classList.add(isCorrect ? 'selected-correct' : 'selected-wrong');
+    if (!isCorrect) buttons[item.correct].classList.add('reveal-correct');
+
+    const fb = document.getElementById('qFeedback');
+    fb.textContent = isCorrect ? item.feedbackOk : item.feedbackKo;
+    fb.className = 'q-feedback show ' + (isCorrect ? 'ok' : 'ko');
+
+    document.getElementById('nextBtn').disabled = false;
+    renderProgress();
+  }
+
+  function nextQuestion() {
+    currentQ++;
+    renderQuestion();
+  }
+
+  function renderResult() {
+    const body = document.getElementById('quizBody');
+    let msg;
+    if (score === QUESTIONS.length) msg = "Score parfait ! Tu maîtrises déjà les bons réflexes.";
+    else if (score >= QUESTIONS.length - 1) msg = "Très bien joué, tu as presque tout bon !";
+    else if (score >= QUESTIONS.length / 2) msg = "Pas mal ! La fiche récap va t'aider à consolider ça.";
+    else msg = "Pas de souci, c'est justement fait pour apprendre : direction la fiche récap !";
+
+    body.innerHTML = `
+      <div class="quiz-result">
+        <div class="score">${score} / ${QUESTIONS.length}</div>
+        <div class="msg">${msg}</div>
+        <button class="btn" onclick="showRecap()">Voir la fiche récap →</button>
+      </div>`;
+  }
+
+  function showRecap() {
+    document.getElementById('quizSection').classList.add('hidden');
+    document.getElementById('recapSection').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ---------- CHECKLIST ----------
+  const CHECK_KEY = 'hvc_ch1_checks';
+  function loadChecks() {
+    try { const r = localStorage.getItem(CHECK_KEY); return r ? JSON.parse(r) : {}; }
+    catch(e) { return {}; }
+  }
+  function saveChecks(c) { try { localStorage.setItem(CHECK_KEY, JSON.stringify(c)); } catch(e) {} }
+
+  let checks = loadChecks();
+
+  function renderChecks() {
+    document.querySelectorAll('.check-item').forEach(el => {
+      const id = el.getAttribute('data-id');
+      if (checks[id]) el.classList.add('checked');
+      else el.classList.remove('checked');
+    });
+    const total = document.querySelectorAll('.check-item').length;
+    const done = Object.values(checks).filter(Boolean).length;
+    document.getElementById('checkCount').textContent = done + ' / ' + total + ' cochées';
+  }
+
+  document.querySelectorAll('.check-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const id = el.getAttribute('data-id');
+      checks[id] = !checks[id];
+      saveChecks(checks);
+      renderChecks();
+    });
+  });
+
+  function finishChapter() {
+    window.location.href = 'index.html?done=1';
+  }
+
+  renderQuestion();
+  renderChecks();
+</script>
+</body>
+</html>

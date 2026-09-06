@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Heure Bleue 6ème B · Apprendre à apprendre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #eef3f8;
+    --surface: #ffffff;
+    --border: #dbe4ee;
+    --border-light: #e9eff5;
+    --text-primary: #172431;
+    --text-secondary: #5c6b7a;
+    --text-muted: #a2afba;
+    --blue: #2d6ca8;
+    --blue-light: #e5eff9;
+    --amber: #d98e2b;
+    --amber-light: #fbf1e2;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background-color: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  .school-name {
+    max-width: 900px;
+    margin: 0 auto 1.75rem;
+    text-align: center;
+  }
+  .school-name h1 {
+    font-size: 30px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+  .school-name h1 span { color: var(--blue); font-weight: 700; }
+  .school-name p {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 8px;
+  }
+
+  .header {
+    max-width: 900px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+  }
+  .header-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .header-sub { font-size: 13px; color: var(--text-secondary); }
+  .header-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+  .prog-wrap { text-align: right; }
+  .prog-bar {
+    width: 130px; height: 4px; background: var(--border-light);
+    border-radius: 4px; overflow: hidden; margin-left: auto; margin-bottom: 6px;
+  }
+  .prog-fill { height: 100%; background: var(--blue); border-radius: 4px; transition: width .5s ease; }
+  .prog-label { font-family: var(--mono); font-size: 11px; color: var(--text-muted); }
+
+  .intro {
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--blue);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  .snake { max-width: 900px; margin: 0 auto; }
+
+  .phase-lbl {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .phase-lbl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .s-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 640px) { .s-row { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 18px 16px;
+    position: relative;
+    transition: box-shadow .2s, transform .2s, border-color .2s, background .2s, opacity .3s;
+    user-select: none;
+  }
+  .card.has-link { cursor: pointer; }
+  .card.has-link:hover:not(.checked) {
+    box-shadow: 0 10px 26px rgba(23,36,49,0.09);
+    transform: translateY(-2px);
+    border-color: var(--blue);
+  }
+  .card.checked {
+    border-color: var(--blue);
+    background: var(--blue-light);
+    opacity: 0.85;
+    cursor: default;
+  }
+  .card.checked .card-title { text-decoration: line-through; color: var(--text-muted); }
+  .card.soon { opacity: 0.45; cursor: not-allowed; }
+
+  .card-check-icon {
+    position: absolute; top: 14px; right: 14px;
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: transparent;
+  }
+  .card.checked .card-check-icon { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .card.soon .card-check-icon { display: none; }
+
+  .card-num {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--blue); margin-bottom: 8px;
+  }
+  .card.soon .card-num { color: var(--text-muted); }
+  .card-title { font-size: 17px; font-weight: 500; margin-bottom: 6px; }
+  .card-detail { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 10px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.04em;
+    background: var(--amber-light); color: var(--amber);
+    border-radius: 5px; padding: 3px 7px;
+  }
+  .chip.b { background: var(--blue-light); color: var(--blue); }
+
+  .stats-row {
+    max-width: 900px; margin: 2.5rem auto 0;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px; text-align: center;
+  }
+  .stat-val { font-size: 22px; font-weight: 700; }
+  .stat-val.blue { color: var(--blue); }
+  .stat-lbl { font-family: var(--mono); font-size: 9.5px; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--text-muted); margin-top: 4px; }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--text-primary); color: #fff; font-size: 13px;
+    padding: 10px 18px; border-radius: 8px; opacity: 0; pointer-events: none;
+    transition: opacity .25s, transform .25s;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .foot {
+    text-align: center; padding: 2rem 0 0; font-family: var(--mono);
+    font-size: 10px; color: var(--text-muted); letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+
+  <div class="school-name">
+    <h1>Heure <span>Bleue</span> · 6ème B</h1>
+    <p>Apprendre à apprendre — outils pour l'autonomie et la méthodologie</p>
+  </div>
+
+  <div class="header">
+    <div>
+      <div class="header-badge">Parcours de l'année</div>
+      <div class="header-sub">Un thème par séance, chaque lundi après-midi</div>
+    </div>
+    <div class="header-right">
+      <div class="prog-wrap">
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-label" id="progLabel">0 / 4 chapitres</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="intro">
+    Bienvenue sur le site de l'Heure de Vie de Classe ! Chaque semaine, on aborde un nouveau thème pour t'aider à devenir plus autonome au collège : organisation, méthode de travail, outils numériques… Clique sur un chapitre disponible pour commencer.
+  </div>
+
+  <div class="snake">
+    <div class="phase-lbl">S'organiser au quotidien</div>
+    <div class="s-row">
+      <div class="card has-link" id="card-1" data-href="chapitre-1.html" onclick="openChapter(this)">
+        <div class="card-check-icon">✓</div>
+        <div class="card-num">Chapitre 1</div>
+        <div class="card-title">🎒 Organiser son cartable</div>
+        <div class="card-detail">Préparer son sac la veille, vérifier son emploi du temps, ne rien oublier le matin.</div>
+        <div class="chips"><span class="chip b">Quiz</span><span class="chip">Checklist</span></div>
+      </div>
+
+      <div class="card soon">
+        <div class="card-num">Chapitre 2</div>
+        <div class="card-title">📅 Comprendre son emploi du temps</div>
+        <div class="card-detail">Lire son EDT, repérer les salles, anticiper les changements de matériel.</div>
+        <div class="chips"><span class="chip">Bientôt</span></div>
+      </div>
+    </div>
+
+    <div class="phase-lbl">Utiliser les bons outils</div>
+    <div class="s-row">
+      <div class="card soon">
+        <div class="card-num">Chapitre 3</div>
+        <div class="card-title">💻 Découvrir Pronote</div>
+        <div class="card-detail">Cahier de textes, notes, absences : s'y retrouver dans Pronote.</div>
+        <div class="chips"><span class="chip">Bientôt</span></div>
+      </div>
+
+      <div class="card soon">
+        <div class="card-num">Chapitre 4</div>
+        <div class="card-title">📖 Apprendre une leçon</div>
+        <div class="card-detail">Faire une fiche de révision efficace et mémoriser durablement.</div>
+        <div class="chips"><span class="chip">Bientôt</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat"><div class="stat-val">4</div><div class="stat-lbl">Chapitres prévus</div></div>
+    <div class="stat"><div class="stat-val">1h</div><div class="stat-lbl">Par séance</div></div>
+    <div class="stat"><div class="stat-val">2026-27</div><div class="stat-lbl">Année scolaire</div></div>
+    <div class="stat"><div class="stat-val blue" id="statDone">0</div><div class="stat-lbl">Complétés</div></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="foot">Heure Bleue · 6ème B · Professeur principal</div>
+
+  <script>
+    const TOTAL = 4;
+    const STATE_KEY = 'hvc_done_v1';
+
+    function loadState() {
+      try { const r = localStorage.getItem(STATE_KEY); return r ? JSON.parse(r) : {}; }
+      catch(e) { return {}; }
+    }
+    function saveState(s) { try { localStorage.setItem(STATE_KEY, JSON.stringify(s)); } catch(e) {} }
+
+    let state = loadState();
+
+    function countDone() {
+      let n = 0;
+      for (let id in state) { if (state[id]) n++; }
+      return n;
+    }
+
+    function updateProgress() {
+      const done = countDone();
+      document.getElementById('progFill').style.width = (done / TOTAL * 100) + '%';
+      document.getElementById('progLabel').textContent = done + ' / ' + TOTAL + ' chapitres';
+      document.getElementById('statDone').textContent = done;
+    }
+
+    function markDone(chapId) {
+      const card = document.getElementById('card-' + chapId);
+      if (!card) return;
+      card.classList.add('checked');
+      state[chapId] = true;
+      saveState(state);
+    }
+
+    function openChapter(card) {
+      if (card.classList.contains('checked')) return;
+      const href = card.getAttribute('data-href');
+      if (href) window.location.href = href;
+    }
+
+    function checkReturnParam() {
+      const params = new URLSearchParams(window.location.search);
+      const done = params.get('done');
+      if (done) {
+        if (!state[done]) {
+          markDone(done);
+          showToast('✓ Chapitre ' + done + ' terminé !');
+        }
+        const url = new URL(window.location);
+        url.searchParams.delete('done');
+        history.replaceState({}, '', url);
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    function renderAll() {
+      for (let id in state) { if (state[id]) markDone(id); }
+      updateProgress();
+    }
+
+    window.addEventListener('load', () => {
+      checkReturnParam();
+      renderAll();
+    });
+  </script>
+
+</body>
+</html>
