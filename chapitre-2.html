@@ -93,17 +93,14 @@
   }
   .vote-row.is-correct-reveal { border-color: var(--green); background: var(--green-light); }
   .vote-label { flex: 1; font-size: 13.5px; line-height: 1.4; }
-  .vote-counter { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .vote-btn {
-    width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--border);
-    background: var(--surface); font-size: 15px; font-weight: 600; cursor: pointer;
-    color: var(--text-secondary); line-height: 1; display: flex; align-items: center; justify-content: center;
+  .vote-input {
+    width: 68px; flex-shrink: 0; text-align: center; font-family: var(--mono);
+    font-size: 17px; font-weight: 500; border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 8px 6px; background: var(--surface); color: var(--text-primary);
   }
-  .vote-btn:hover { border-color: var(--blue); color: var(--blue); }
-  .vote-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-  .vote-num {
-    font-family: var(--mono); font-size: 15px; font-weight: 500; width: 26px; text-align: center;
-  }
+  .vote-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(45,108,168,0.15); }
+  .vote-input:disabled { background: var(--border-light); color: var(--text-muted); }
+  .vote-input::-webkit-inner-spin-button { opacity: 1; }
 
   .vote-total {
     font-size: 12px; color: var(--text-muted); margin: 8px 0 18px; text-align: right;
@@ -188,7 +185,7 @@
     <div class="badge">Chapitre 2</div>
     <h1>📅 Comprendre son emploi du temps</h1>
     <p>Savoir lire son emploi du temps, c'est la base pour ne jamais être pris au dépourvu : bonne salle, bon cahier, bonne semaine (A ou B)... et savoir aussi organiser son temps en dehors du collège pour dégager de vrais moments de devoirs. On commence par un quiz collectif à main levée, puis on construit ta fiche récap.</p>
-    <div class="mode-note">👋 <strong>Mode vote à main levée :</strong> pour chaque question, le prof affiche les propositions, compte les mains levées par les élèves puis rentre les chiffres. La bonne réponse et le pourcentage de la classe qui a trouvé s'affichent ensuite.</div>
+    <div class="mode-note">👋 <strong>Mode vote à main levée :</strong> demande "qui vote A ?", "qui vote B ?"... et tape directement le nombre de mains levées dans chaque case, puis appuie sur <strong>Entrée</strong> pour passer à la réponse suivante — la validation se fait automatiquement après la dernière.</div>
   </div>
 
   <!-- ================= QUIZ ================= -->
@@ -383,15 +380,12 @@
     let html = `<div class="q-count">Question ${currentQ + 1} / ${QUESTIONS.length}</div>
       <div class="q-text">${item.q}</div>`;
 
+    const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
     item.options.forEach((opt, i) => {
       html += `
         <div class="vote-row" id="voteRow-${i}">
-          <div class="vote-label">${opt}</div>
-          <div class="vote-counter">
-            <button class="vote-btn" onclick="changeVote(${i}, -1)">−</button>
-            <div class="vote-num" id="voteNum-${i}">0</div>
-            <button class="vote-btn" onclick="changeVote(${i}, 1)">+</button>
-          </div>
+          <div class="vote-label"><strong>${letters[i]}.</strong> ${opt}</div>
+          <input type="number" min="0" inputmode="numeric" class="vote-input" id="voteInput-${i}" placeholder="0">
         </div>`;
     });
 
@@ -403,13 +397,36 @@
       </div>`;
 
     body.innerHTML = html;
+
+    // Vote rapide au clavier : Entrée passe au champ suivant, puis valide automatiquement
+    item.options.forEach((opt, i) => {
+      const inp = document.getElementById('voteInput-' + i);
+      inp.addEventListener('input', () => {
+        const n = parseInt(inp.value, 10);
+        votes[i] = (isNaN(n) || n < 0) ? 0 : n;
+        updateVoteTotal();
+      });
+      inp.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (i < item.options.length - 1) {
+            document.getElementById('voteInput-' + (i + 1)).focus();
+          } else {
+            validateVotes();
+          }
+        }
+      });
+    });
+    setTimeout(() => {
+      const first = document.getElementById('voteInput-0');
+      if (first) first.focus();
+    }, 30);
   }
 
-  function changeVote(i, delta) {
-    votes[i] = Math.max(0, votes[i] + delta);
-    document.getElementById('voteNum-' + i).textContent = votes[i];
+  function updateVoteTotal() {
     const total = votes.reduce((a, b) => a + b, 0);
-    document.getElementById('voteTotal').textContent = total + " élève(s) ont voté";
+    const el = document.getElementById('voteTotal');
+    if (el) el.textContent = total + " élève(s) ont voté";
   }
 
   function validateVotes() {
@@ -423,8 +440,8 @@
     const pct = Math.round((correctCount / total) * 100);
     results[currentQ] = { total, correctCount, pct };
 
-    // Lock counters
-    document.querySelectorAll('.vote-btn').forEach(b => b.setAttribute('disabled', 'true'));
+    // Lock inputs
+    document.querySelectorAll('.vote-input').forEach(inp => inp.setAttribute('disabled', 'true'));
     document.getElementById('voteRow-' + item.correct).classList.add('is-correct-reveal');
     document.getElementById('validateBtn').classList.add('hidden');
     document.getElementById('nextBtn').classList.remove('hidden');

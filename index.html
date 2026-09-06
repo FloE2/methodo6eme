@@ -22,6 +22,7 @@
     --blue-light: #e5eff9;
     --amber: #d98e2b;
     --amber-light: #fbf1e2;
+    --red: #c0392b;
     --font: 'DM Sans', sans-serif;
     --mono: 'DM Mono', monospace;
   }
@@ -150,7 +151,8 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 12px; color: transparent;
   }
-  .card.checked .card-check-icon { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .card.checked .card-check-icon { background: var(--blue); border-color: var(--blue); color: #fff; cursor: pointer; }
+  .card.checked .card-check-icon:hover { background: var(--red); border-color: var(--red); }
   .card.soon .card-check-icon { display: none; }
 
   .card-num {
@@ -218,6 +220,7 @@
 
   <div class="intro">
     Bienvenue sur le site de l'Heure de Vie de Classe ! Chaque semaine, on aborde un nouveau thème pour t'aider à devenir plus autonome au collège : organisation, méthode de travail, outils numériques… Clique sur un chapitre disponible pour commencer.
+    <br><span style="color:var(--text-muted); font-size:12px;">💡 Prof : clique sur le ✓ d'un chapitre terminé pour le réinitialiser (ex. pour le refaire avec une autre classe).</span>
   </div>
 
   <div class="snake">
@@ -273,6 +276,17 @@
     const TOTAL = 4;
     const STATE_KEY = 'hvc_done_v1';
 
+    // Clé de stockage de la fiche récap (checklist) de chaque chapitre,
+    // à compléter au fur et à mesure que de nouveaux chapitres sont ajoutés.
+    const CHAPTER_CHECK_KEYS = {
+      '1': 'hvc_ch1_checks_v2',
+      '2': 'hvc_ch2_checks_v1'
+    };
+    const CHAPTER_HREFS = {
+      '1': 'chapitre-1.html',
+      '2': 'chapitre-2.html'
+    };
+
     function loadState() {
       try { const r = localStorage.getItem(STATE_KEY); return r ? JSON.parse(r) : {}; }
       catch(e) { return {}; }
@@ -297,9 +311,48 @@
     function markDone(chapId) {
       const card = document.getElementById('card-' + chapId);
       if (!card) return;
+      card.classList.remove('has-link');
       card.classList.add('checked');
+      card.removeAttribute('onclick');
+      const checkIcon = card.querySelector('.card-check-icon');
+      if (checkIcon) {
+        checkIcon.setAttribute('onclick', `askUnmark('${chapId}', event)`);
+        checkIcon.title = 'Cliquer pour réinitialiser ce chapitre (nouvelle classe)';
+      }
       state[chapId] = true;
       saveState(state);
+    }
+
+    function askUnmark(chapId, event) {
+      if (event) event.stopPropagation();
+      const ok = confirm(
+        "Réinitialiser le chapitre " + chapId + " ?\n\n" +
+        "La case sera décochée et la fiche récap cochée par les élèves sera remise à zéro, " +
+        "pour pouvoir refaire ce chapitre avec une autre classe. Les résultats du quiz ne sont " +
+        "de toute façon jamais conservés d'une séance à l'autre."
+      );
+      if (!ok) return;
+      unmarkDone(chapId);
+    }
+
+    function unmarkDone(chapId) {
+      const card = document.getElementById('card-' + chapId);
+      if (!card) return;
+      card.classList.remove('checked');
+      card.classList.add('has-link');
+      card.setAttribute('data-href', CHAPTER_HREFS[chapId] || '');
+      card.setAttribute('onclick', 'openChapter(this)');
+      const checkIcon = card.querySelector('.card-check-icon');
+      if (checkIcon) { checkIcon.removeAttribute('onclick'); checkIcon.removeAttribute('title'); }
+
+      delete state[chapId];
+      saveState(state);
+
+      const checkKey = CHAPTER_CHECK_KEYS[chapId];
+      if (checkKey) { try { localStorage.removeItem(checkKey); } catch(e) {} }
+
+      updateProgress();
+      showToast('↩ Chapitre ' + chapId + ' réinitialisé pour une nouvelle classe');
     }
 
     function openChapter(card) {
