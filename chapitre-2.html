@@ -314,6 +314,7 @@
   <div id="recapSection" class="hidden">
     <div class="section-lbl">Étape 3 · Fiche récap</div>
     <div class="recap-card">
+      <button class="btn ghost no-print hidden" id="recapBackBtn" onclick="goBackFromRecap()" style="margin-bottom:14px;">← Retour</button>
       <h2>Ma checklist emploi du temps</h2>
       <div class="recap-sub">Coche au fur et à mesure — ta progression est enregistrée sur cet ordinateur.</div>
 
@@ -563,9 +564,9 @@
       explain: "Réviser uniquement la veille est moins efficace que d'étaler ses révisions sur plusieurs jours."
     },
     {
-      text: "Léo a repéré à l'avance qu'il change de bâtiment entre Techno et EPS, et prévoit un peu de marge.",
+      text: "Léo remarque que le mardi, il n'est pas dans la même salle selon qu'on est en semaine A ou en semaine B, et vérifie bien laquelle est en cours avant de préparer son sac.",
       isError: false,
-      explain: "Anticiper les trajets entre les salles évite le stress et les retards."
+      explain: "Vérifier la semaine A ou B évite de se tromper de salle ou d'oublier le bon matériel."
     },
     {
       text: "Léo se couche à minuit tous les soirs de la semaine, même les jours de classe.",
@@ -643,6 +644,9 @@
   function showRecap() {
     document.getElementById('errorSection').classList.add('hidden');
     document.getElementById('recapSection').classList.remove('hidden');
+    recapReturnTarget = null;
+    const backBtn = document.getElementById('recapBackBtn');
+    if (backBtn) backBtn.classList.add('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -700,13 +704,37 @@
   }
 
   // ---------- ACCÈS DIRECT À LA FICHE RÉCAP ----------
+  let recapReturnTarget = null;
   function goToRecapDirect() {
     const quiz = document.getElementById('quizSection');
     const err = document.getElementById('errorSection');
     const recap = document.getElementById('recapSection');
+    if (quiz && !quiz.classList.contains('hidden')) recapReturnTarget = 'quiz';
+    else if (err && !err.classList.contains('hidden')) recapReturnTarget = 'error';
+    else recapReturnTarget = null;
+
     if (quiz) quiz.classList.add('hidden');
     if (err) err.classList.add('hidden');
     if (recap) recap.classList.remove('hidden');
+
+    const backBtn = document.getElementById('recapBackBtn');
+    if (backBtn) {
+      if (recapReturnTarget) backBtn.classList.remove('hidden');
+      else backBtn.classList.add('hidden');
+    }
+    window.scrollTo(0, 0);
+  }
+
+  function goBackFromRecap() {
+    const quiz = document.getElementById('quizSection');
+    const err = document.getElementById('errorSection');
+    const recap = document.getElementById('recapSection');
+    if (recap) recap.classList.add('hidden');
+    if (recapReturnTarget === 'error' && err) err.classList.remove('hidden');
+    else if (quiz) quiz.classList.remove('hidden');
+    recapReturnTarget = null;
+    const backBtn = document.getElementById('recapBackBtn');
+    if (backBtn) backBtn.classList.add('hidden');
     window.scrollTo(0, 0);
   }
 
