@@ -173,6 +173,30 @@
 
   .hidden { display: none; }
 
+  .head-actions { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .link-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font); font-size: 13px; font-weight: 500;
+    background: var(--surface); color: var(--blue);
+    border: 1.5px solid var(--blue); border-radius: 9px;
+    padding: 9px 16px; cursor: pointer; transition: background .15s, color .15s;
+  }
+  .link-btn:hover { background: var(--blue); color: #fff; }
+
+  @media print {
+    body * { visibility: hidden; }
+    #recapSection, #recapSection * { visibility: visible; }
+    #recapSection {
+      position: absolute; top: 0; left: 0; width: 100%;
+      margin: 0; padding: 0;
+    }
+    #recapSection.hidden { display: block !important; }
+    .no-print { display: none !important; }
+    .section-lbl { display: none !important; }
+    .recap-card { border: none; padding: 0; }
+    @page { size: A4; margin: 14mm; }
+  }
+
   .foot { text-align: center; padding: 2.5rem 0 0; font-family: var(--mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.05em; }
 </style>
 </head>
@@ -186,6 +210,9 @@
     <h1>🎒 Organiser son cartable</h1>
     <p>Un cartable bien préparé, c'est moins de stress le matin et l'assurance de ne rien oublier. On commence par un quiz collectif à main levée, puis on construit ensemble ta fiche récap à garder toute l'année.</p>
     <div class="mode-note">👋 <strong>Mode vote à main levée :</strong> demande "qui vote A ?", "qui vote B ?"... et tape directement le nombre de mains levées dans chaque case, puis appuie sur <strong>Entrée</strong> pour passer à la réponse suivante — la validation se fait automatiquement après la dernière.</div>
+    <div class="head-actions no-print">
+      <button class="link-btn" onclick="goToChecklist()">📋 Accès direct à la checklist</button>
+    </div>
   </div>
 
   <!-- ================= QUIZ ================= -->
@@ -232,7 +259,10 @@
 
       <div class="finish-row">
         <div class="finish-hint" id="checkCount">0 / 10 cochées</div>
-        <button class="btn" id="finishBtn" onclick="finishChapter()">Terminer le chapitre</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn ghost no-print" onclick="window.print()">🖨️ Télécharger / imprimer (PDF)</button>
+          <button class="btn" id="finishBtn" onclick="finishChapter()">Terminer le chapitre</button>
+        </div>
       </div>
     </div>
   </div>
@@ -506,6 +536,10 @@
     document.getElementById('quizSection').classList.add('hidden');
     document.getElementById('recapSection').classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goToChecklist() {
+    showRecap();
   }
 
   // ---------- CHECKLIST ----------
