@@ -202,6 +202,45 @@
   .hidden { display: none; }
 
   .foot { text-align: center; padding: 2.5rem 0 0; font-family: var(--mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.05em; }
+
+  /* PRINT BUTTON (chapter head) */
+  .head-actions { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .print-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font); font-size: 13px; font-weight: 500;
+    background: var(--surface); color: var(--blue);
+    border: 1.5px solid var(--blue); border-radius: 9px;
+    padding: 9px 16px; cursor: pointer; transition: background .15s, color .15s;
+  }
+  .print-btn:hover { background: var(--blue); color: #fff; }
+
+  /* EDT PRINT OVERLAY */
+  .edt-overlay {
+    position: fixed; inset: 0; background: rgba(23,36,49,0.72);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px; z-index: 1000;
+  }
+  .edt-overlay.hidden { display: none; }
+  .edt-sheet {
+    background: #fff; border-radius: 16px; padding: 28px;
+    max-width: 920px; width: 100%; max-height: 92vh; overflow: auto;
+    text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+  .edt-sheet h2 { font-size: 20px; font-weight: 500; margin-bottom: 4px; color: var(--text-primary); }
+  .edt-sheet .edt-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 18px; }
+  .edt-sheet img { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 8px; display: block; }
+  .edt-actions { margin-top: 20px; display: flex; gap: 10px; justify-content: center; }
+
+  @media print {
+    body * { visibility: hidden; }
+    #edtPrintSheet, #edtPrintSheet * { visibility: visible; }
+    #edtPrintSheet {
+      position: absolute; top: 0; left: 0; width: 100%; max-height: none;
+      margin: 0; box-shadow: none; border-radius: 0; padding: 0; overflow: visible;
+    }
+    .no-print { display: none !important; }
+    @page { size: A4; margin: 12mm; }
+  }
 </style>
 </head>
 <body>
@@ -214,6 +253,22 @@
     <h1>📅 Comprendre son emploi du temps</h1>
     <p>Savoir lire son emploi du temps, c'est la base pour ne jamais être pris au dépourvu : bonne salle, bon cahier, bonne semaine (A ou B)... et savoir aussi organiser son temps en dehors du collège pour dégager de vrais moments de devoirs. Deux activités collectives aujourd'hui : un Vrai ou Faux à main levée, puis un jeu "Trouve l'erreur", avant la fiche récap.</p>
     <div class="mode-note">👋 <strong>Mode vote à main levée :</strong> demande "qui vote Vrai ?", "qui vote Faux ?"... et tape directement le nombre de mains levées dans chaque case, puis appuie sur <strong>Entrée</strong> pour passer à la suite — la validation se fait automatiquement après la dernière réponse.</div>
+    <div class="head-actions">
+      <button class="print-btn" onclick="openSchedulePrint()">🖨️ Imprimer l'emploi du temps (grand format A4)</button>
+    </div>
+  </div>
+
+  <!-- ================= EMPLOI DU TEMPS — IMPRESSION A4 ================= -->
+  <div id="edtOverlay" class="edt-overlay hidden">
+    <div class="edt-sheet" id="edtPrintSheet">
+      <h2>Mon emploi du temps — 6ème B</h2>
+      <div class="edt-sub no-print">Année 2026-2027 · à garder sous les yeux pendant le chapitre, ou à imprimer en grand</div>
+      <img src="edt-6b.jpg" alt="Emploi du temps 6B 2026-2027" />
+      <div class="edt-actions no-print">
+        <button class="btn" onclick="window.print()">Imprimer</button>
+        <button class="btn ghost" onclick="closeSchedulePrint()">Fermer</button>
+      </div>
+    </div>
   </div>
 
   <!-- ================= QUIZ ================= -->
@@ -608,6 +663,17 @@
   function finishChapter() {
     window.location.href = 'index.html?done=2';
   }
+
+  // ---------- IMPRESSION EMPLOI DU TEMPS ----------
+  function openSchedulePrint() {
+    document.getElementById('edtOverlay').classList.remove('hidden');
+  }
+  function closeSchedulePrint() {
+    document.getElementById('edtOverlay').classList.add('hidden');
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSchedulePrint();
+  });
 
   renderQuestion();
   renderChecks();
