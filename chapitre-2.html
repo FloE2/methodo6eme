@@ -236,7 +236,7 @@
     #edtPrintSheet, #edtPrintSheet *,
     #planningPrintSheet, #planningPrintSheet * { visibility: visible; }
     #edtPrintSheet, #planningPrintSheet {
-      position: absolute; top: 0; left: 0; width: 100%; max-height: none;
+      position: absolute; top: 0; left: 0; width: 100%; max-width: none; max-height: none;
       margin: 0; box-shadow: none; border-radius: 0; padding: 0; overflow: visible;
     }
     .no-print { display: none !important; }
@@ -702,10 +702,13 @@
 
   // ---------- ACCÈS DIRECT À LA FICHE RÉCAP ----------
   function goToRecapDirect() {
-    document.getElementById('quizSection').classList.add('hidden');
-    document.getElementById('errorSection').classList.add('hidden');
-    document.getElementById('recapSection').classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const quiz = document.getElementById('quizSection');
+    const err = document.getElementById('errorSection');
+    const recap = document.getElementById('recapSection');
+    if (quiz) quiz.classList.add('hidden');
+    if (err) err.classList.add('hidden');
+    if (recap) recap.classList.remove('hidden');
+    window.scrollTo(0, 0);
   }
 
   document.addEventListener('keydown', (e) => {
