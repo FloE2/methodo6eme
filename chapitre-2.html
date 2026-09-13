@@ -233,8 +233,9 @@
 
   @media print {
     body * { visibility: hidden; }
-    #edtPrintSheet, #edtPrintSheet * { visibility: visible; }
-    #edtPrintSheet {
+    #edtPrintSheet, #edtPrintSheet *,
+    #planningPrintSheet, #planningPrintSheet * { visibility: visible; }
+    #edtPrintSheet, #planningPrintSheet {
       position: absolute; top: 0; left: 0; width: 100%; max-height: none;
       margin: 0; box-shadow: none; border-radius: 0; padding: 0; overflow: visible;
     }
@@ -255,6 +256,8 @@
     <div class="mode-note">👋 <strong>Mode vote à main levée :</strong> demande "qui vote Vrai ?", "qui vote Faux ?"... et tape directement le nombre de mains levées dans chaque case, puis appuie sur <strong>Entrée</strong> pour passer à la suite — la validation se fait automatiquement après la dernière réponse.</div>
     <div class="head-actions">
       <button class="print-btn" onclick="openSchedulePrint()">🖨️ Imprimer l'emploi du temps (grand format A4)</button>
+      <button class="print-btn" onclick="openPlanningPrint()">🎨 Planning de la semaine à colorier</button>
+      <button class="print-btn" onclick="goToRecapDirect()">📋 Accès direct à la fiche récap</button>
     </div>
   </div>
 
@@ -267,6 +270,20 @@
       <div class="edt-actions no-print">
         <button class="btn" onclick="window.print()">Imprimer</button>
         <button class="btn ghost" onclick="closeSchedulePrint()">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PLANNING VIERGE À COLORIER — IMPRESSION A4 ================= -->
+  <div id="planningOverlay" class="edt-overlay hidden">
+    <div class="edt-sheet" id="planningPrintSheet">
+      <h2>Mon planning de la semaine à colorier</h2>
+      <div class="edt-sub no-print">À télécharger, imprimer et colorier avec le code couleur ci-dessous</div>
+      <img src="planning-vierge.jpg" alt="Planning vierge de la semaine à colorier" />
+      <div class="edt-actions no-print">
+        <a class="btn" href="planning-vierge.jpg" download="planning-vierge.jpg" style="text-decoration:none; display:inline-flex; align-items:center;">⬇️ Télécharger l'image</a>
+        <button class="btn" onclick="printPlanning()">Imprimer</button>
+        <button class="btn ghost" onclick="closePlanningPrint()">Fermer</button>
       </div>
     </div>
   </div>
@@ -337,18 +354,18 @@
   // ---------- QUESTIONS (mode vote de classe) ----------
   const QUESTIONS = [
     {
-      q: "Sur l'emploi du temps du collège, les heures de cours sont indiquées par des cases grisées.",
+      q: "Sur l'emploi du temps du collège, les heures de cours sont indiquées par des cases colorées.",
       options: ["Vrai", "Faux"],
       letters: ["V", "F"],
       correct: 0,
-      explain: "Vrai : les cases grisées représentent les créneaux occupés par les cours au collège."
+      explain: "Vrai : les cases colorées représentent les créneaux occupés par les cours au collège."
     },
     {
-      q: "Si tu ne sais pas si tu es en semaine A ou B, deviner est aussi fiable que de vérifier sur Pronote ou le panneau d'affichage.",
-      options: ["Vrai", "Faux"],
-      letters: ["V", "F"],
-      correct: 1,
-      explain: "Faux : deviner expose à l'erreur. Vérifier reste le seul réflexe fiable à 100%."
+      q: "Pour savoir si je suis en semaine A ou en semaine B, je vérifie :",
+      options: ["Dans mon carnet de correspondance", "En demandant à mes parents"],
+      letters: ["A", "B"],
+      correct: 0,
+      explain: "Le carnet de correspondance (ou Pronote) indique la semaine A ou B — c'est la source fiable, pas besoin de demander à quelqu'un qui peut se tromper."
     },
     {
       q: "Il est conseillé de faire environ 15 à 45 minutes de devoirs chaque soir en 6ème, plutôt que plusieurs heures d'un coup.",
@@ -365,11 +382,11 @@
       explain: "Faux : étaler ses révisions sur plusieurs jours aide bien mieux la mémorisation qu'une révision de dernière minute."
     },
     {
-      q: "Le code couleur (noir/bleu/rouge/vert) sur la fiche \"Mon emploi du temps perso\" sert à vérifier qu'un vrai créneau de devoirs est prévu chaque jour.",
-      options: ["Vrai", "Faux"],
-      letters: ["V", "F"],
-      correct: 0,
-      explain: "Vrai : le code couleur permet justement de repérer d'un coup d'œil si un moment vert (devoirs) existe bien chaque jour."
+      q: "Est-ce en semaine A ou en semaine B que j'ai le plus d'heures de français ?",
+      options: ["Semaine A", "Semaine B"],
+      letters: ["A", "B"],
+      correct: 1,
+      explain: "Semaine B : le vendredi de 10h à 11h, il y a une heure de français en plus — pense à vérifier ta propre semaine sur ton emploi du temps !"
     },
     {
       q: "Le sommeil n'a aucun lien avec la capacité à se concentrer en classe le lendemain.",
@@ -671,8 +688,28 @@
   function closeSchedulePrint() {
     document.getElementById('edtOverlay').classList.add('hidden');
   }
+
+  // ---------- PLANNING VIERGE À COLORIER ----------
+  function openPlanningPrint() {
+    document.getElementById('planningOverlay').classList.remove('hidden');
+  }
+  function closePlanningPrint() {
+    document.getElementById('planningOverlay').classList.add('hidden');
+  }
+  function printPlanning() {
+    window.print();
+  }
+
+  // ---------- ACCÈS DIRECT À LA FICHE RÉCAP ----------
+  function goToRecapDirect() {
+    document.getElementById('quizSection').classList.add('hidden');
+    document.getElementById('errorSection').classList.add('hidden');
+    document.getElementById('recapSection').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeSchedulePrint();
+    if (e.key === 'Escape') { closeSchedulePrint(); closePlanningPrint(); }
   });
 
   renderQuestion();
