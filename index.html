@@ -143,6 +143,7 @@
   }
   .card.checked .card-title { text-decoration: line-through; color: var(--text-muted); }
   .card.soon { opacity: 0.45; cursor: not-allowed; }
+  .card.wide { grid-column: 1 / -1; }
 
   .card-check-icon {
     position: absolute; top: 14px; right: 14px;
@@ -213,7 +214,7 @@
     <div class="header-right">
       <div class="prog-wrap">
         <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
-        <div class="prog-label" id="progLabel">0 / 4 chapitres</div>
+        <div class="prog-label" id="progLabel">0 / 5 chapitres</div>
       </div>
     </div>
   </div>
@@ -243,17 +244,28 @@
       </div>
     </div>
 
+    <div class="phase-lbl">Vivre ensemble en classe</div>
+    <div class="s-row">
+      <div class="card has-link wide" id="card-3" data-href="election-delegues.html" onclick="openChapter(this)">
+        <div class="card-check-icon">✓</div>
+        <div class="card-num">Chapitre 3</div>
+        <div class="card-title">🗳️ Élire ses délégués de classe</div>
+        <div class="card-detail">Comprendre le rôle des délégués, écouter les candidats, voter à bulletin secret et compter les voix en direct.</div>
+        <div class="chips"><span class="chip b">Vrai ou faux</span><span class="chip b">Vote en direct</span><span class="chip">Élection</span></div>
+      </div>
+    </div>
+
     <div class="phase-lbl">Utiliser les bons outils</div>
     <div class="s-row">
       <div class="card soon">
-        <div class="card-num">Chapitre 3</div>
+        <div class="card-num">Chapitre 4</div>
         <div class="card-title">💻 Découvrir Pronote</div>
         <div class="card-detail">Cahier de textes, notes, absences : s'y retrouver dans Pronote.</div>
         <div class="chips"><span class="chip">Bientôt</span></div>
       </div>
 
       <div class="card soon">
-        <div class="card-num">Chapitre 4</div>
+        <div class="card-num">Chapitre 5</div>
         <div class="card-title">📖 Apprendre une leçon</div>
         <div class="card-detail">Faire une fiche de révision efficace et mémoriser durablement.</div>
         <div class="chips"><span class="chip">Bientôt</span></div>
@@ -262,7 +274,7 @@
   </div>
 
   <div class="stats-row">
-    <div class="stat"><div class="stat-val">4</div><div class="stat-lbl">Chapitres prévus</div></div>
+    <div class="stat"><div class="stat-val">5</div><div class="stat-lbl">Chapitres prévus</div></div>
     <div class="stat"><div class="stat-val">1h</div><div class="stat-lbl">Par séance</div></div>
     <div class="stat"><div class="stat-val">2026-27</div><div class="stat-lbl">Année scolaire</div></div>
     <div class="stat"><div class="stat-val blue" id="statDone">0</div><div class="stat-lbl">Complétés</div></div>
@@ -273,18 +285,20 @@
   <div class="foot">Heure Bleue · 6ème B · Professeur principal</div>
 
   <script>
-    const TOTAL = 4;
+    const TOTAL = 5;
     const STATE_KEY = 'hvc_done_v1';
 
     // Clé de stockage de la fiche récap (checklist) de chaque chapitre,
     // à compléter au fur et à mesure que de nouveaux chapitres sont ajoutés.
     const CHAPTER_CHECK_KEYS = {
       '1': 'hvc_ch1_checks_v2',
-      '2': 'hvc_ch2_checks_v1'
+      '2': 'hvc_ch2_checks_v1',
+      '3': 'hvc_ch3_election_v1'
     };
     const CHAPTER_HREFS = {
       '1': 'chapitre-1.html',
-      '2': 'chapitre-2.html'
+      '2': 'chapitre-2.html',
+      '3': 'election-delegues.html'
     };
 
     function loadState() {
@@ -325,7 +339,11 @@
 
     function askUnmark(chapId, event) {
       if (event) event.stopPropagation();
+      const warn3 = (chapId === '3')
+        ? "ATTENTION : les candidats et les résultats de l'élection seront effacés.\n\n"
+        : "";
       const ok = confirm(
+        warn3 +
         "Réinitialiser le chapitre " + chapId + " ?\n\n" +
         "La case sera décochée et la fiche récap cochée par les élèves sera remise à zéro, " +
         "pour pouvoir refaire ce chapitre avec une autre classe. Les résultats du quiz ne sont " +
