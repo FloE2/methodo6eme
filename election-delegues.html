@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<title>Élection des délégués de classe</title>
+<title>Chapitre 3 · Élire ses délégués de classe — Heure Bleue 6ème B</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&display=swap" rel="stylesheet">
@@ -51,12 +51,16 @@ b,strong{font-weight:700}
 
 /* En-tête */
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;height:var(--top-h);background:var(--bg);border-bottom:2.5px solid var(--edge);display:flex;align-items:center;gap:14px;padding:0 18px}
+.back{flex:none;font-weight:700;font-size:.95rem;color:var(--ink);text-decoration:none;border:2px solid var(--edge);border-radius:999px;padding:6px 14px;background:var(--surface);white-space:nowrap}
+.back:hover{background:var(--hi)}
 .brand{font-family:var(--display);font-weight:800;font-size:1.15rem;white-space:nowrap}
 .steps{display:flex;gap:6px;overflow-x:auto;flex:1;scrollbar-width:none;padding:4px 2px}
 .steps::-webkit-scrollbar{display:none}
 .step{font:inherit;font-size:.95rem;font-weight:700;border:2px solid var(--edge);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;white-space:nowrap}
 .step[aria-current="step"]{background:var(--ink);color:var(--bg)}
 .step.theme{flex:none}
+.step.reset{flex:none}
+.step.reset.danger{background:var(--red);color:#fff}
 
 .wrap{max-width:1180px;margin:0 auto;padding:30px 20px 70px}
 .head{margin-bottom:28px}
@@ -279,6 +283,7 @@ button.brow:hover{background:rgba(255,255,255,.07)}
   .strip li:not(:last-child)::after{content:"↓";right:auto;left:50%;top:auto;bottom:-32px;transform:translateX(-50%)}
   .branches{grid-template-columns:1fr}
   .brand{display:none}
+  .step.reset .lbl{display:none}
   .brow{grid-template-columns:36px minmax(0,1fr) 60px}
   .marks{display:none}
   .bcount{font-size:2rem}
@@ -297,7 +302,7 @@ button.brow:hover{background:rgba(255,255,255,.07)}
 'use strict';
 
 /* ---------- Données de base ---------- */
-var KEY='delegues-classe-v1', SEATS=2;
+var KEY='hvc_ch3_election_v1', SEATS=2;
 var SCENES=[
   {label:'Accueil'},{label:'Vrai ou faux'},{label:'Missions'},{label:'Élection'},
   {label:'Candidats'},{label:'Vote'},{label:'Dépouillement'},{label:'Résultats'}
@@ -344,7 +349,7 @@ function load(){
 }
 var S=load();
 var E={quiz:{},timer:null,confirm:null,last:null,drop:false,celebrate:false,settingsOpen:false,
-  calc:{v:S.electeurs,inv:1},err:null,focusForm:false,nav:false};
+  calc:{v:S.electeurs,inv:1},err:null,focusForm:false,nav:false,flash:null};
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
 
 /* ---------- Utilitaires ---------- */
@@ -447,26 +452,27 @@ function pager(prev,next){
 /* ---------- En-tête ---------- */
 function header(){
   var tl={auto:'Automatique',light:'Clair',dark:'Sombre'}[S.theme], ic={auto:'◐',light:'☀',dark:'☾'}[S.theme];
-  return '<header class="top"><div class="brand"><span aria-hidden="true">🗳️</span> Délégués '+esc(S.classe)+'</div>'+
+  return '<header class="top"><a class="back" href="index.html">← Sommaire</a><div class="brand"><span aria-hidden="true">🗳️</span> Délégués '+esc(S.classe)+'</div>'+
     '<nav class="steps" aria-label="Étapes du chapitre">'+SCENES.map(function(s,i){
       return '<button class="step" data-act="go" data-i="'+i+'"'+(i===S.scene?' aria-current="step"':'')+'>'+s.label+'</button>';
     }).join('')+'</nav>'+
+    '<button class="step reset'+(E.confirm==='reset'?' danger':'')+'" data-act="reset" data-confirm="1" data-fid="reset" title="Effacer les candidats et tous les votes">'+(E.confirm==='reset'?'Confirmer : tout effacer ?':'↺ <span class="lbl">Tout remettre à zéro</span>')+'</button>'+
     '<button class="step theme" data-act="theme" aria-label="Changer le thème (actuel : '+tl+')" title="Thème : '+tl+'">'+ic+'</button></header>';
 }
 
 /* ---------- Scènes ---------- */
 function sceneAccueil(){
-  return '<div class="wrap"><section class="hero"><div>'+
+  var flash=E.flash; E.flash=null;
+  return '<div class="wrap">'+(flash?'<div class="info" role="status">✔ '+esc(flash)+'</div>':'')+'<section class="hero"><div>'+
   '<h1>Qui parlera pour la '+esc(S.classe)+'&nbsp;?</h1>'+
-  '<p class="lead">Les délégués sont la voix de la classe. Aujourd’hui, tu découvres leur rôle, tu écoutes les candidats, puis on vote pour de vrai : bulletin secret, isoloir, urne et dépouillement en direct.</p>'+
+  '<p class="lead">Les délégués sont la voix de la classe. Aujourd’hui, tu découvres leur rôle, tu écoutes les candidats, puis on vote pour de vrai : bulletin secret, urne et dépouillement en direct.</p>'+
   '<ol class="plan"><li>On découvre le rôle des délégués</li><li>Les binômes se présentent</li><li>On vote, tour après tour</li><li>On compte les bulletins ensemble</li></ol>'+
   '<div class="row"><button class="btn big" data-act="go" data-i="1">On commence !</button><button class="btn ghost" data-act="go" data-i="4">Aller aux candidats</button></div>'+
   '<p class="school" style="margin-top:22px">Collège Yves du Manoir</p>'+
   '<details class="settings"'+(E.settingsOpen?' open':'')+'><summary>Réglages du professeur</summary>'+
     '<div class="fields"><label>Classe<input id="set-classe" value="'+esc(S.classe)+'" maxlength="12"></label>'+
     '<label>Élèves qui votent<input id="set-electeurs" type="number" min="1" max="60" value="'+S.electeurs+'"></label></div>'+
-    '<p class="hint">Tout est enregistré automatiquement dans ce navigateur : tu peux actualiser la page sans perdre les votes.</p>'+
-    '<button class="btn small ghost" data-act="reset" data-confirm="1">'+(E.confirm==='reset'?'Cliquer encore pour tout effacer':'Tout effacer et recommencer')+'</button>'+
+    '<p class="hint">Tout est enregistré automatiquement dans ce navigateur : tu peux actualiser la page sans perdre les votes. Pour tout effacer, utilise le bouton « Tout remettre à zéro » en haut de la page.</p>'+
   '</details></div>'+
   '<div class="hero-art">'+urne({hero:true})+'</div></section></div>';
 }
@@ -501,7 +507,7 @@ function sceneMissions(){
     ['👂','Il écoute ses camarades et transmet les informations, sans les déformer.'],
     ['🤐','Il garde une certaine réserve sur ce qui se dit au conseil de classe.'],
     ['🎓','Il peut suivre une formation de délégué.'],
-    ['🌱','Il peut proposer des projets, comme un potager pédagogique, au chef d’établissement.']
+    ['🌱','Il peut proposer des projets au chef d’établissement, comme un club sur l’heure du midi.']
   ];
   return '<div class="wrap"><div class="head"><h1>À quoi sert un délégué ?</h1><p class="lead">Un délégué représente ses camarades et fait le lien avec les adultes du collège. Voici ses cinq rôles.</p></div>'+
   '<div class="roles">'+roles.map(function(r,i){ var c=PALETTE[i]; return '<article class="role" style="--c:'+c.bg+';--cfg:'+c.fg+'"><span class="emo" aria-hidden="true">'+r[0]+'</span><h3>'+r[1]+'</h3><p>'+r[2]+'</p></article>'; }).join('')+'</div>'+
@@ -510,8 +516,6 @@ function sceneMissions(){
     '<li><b>Transmettre</b>ces avis aux adultes présents au conseil de classe.</li>'+
     '<li><b>Diffuser</b>à la classe les informations données pendant le conseil.</li></ol></section>'+
   '<section class="sec"><h2>Et tout au long de l’année</h2><ul class="year">'+year.map(function(y){ return '<li><span class="emo" aria-hidden="true">'+y[0]+'</span><span>'+y[1]+'</span></li>'; }).join('')+'</ul></section>'+
-  '<section class="livret"><h3>📒 Dans ton livret, page 7 : quels sont les rôles des délégués de classe ?</h3><ol>'+
-    '<li>Recueillir les avis et les propositions des élèves.</li><li>Les transmettre lors du conseil de classe.</li><li>Informer les camarades de ce qui a été dit au conseil.</li></ol></section>'+
   pager(true,true)+'</div>';
 }
 
@@ -521,7 +525,8 @@ function sceneElection(){
     ['👥','2 titulaires et 2 suppléants','Dans chaque classe, on élit 2 délégués titulaires et 2 suppléants.'],
     ['🧑‍🎓','Tous les élèves votent','Chaque élève de la classe peut voter, sans aucune exception.'],
     ['🙋','Tous les élèves peuvent se présenter','Chacun peut être candidat, même en se déclarant le jour de l’élection. On se présente en binôme : un titulaire et un suppléant que l’on choisit.'],
-    ['🤫','Le vote est secret','Tu passes dans l’isoloir, tu écris sur ton bulletin le nom du titulaire, sans faute, puis tu le glisses dans l’urne. Son suppléant est élu avec lui. Un bulletin blanc ou nul n’est pas compté comme une voix.'],
+    ['🤫','Le vote est secret','Tu écris sur ton bulletin le nom du titulaire, sans faute et sans le montrer, puis tu le plies et tu le glisses dans l’urne. Personne ne sait pour qui tu as voté. Son suppléant est élu avec lui.'],
+    ['🗒️','Bulletin blanc, bulletin nul : c’est quoi ?','Un bulletin <b>blanc</b> est un bulletin vide : personne n’y a écrit de nom. Un bulletin <b>nul</b> est un bulletin qu’on ne peut pas compter : nom illisible ou qui n’est pas celui d’un élève de la classe, plusieurs noms, dessin ou message écrit dessus. Ni l’un ni l’autre ne donne de voix à un candidat, et on ne les compte pas dans les suffrages exprimés.'],
     ['⭐','On peut être élu sans s’être présenté','Il faut avoir assez de voix, et accepter d’être délégué.'],
     ['📅','On est délégué toute l’année','Le mandat dure l’année scolaire. Si un délégué démissionne, on élit un remplaçant.']
   ];
@@ -540,7 +545,7 @@ function sceneElection(){
       '<div><label id="l-i">Bulletins blancs ou nuls</label><div class="stepper" role="group" aria-labelledby="l-i"><button class="btn" data-act="calc" data-k="i" data-d="-1" aria-label="Un bulletin de moins">−</button><output>'+C.inv+'</output><button class="btn" data-act="calc" data-k="i" data-d="1" aria-label="Un bulletin de plus">+</button></div></div>'+
     '</div><p class="res" aria-live="polite">'+plural(ex,'suffrage exprimé','suffrages exprimés')+' : il faut <b>'+maj+' voix</b> pour gagner au tour 1.</p></div></section>'+
   '<section class="livret"><h3>📒 Dans ton livret, page 7 : complète les phrases</h3><ul>'+
-    '<li>On vote à bulletins <span class="fill">secrets</span>, en allant dans un <span class="fill">isoloir</span>.</li>'+
+    '<li>On vote à bulletins <span class="fill">secrets</span>.</li>'+
     '<li>Je dois inscrire <span class="fill">le nom du candidat</span> sur mon bulletin sans faire de fautes.</li>'+
     '<li>Je dépose ensuite mon bulletin dans l’<span class="fill">urne</span>.</li>'+
     '<li>Il faudra <span class="fill">'+N+'</span> voix pour être élu au 1<sup>er</sup> tour dans notre classe, si les '+S.electeurs+' élèves votent et que tous les bulletins comptent.</li></ul></section>'+
@@ -604,8 +609,7 @@ function sceneVote(){
   return '<div class="wrap"><div class="head"><h1>'+(r===1?'Tour 1 : à toi de voter !':'Tour 2 : on vote encore !')+'</h1></div>'+roundTabs()+extra+
   '<div class="votegrid"><div><h2>Comment je vote ?</h2><ol class="howto">'+
     '<li>Mon nom est coché sur la liste : je vote une seule fois.</li>'+
-    '<li>Je passe dans l’isoloir avec mon bulletin.</li>'+
-    '<li>J’écris le nom du titulaire, sans faute.</li>'+
+    '<li>J’écris le nom du titulaire sur mon bulletin, sans faute et sans le montrer.</li>'+
     '<li>Je plie mon bulletin et je le glisse dans l’urne.</li></ol>'+
     '<h2>Les candidats</h2><p class="hint" style="margin:0">Recopie bien le nom du titulaire.</p>'+names+'</div>'+
   '<div class="urnepanel">'+urne({count:R.votants,total:S.electeurs})+
@@ -627,8 +631,8 @@ function boardRow(idx,c,t,scale,o,closed){
   if(closed) return '<div class="brow'+(won?' won':'')+'" '+style+'>'+inner+'</div>';
   return '<button class="brow" '+style+' data-act="vote" data-v="'+c.id+'" data-fid="v-'+c.id+'" aria-label="Ajouter une voix pour '+esc(duoName(c))+' (actuellement '+n+')">'+inner+'</button>';
 }
-function neutralRow(key,label,n,scale,fid,closed){
-  var inner='<span class="bkey">'+key+'</span><span class="bname">'+label+'</span><span class="marks">'+marks(n)+'</span><span class="bcount">'+n+'</span><span class="btrack"><span class="bfill" style="width:'+Math.min(100,n/scale*100)+'%"></span></span>';
+function neutralRow(key,label,n,scale,fid,closed,sub){
+  var inner='<span class="bkey">'+key+'</span><span class="bname">'+label+(sub?'<small>'+sub+'</small>':'')+'</span><span class="marks">'+marks(n)+'</span><span class="bcount">'+n+'</span><span class="btrack"><span class="bfill" style="width:'+Math.min(100,n/scale*100)+'%"></span></span>';
   if(closed) return '<div class="brow small">'+inner+'</div>';
   return '<button class="brow small" data-act="vote" data-v="'+(key==='B'?'B':'N')+'" data-fid="'+fid+'" aria-label="Ajouter un bulletin '+label.toLowerCase()+' (actuellement '+n+')">'+inner+'</button>';
 }
@@ -651,7 +655,7 @@ function sceneDepouillement(){
     last='<div class="last"><span class="lab">Bulletin n° '+R.events.length+', dernier lu :</span><span class="who'+(L&&L.fresh?' pop':'')+'"'+style+'>'+who+'</span></div>';
   }
   var rows=cands.map(function(c,i){ return boardRow(i+1,c,t,scale,o,closed); }).join('');
-  rows+=neutralRow('B','Blanc',t.blank,scale,'v-b',closed)+neutralRow('N','Nul',t.nul,scale,'v-n',closed);
+  rows+=neutralRow('B','Blanc',t.blank,scale,'v-b',closed,'bulletin vide, sans aucun nom')+neutralRow('N','Nul',t.nul,scale,'v-n',closed,'bulletin qu’on ne peut pas compter');
   var bar='';
   if(!closed){
     bar='<div class="boardbar"><button class="btn ghost" data-act="undo" data-fid="undo"'+(R.events.length?'':' disabled')+'>Annuler le dernier</button>'+
@@ -743,6 +747,7 @@ function sceneResultats(){
     '<section class="sec pv"><h2>Procès-verbal</h2><p class="hint">À copier, puis à coller dans un document ou dans le livret.</p>'+
     '<textarea id="pv" readonly aria-label="Procès-verbal de l’élection">'+esc(pvText())+'</textarea>'+
     '<div class="row" style="margin-top:12px"><button class="btn" data-act="copy">Copier le procès-verbal</button><span class="hint" id="copied" aria-live="polite"></span></div></section>'+
+    '<div class="row" style="margin-top:38px"><button class="btn blue big" data-act="finish">Terminer le chapitre</button><span class="hint">Le chapitre sera coché sur le sommaire.</span></div>'+
     pager(true,false)+'</div>';
 }
 var SCENE_FN=[sceneAccueil,sceneVF,sceneMissions,sceneElection,sceneCandidats,sceneVote,sceneDepouillement,sceneResultats];
@@ -821,7 +826,11 @@ function undoVote(){
   R.events.pop(); E.last={round:S.round,fresh:false}; save(); render();
 }
 function confirmTwice(key,fn){
-  if(E.confirm===key){ E.confirm=null; fn(); } else { E.confirm=key; render(); }
+  if(E.confirm===key){ E.confirm=null; fn(); }
+  else{
+    E.confirm=key; render();
+    setTimeout(function(){ if(E.confirm===key){ E.confirm=null; render(); } },6000);
+  }
 }
 var A={
   go:function(el){ navigate(+el.dataset.i); },
@@ -864,7 +873,16 @@ var A={
     if(i>-1) S.tieWinners.splice(i,1); else { S.tieWinners.push(id); while(S.tieWinners.length>need) S.tieWinners.shift(); }
     save(); render();
   },
-  reset:function(){ confirmTwice('reset',function(){ S=defaults(); E.quiz={}; E.last=null; E.calc={v:S.electeurs,inv:1}; stopTimer(); applyTheme(); save(); render(); }); },
+  reset:function(){
+    confirmTwice('reset',function(){
+      var keep={classe:S.classe,electeurs:S.electeurs,theme:S.theme,timerSec:S.timerSec};
+      S=defaults(); S.classe=keep.classe; S.electeurs=keep.electeurs; S.theme=keep.theme; S.timerSec=keep.timerSec;
+      E.quiz={}; E.last=null; E.err=null; E.drop=false; E.celebrate=false; E.calc={v:S.electeurs,inv:1};
+      E.flash='Tout est remis à zéro : candidats et votes effacés.';
+      stopTimer(); navigate(ACC);
+    });
+  },
+  finish:function(){ window.location.href='index.html?done=3'; },
   copy:function(){
     var ta=document.getElementById('pv'), msg=document.getElementById('copied'); if(!ta) return;
     var done=function(ok){ if(msg) msg.textContent=ok?'Copié !':'Sélectionne le texte et copie-le avec Ctrl+C.'; };
