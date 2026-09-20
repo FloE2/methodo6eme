@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Élection des délégués de classe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --top-h:64px;
+  --bg:#EEF2FF; --surface:#FFFFFF; --ink:#111B3D; --muted:#4B5678;
+  --edge:#111B3D; --edge-shadow:#111B3D; --line:rgba(17,27,61,.18); --focus:#2547F5;
+  --hi:#FFF0B3; --ok-bg:#D9F6EA; --ko-bg:#FFE0E3; --ok:#0B7F61; --ko:#C0212E;
+  --blue:#2547F5; --red:#D42D3A; --yellow:#FFC629; --green:#0B7F61;
+  --board:#1F3B34; --board-2:#28483F; --chalk:#F3F0E6; --chalk-dim:#B8C6BC; --wood:#8A5A34;
+  --display:"Bricolage Grotesque","Trebuchet MS","Segoe UI",system-ui,sans-serif;
+  --text:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1330; --surface:#182047; --ink:#F0F3FF; --muted:#B4BEE0;
+    --edge:#7280CC; --edge-shadow:#03061A; --line:rgba(240,243,255,.2); --focus:#FFC629;
+    --hi:#3B3411; --ok-bg:#0F3B30; --ko-bg:#4A1B25; --ok:#5FE0B5; --ko:#FF8A93;
+    --blue:#4363FF; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1330; --surface:#182047; --ink:#F0F3FF; --muted:#B4BEE0;
+  --edge:#7280CC; --edge-shadow:#03061A; --line:rgba(240,243,255,.2); --focus:#FFC629;
+  --hi:#3B3411; --ok-bg:#0F3B30; --ko-bg:#4A1B25; --ok:#5FE0B5; --ko:#FF8A93;
+  --blue:#4363FF; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--text);font-size:1.125rem;line-height:1.5}
+h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-.02em;line-height:1.05;margin:0}
+h1{font-size:clamp(2.3rem,6vw,4.4rem)}
+h2{font-size:clamp(1.55rem,3vw,2.2rem);margin-bottom:14px}
+h3{font-size:1.3rem}
+p{margin:0 0 .8em}
+b,strong{font-weight:700}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* En-tête */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;height:var(--top-h);background:var(--bg);border-bottom:2.5px solid var(--edge);display:flex;align-items:center;gap:14px;padding:0 18px}
+.brand{font-family:var(--display);font-weight:800;font-size:1.15rem;white-space:nowrap}
+.steps{display:flex;gap:6px;overflow-x:auto;flex:1;scrollbar-width:none;padding:4px 2px}
+.steps::-webkit-scrollbar{display:none}
+.step{font:inherit;font-size:.95rem;font-weight:700;border:2px solid var(--edge);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;white-space:nowrap}
+.step[aria-current="step"]{background:var(--ink);color:var(--bg)}
+.step.theme{flex:none}
+
+.wrap{max-width:1180px;margin:0 auto;padding:30px 20px 70px}
+.head{margin-bottom:28px}
+.lead{font-size:1.25rem;max-width:62ch;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.hint{color:var(--muted);font-size:1rem}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px}
+
+/* Boutons */
+.btn{font:inherit;font-weight:700;font-size:1.05rem;border:2.5px solid var(--edge);background:var(--yellow);color:#111B3D;border-radius:999px;padding:.6em 1.3em;cursor:pointer;box-shadow:0 4px 0 var(--edge);transition:transform .08s,box-shadow .08s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 5px 0 var(--edge)}
+.btn:active{transform:translateY(4px);box-shadow:0 0 0 var(--edge)}
+.btn.blue{background:var(--blue);color:#fff}
+.btn.red{background:var(--red);color:#fff}
+.btn.ghost{background:var(--surface);color:var(--ink)}
+.btn.small{font-size:.92rem;padding:.35em .9em;box-shadow:0 3px 0 var(--edge)}
+.btn.big{font-size:1.3rem;padding:.7em 1.6em}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:0 4px 0 var(--edge)}
+
+/* Champs */
+label{display:grid;gap:6px;font-weight:700;font-size:1rem}
+input,select{font:inherit;font-weight:400;padding:.55em .8em;border:2.5px solid var(--edge);border-radius:12px;background:var(--bg);color:var(--ink);min-width:0}
+input[type=number]{width:7em}
+
+/* Accueil */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:36px;align-items:center;min-height:min(72vh,660px)}
+.hero h1{margin-bottom:18px}
+.school{font-weight:700;color:var(--muted)}
+.plan{list-style:none;counter-reset:p;padding:0;margin:22px 0;display:grid;gap:10px}
+.plan li{counter-increment:p;display:flex;gap:12px;align-items:center;font-weight:700}
+.plan li::before{content:counter(p);flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--yellow);color:#111B3D;border:2.5px solid var(--edge);font-family:var(--display);font-weight:800}
+.settings{margin-top:26px;border:2.5px dashed var(--edge);border-radius:14px;padding:12px 16px;max-width:520px}
+.settings summary{cursor:pointer;font-weight:700}
+.settings .fields{display:flex;gap:16px;flex-wrap:wrap;margin:14px 0}
+
+/* Urne */
+.urne{width:min(340px,80%);height:auto;display:block;margin:0 auto}
+.u-shadow{fill:rgba(0,0,0,.18)}
+.u-body{fill:var(--blue);stroke:var(--edge);stroke-width:5}
+.u-lid{fill:var(--red);stroke:var(--edge);stroke-width:5}
+.u-slot{fill:#0A0F2B}
+.u-label{fill:#fff;stroke:var(--edge);stroke-width:4}
+.u-text{font-family:var(--display);font-weight:800;font-size:34px;fill:#111B3D}
+.u-text.big{font-size:52px}
+.u-sub{font-family:var(--text);font-weight:700;font-size:16px;fill:#4B5678}
+.u-paper{fill:#fff;stroke:#111B3D;stroke-width:4}
+.u-line{stroke:#111B3D;stroke-width:4;stroke-linecap:round;fill:none}
+.ballot{transform-box:fill-box;transform-origin:50% 50%}
+.ballot:not(.hero-ballot){opacity:0}
+.hero-ballot{animation:heroDrop 1.1s .5s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes heroDrop{from{transform:translateY(-120px) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+
+/* Vrai ou faux */
+.score{font-family:var(--display);font-weight:800;font-size:1.4rem}
+.vf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px;margin-top:22px}
+.vf{background:var(--surface);border:2.5px solid var(--edge);border-radius:26px 26px 26px 6px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:5px 5px 0 var(--edge-shadow);min-height:190px}
+.vf.ok{background:var(--ok-bg)}
+.vf.ko{background:var(--ko-bg)}
+.vf-q{font-family:var(--display);font-weight:800;font-size:1.25rem;line-height:1.15;margin:0}
+.vf-res{font-weight:700;margin:0}
+.vf.ok .vf-res{color:var(--ok)}
+.vf.ko .vf-res{color:var(--ko)}
+.vf-exp{margin:0;color:var(--muted);font-size:1rem}
+.vf .row{margin-top:auto}
+
+/* Missions */
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}
+.role{background:var(--c);color:var(--cfg);border:2.5px solid var(--edge);border-radius:22px 22px 4px 22px;padding:18px;box-shadow:5px 5px 0 var(--edge-shadow)}
+.role .emo{font-size:2.4rem;line-height:1;display:block;margin-bottom:10px}
+.role h3{margin-bottom:6px}
+.role p{margin:0;font-size:1rem}
+.sec{margin-top:46px}
+.strip{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:26px;counter-reset:s}
+.strip li{counter-increment:s;position:relative;background:var(--surface);border:2.5px solid var(--edge);border-radius:18px;padding:18px 20px;box-shadow:5px 5px 0 var(--edge-shadow)}
+.strip li::before{content:counter(s);position:absolute;top:-16px;left:16px;width:34px;height:34px;border-radius:50%;background:var(--yellow);color:#111B3D;border:2.5px solid var(--edge);display:grid;place-items:center;font-family:var(--display);font-weight:800}
+.strip li:not(:last-child)::after{content:"→";position:absolute;right:-24px;top:50%;transform:translateY(-50%);font-size:1.6rem;font-weight:800}
+.strip b{font-family:var(--display);font-size:1.5rem;display:block}
+.year{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.year li{display:grid;grid-template-columns:52px 1fr;gap:14px;align-items:center;padding:12px 0;border-top:2px solid var(--line)}
+.year li:first-child{border-top:0}
+.year .emo{font-size:1.9rem;text-align:center}
+.livret{border:2.5px dashed var(--edge);border-radius:14px;padding:16px 22px;background:var(--surface);margin-top:34px}
+.livret h3{font-size:1.15rem;margin-bottom:8px}
+.livret ol,.livret ul{margin:0;padding-left:1.3em}
+.livret .fill{background:var(--hi);border-radius:6px;padding:0 .35em;font-weight:700}
+
+/* Election */
+.rules{display:grid}
+.rule{display:grid;grid-template-columns:64px 1fr;gap:16px;align-items:start;padding:16px 0;border-top:2px solid var(--line)}
+.rule:first-child{border-top:0}
+.rule .emo{font-size:2.3rem;line-height:1.1;text-align:center}
+.rule h3{margin-bottom:4px}
+.rule p{margin:0;color:var(--muted)}
+.flow{max-width:760px;display:grid;gap:14px;justify-items:center;text-align:center}
+.node{background:var(--surface);border:2.5px solid var(--edge);border-radius:18px;padding:14px 22px;box-shadow:5px 5px 0 var(--edge-shadow);width:100%}
+.node.q{background:var(--yellow);color:#111B3D;font-family:var(--display);font-weight:800;font-size:1.3rem}
+.arrow{font-size:1.8rem;font-weight:800;line-height:1}
+.branches{display:grid;grid-template-columns:1fr 1fr;gap:18px;width:100%}
+.branch{border:2.5px solid var(--edge);border-radius:18px;padding:14px 18px;text-align:left;box-shadow:5px 5px 0 var(--edge-shadow)}
+.branch.yes{background:var(--ok-bg)}
+.branch.no{background:var(--ko-bg)}
+.branch b{font-family:var(--display);font-size:1.4rem;display:block}
+.branch span{font-size:1rem}
+.calc{background:var(--hi);border:2.5px solid var(--edge);border-radius:22px;padding:22px;display:grid;gap:18px}
+.calc .ctrl{display:flex;flex-wrap:wrap;gap:26px}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper .btn{padding:.2em .8em;font-size:1.4rem;box-shadow:0 3px 0 var(--edge)}
+.stepper output{font-family:var(--display);font-weight:800;font-size:2rem;min-width:2.2ch;text-align:center}
+.calc .res{font-size:1.3rem;margin:0}
+.calc .res b{font-family:var(--display);font-size:1.8rem}
+
+/* Candidats */
+.cform{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;background:var(--surface);border:2.5px solid var(--edge);border-radius:22px;padding:22px;margin-bottom:26px;box-shadow:5px 5px 0 var(--edge-shadow)}
+.cform h2{grid-column:1/-1;margin:0}
+.cform .wide{grid-column:1/-1}
+.cform .hint{font-weight:400}
+.err{grid-column:1/-1;color:var(--ko);font-weight:700;margin:0}
+.timerbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--top-h) + 8px);z-index:10;background:var(--yellow);color:#111B3D;border:2.5px solid var(--edge);border-radius:20px;padding:14px 20px;margin-bottom:26px;display:grid;grid-template-columns:1fr auto;gap:8px 20px;align-items:center;box-shadow:5px 5px 0 var(--edge-shadow)}
+.timerbar.done{background:var(--red);color:#fff}
+.t-who{font-weight:700}
+.t-clock{font-family:var(--display);font-weight:800;font-size:3rem;line-height:1;grid-row:1/3;grid-column:2}
+.t-track{height:12px;border:2px solid #111B3D;border-radius:999px;background:rgba(255,255,255,.55);overflow:hidden}
+.timerbar.done .t-track{border-color:#fff;background:rgba(255,255,255,.25)}
+.t-fill{height:100%;background:#111B3D}
+.timerbar.done .t-fill{background:#fff}
+.timerbar .row{grid-column:1}
+.tools{display:flex;flex-wrap:wrap;gap:14px;align-items:end;justify-content:space-between;margin-bottom:22px}
+.posters{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:40px 28px;padding:14px 6px}
+.poster{position:relative;background:var(--c);color:var(--cfg);border:3px solid var(--edge);padding:30px 22px 18px;transform:rotate(var(--tilt,-1deg));box-shadow:7px 7px 0 var(--edge-shadow);display:flex;flex-direction:column;gap:16px}
+.poster:nth-child(4n+1){--tilt:-1.6deg}
+.poster:nth-child(4n+2){--tilt:1.2deg}
+.poster:nth-child(4n+3){--tilt:-.7deg}
+.poster:nth-child(4n+4){--tilt:1.8deg}
+.tape{position:absolute;top:-15px;left:50%;width:92px;height:28px;transform:translateX(-50%) rotate(-3deg);background:rgba(255,255,255,.7);border:1.5px solid rgba(0,0,0,.18)}
+.slogan{font-family:var(--display);font-weight:800;font-size:1.75rem;line-height:1.05;margin:0;overflow-wrap:anywhere}
+.slogan.none{opacity:.7;font-weight:500;font-size:1.3rem}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.duo small{display:block;font-size:.88rem;opacity:.85}
+.duo strong{font-family:var(--display);font-size:1.3rem;line-height:1.1;overflow-wrap:anywhere}
+.poster .row{margin-top:auto}
+.poster.empty{background:transparent;color:var(--muted);border-style:dashed;box-shadow:none;align-items:center;justify-content:center;text-align:center;min-height:200px}
+.empty-note{border:2.5px dashed var(--edge);border-radius:18px;padding:26px;text-align:center;color:var(--muted)}
+
+/* Vote */
+.pill{display:inline-block;font-family:var(--display);font-weight:800;font-size:1.05rem;background:var(--blue);color:#fff;border:2.5px solid var(--edge);border-radius:999px;padding:.1em .8em;vertical-align:middle}
+.rounds{display:flex;gap:10px;margin-bottom:20px}
+.votegrid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:start}
+.howto{list-style:none;counter-reset:h;padding:0;margin:0 0 28px;display:grid;gap:14px}
+.howto li{counter-increment:h;display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:center;font-size:1.25rem;font-weight:700}
+.howto li::before{content:counter(h);display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--yellow);color:#111B3D;border:2.5px solid var(--edge);font-family:var(--display);font-weight:800;font-size:1.3rem}
+.names{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.names li{display:flex;align-items:center;gap:12px;background:var(--surface);border:2.5px solid var(--edge);border-radius:14px;padding:10px 14px}
+.names .dot{flex:none;width:22px;height:22px;border-radius:50%;background:var(--c);border:2.5px solid var(--edge)}
+.names b{font-family:var(--display);font-size:1.35rem}
+.names .sup{color:var(--muted);font-size:1rem}
+.urnepanel{text-align:center}
+.prog{height:18px;border:2.5px solid var(--edge);border-radius:999px;background:var(--surface);overflow:hidden;margin:18px auto 6px;max-width:340px}
+.prog>i{display:block;height:100%;background:var(--green);transition:width .3s}
+.prog.over>i{background:var(--red)}
+.urnepanel .row{justify-content:center;margin-top:16px}
+.info{background:var(--hi);border:2.5px solid var(--edge);border-radius:16px;padding:12px 18px;margin-bottom:18px}
+
+/* Dépouillement : le tableau */
+.board{background:var(--board);color:var(--chalk);border:10px solid var(--wood);border-radius:14px;box-shadow:inset 0 0 44px rgba(0,0,0,.4),8px 8px 0 var(--edge-shadow);padding:22px 24px 26px}
+.bhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.bhead h2{margin:0;color:var(--chalk)}
+.chip{font-weight:700;border:2px solid var(--chalk-dim);border-radius:999px;padding:.2em .9em;font-size:1rem}
+.chip.good{background:var(--chalk);color:#1F3B34;border-color:var(--chalk)}
+.chip.warn{border-style:dashed}
+.last{display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:var(--board-2);border:2px dashed var(--chalk-dim);border-radius:12px;padding:12px 18px;margin:16px 0 8px;min-height:74px}
+.last .lab{color:var(--chalk-dim);font-size:1rem}
+.last .who{font-family:var(--display);font-weight:800;font-size:2rem;line-height:1.1;background:var(--c,transparent);color:var(--cfg,var(--chalk));padding:.05em .5em;border-radius:8px}
+.last .who.pop{animation:pop .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.6) rotate(-4deg);opacity:0}to{transform:none;opacity:1}}
+.brow{display:grid;grid-template-columns:44px minmax(0,1fr) auto 76px;gap:2px 16px;align-items:center;width:100%;text-align:left;color:inherit;font:inherit;background:transparent;border:0;border-bottom:1.5px dashed rgba(243,240,230,.25);padding:12px 6px}
+button.brow{cursor:pointer}
+button.brow:hover{background:rgba(255,255,255,.07)}
+.brow:focus-visible{outline-color:var(--yellow)}
+.bkey{width:36px;height:36px;border:2.5px solid var(--chalk);border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800}
+.bname{font-family:var(--display);font-weight:800;font-size:1.55rem;line-height:1.1;overflow-wrap:anywhere}
+.bname small{display:block;font-family:var(--text);font-weight:400;font-size:.95rem;color:var(--chalk-dim)}
+.marks{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.tm{width:44px;height:34px;stroke:var(--chalk);stroke-width:3.6;stroke-linecap:round;fill:none}
+.bcount{font-family:var(--display);font-weight:800;font-size:2.6rem;text-align:right;line-height:1}
+.btrack{grid-column:1/-1;height:12px;background:rgba(255,255,255,.12);border-radius:6px;position:relative;overflow:hidden;margin-top:6px}
+.bfill{height:100%;background:var(--c,var(--chalk-dim));width:0;transition:width .35s}
+.bmaj{position:absolute;top:0;bottom:0;width:3px;background:var(--chalk)}
+.brow.won .bname::after{content:" ★ élu(e)";font-size:1.1rem}
+.brow.small .bname{font-size:1.2rem}
+.brow.small .bcount{font-size:1.8rem}
+.brow.small .bkey{border-color:var(--chalk-dim);color:var(--chalk-dim)}
+.boardbar{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-top:20px}
+.boardbar form{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin-left:auto}
+.boardbar label{color:var(--chalk-dim)}
+.boardbar input{background:var(--board-2);color:var(--chalk);border-color:var(--chalk-dim)}
+.keys{color:var(--chalk-dim);font-size:.95rem;margin:14px 0 0}
+.outcome{margin-top:30px;background:var(--surface);border:2.5px solid var(--edge);border-radius:22px;padding:24px;box-shadow:6px 6px 0 var(--edge-shadow)}
+.verdict{font-family:var(--display);font-weight:800;font-size:1.6rem;line-height:1.15}
+.verdict.good{color:var(--ok)}
+.won{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:8px}
+.won li{font-size:1.2rem;font-weight:700}
+.tie{background:var(--hi);border-radius:14px;padding:14px 18px;margin:12px 0}
+.tie .row{margin-top:10px}
+.tie button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+/* Résultats */
+.seats{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:44px 30px;padding:14px 6px;max-width:900px}
+.seat-title{font-family:var(--display);font-weight:800;font-size:1.05rem}
+.pv textarea{width:100%;min-height:280px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.95rem;line-height:1.45;padding:14px;border:2.5px solid var(--edge);border-radius:14px;background:var(--surface);color:var(--ink);resize:vertical}
+
+/* Confettis */
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:60}
+.confetti i{position:absolute;top:-24px;width:10px;height:16px;animation:fall var(--d) linear var(--dl) forwards}
+@keyframes fall{to{transform:translateY(112vh) rotate(720deg)}}
+
+@media (max-width:860px){
+  .hero,.votegrid{grid-template-columns:1fr}
+  .hero{min-height:0}
+  .strip{grid-template-columns:1fr}
+  .strip li:not(:last-child)::after{content:"↓";right:auto;left:50%;top:auto;bottom:-32px;transform:translateX(-50%)}
+  .branches{grid-template-columns:1fr}
+  .brand{display:none}
+  .brow{grid-template-columns:36px minmax(0,1fr) 60px}
+  .marks{display:none}
+  .bcount{font-size:2rem}
+  .t-clock{font-size:2.2rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .ballot:not(.hero-ballot){opacity:0}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+'use strict';
+
+/* ---------- Données de base ---------- */
+var KEY='delegues-classe-v1', SEATS=2;
+var SCENES=[
+  {label:'Accueil'},{label:'Vrai ou faux'},{label:'Missions'},{label:'Élection'},
+  {label:'Candidats'},{label:'Vote'},{label:'Dépouillement'},{label:'Résultats'}
+];
+var ACC=0,VFS=1,MIS=2,ELE=3,CAN=4,VOTE=5,DEP=6,RES=7;
+var PALETTE=[
+  {bg:'#D42D3A',fg:'#FFFFFF'},{bg:'#2547F5',fg:'#FFFFFF'},{bg:'#FFC629',fg:'#111B3D'},{bg:'#0B7F61',fg:'#FFFFFF'},
+  {bg:'#7C4DFF',fg:'#FFFFFF'},{bg:'#F7802B',fg:'#111B3D'},{bg:'#C72C85',fg:'#FFFFFF'},{bg:'#0C74B8',fg:'#FFFFFF'}
+];
+var VF=[
+  {s:'Le délégué est le porte-parole de la classe.',a:true,e:'Il représente les élèves, par exemple au conseil de classe.'},
+  {s:'Le délégué est le chef de la classe.',a:false,e:'Ni chef de classe, ni chouchou des professeurs : il représente ses camarades.'},
+  {s:'Il aide et conseille ses camarades.',a:true,e:'C’est son rôle de médiateur : il encourage l’entraide, par exemple en donnant les devoirs aux absents.'},
+  {s:'On peut lui faire porter la faute quand il y a un problème dans la classe.',a:false,e:'Un délégué n’est pas un bouc émissaire.'},
+  {s:'Il dialogue avec les adultes du collège.',a:true,e:'Il est le relais entre la classe et les adultes de l’établissement.'},
+  {s:'Il doit accompagner les élèves malades à l’infirmerie.',a:false,e:'Il n’est ni le « gendarme » ni le « secouriste » de la classe.'},
+  {s:'Il transmet les informations sans les déformer.',a:true,e:'Il écoute ses camarades et rapporte fidèlement ce qui a été dit.'},
+  {s:'Il est chargé de distribuer les documents administratifs.',a:false,e:'Ce n’est pas son rôle.'}
+];
+
+/* ---------- État ---------- */
+function defaults(){
+  return {scene:0,classe:'6B',electeurs:25,theme:'auto',round:1,candidates:[],nextId:1,
+    rounds:{1:{votants:0,events:[],closed:false},2:{votants:0,events:[],closed:false}},
+    tieWinners:[],editing:null,timerSec:60};
+}
+function load(){
+  var d=defaults();
+  try{
+    var raw=localStorage.getItem(KEY);
+    if(raw){
+      var p=JSON.parse(raw);
+      if(p&&typeof p==='object'){
+        for(var k in d){ if(p[k]!==undefined) d[k]=p[k]; }
+        [1,2].forEach(function(r){
+          var x=d.rounds[r]||{}; d.rounds[r]={votants:+x.votants||0,events:Array.isArray(x.events)?x.events:[],closed:!!x.closed};
+        });
+        if(!Array.isArray(d.candidates)) d.candidates=[];
+      }
+    }
+  }catch(e){}
+  d.editing=null;
+  return d;
+}
+var S=load();
+var E={quiz:{},timer:null,confirm:null,last:null,drop:false,celebrate:false,settingsOpen:false,
+  calc:{v:S.electeurs,inv:1},err:null,focusForm:false,nav:false};
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+
+/* ---------- Utilitaires ---------- */
+var app=document.getElementById('app');
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function clamp(n,a,b){ return Math.max(a,Math.min(b,n)); }
+function plural(n,w,p){ return n+' '+(n>1?(p||w+'s'):w); }
+function cand(id){ for(var i=0;i<S.candidates.length;i++){ if(S.candidates[i].id===id) return S.candidates[i]; } return null; }
+function col(c){ return PALETTE[(c&&c.ci!=null?c.ci:0)%PALETTE.length]; }
+function duoName(c){ return c.suppleant?(c.titulaire+' & '+c.suppleant):c.titulaire; }
+function hasVotes(id){ return [1,2].some(function(r){ return S.rounds[r].events.indexOf(id)>-1; }); }
+function reduced(){ return window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+function majorite(n){ return n>0?Math.floor(n/2)+1:0; }
+
+/* ---------- Dépouillement : calculs ---------- */
+function tally(r){
+  var ev=S.rounds[r].events, ids={}, counts={}, B=0, N=0;
+  S.candidates.forEach(function(c){ ids[c.id]=true; });
+  ev.forEach(function(e){
+    if(e==='B') B++;
+    else if(e==='N') N++;
+    else if(ids[e]) counts[e]=(counts[e]||0)+1;
+    else N++;
+  });
+  var lus=ev.length, ex=lus-B-N;
+  return {counts:counts,blank:B,nul:N,lus:lus,exprimes:ex,maj:majorite(ex)};
+}
+function activeCands(r){
+  if(r===1) return S.candidates.slice();
+  var o=outcome(1), el=o?o.elected:[];
+  return S.candidates.filter(function(c){ return el.indexOf(c.id)<0; });
+}
+function outcome(r){
+  var R=S.rounds[r]; if(!R.closed) return null;
+  var t=tally(r), prev=(r===2)?outcome(1):null, already=prev?prev.elected:[];
+  var seats=SEATS-already.length;
+  var ranked=activeCands(r).map(function(c){ return {c:c,v:t.counts[c.id]||0}; }).sort(function(a,b){ return b.v-a.v; });
+  var o={r:r,t:t,seats:seats,elected:[],ranked:ranked,tie:null,reason:''};
+  if(r===1){
+    var top=ranked[0];
+    if(top&&t.maj>0&&top.v>=t.maj){ o.elected=[top.c.id]; o.reason='majorite'; } else o.reason='aucune';
+    return o;
+  }
+  var pool=ranked.filter(function(x){ return x.v>0; });
+  if(!pool.length){ o.reason='vide'; return o; }
+  if(pool.length<=seats){ o.elected=pool.map(function(x){ return x.c.id; }); return o; }
+  var cutoff=pool[seats-1].v;
+  var sure=pool.filter(function(x){ return x.v>cutoff; });
+  var tied=pool.filter(function(x){ return x.v===cutoff; });
+  var need=seats-sure.length;
+  var ids=sure.map(function(x){ return x.c.id; });
+  if(tied.length<=need){ o.elected=ids.concat(tied.map(function(x){ return x.c.id; })); return o; }
+  var picks=null, by='';
+  if(tied.every(function(x){ return x.c.naissance; })){
+    var sorted=tied.slice().sort(function(a,b){ return b.c.naissance<a.c.naissance?-1:(b.c.naissance>a.c.naissance?1:0); });
+    if(sorted[need-1].c.naissance!==sorted[need].c.naissance){ picks=sorted.slice(0,need).map(function(x){ return x.c.id; }); by='age'; }
+  }
+  if(!picks){
+    var chosen=S.tieWinners.filter(function(id){ return tied.some(function(x){ return x.c.id===id; }); });
+    if(chosen.length===need){ picks=chosen; by='choix'; }
+  }
+  o.tie={tied:tied.map(function(x){ return x.c.id; }),need:need,v:cutoff,resolved:!!picks,by:by};
+  o.elected=ids.concat(picks||[]);
+  return o;
+}
+function finalElected(){
+  var o1=outcome(1), o2=outcome(2), out=[];
+  if(o1) o1.elected.forEach(function(id){ out.push({id:id,round:1}); });
+  if(o2) o2.elected.forEach(function(id){ out.push({id:id,round:2}); });
+  return out;
+}
+
+/* ---------- Composants visuels ---------- */
+function urne(o){
+  o=o||{};
+  var num=(o.count!=null);
+  return '<svg class="urne" viewBox="0 0 240 270" role="img" aria-label="Urne de vote">'+
+  '<defs><clipPath id="clipU"><rect x="0" y="0" width="240" height="104"/></clipPath></defs>'+
+  '<ellipse cx="120" cy="258" rx="98" ry="10" class="u-shadow"/>'+
+  '<path d="M42 118h156v122a16 16 0 0 1-16 16H58a16 16 0 0 1-16-16z" class="u-body"/>'+
+  '<rect x="30" y="98" width="180" height="30" rx="9" class="u-lid"/>'+
+  '<rect x="84" y="107" width="72" height="12" rx="6" class="u-slot"/>'+
+  '<rect x="66" y="146" width="108" height="80" rx="10" class="u-label"/>'+
+  '<text x="120" y="'+(num?196:196)+'" text-anchor="middle" class="u-text'+(num?' big':'')+'">'+(num?o.count:'VOTE')+'</text>'+
+  (num?'<text x="120" y="216" text-anchor="middle" class="u-sub">sur '+o.total+'</text>':'')+
+  '<g clip-path="url(#clipU)"><g class="ballot'+(o.hero?' hero-ballot':'')+'">'+
+  '<rect x="90" y="18" width="60" height="80" rx="4" class="u-paper"/>'+
+  '<path d="M102 40h36M102 54h36M102 68h22" class="u-line"/></g></g></svg>';
+}
+function marks(n){
+  var out='', g=Math.floor(n/5), r=n%5, i, d, k;
+  for(i=0;i<g;i++) out+='<svg class="tm" viewBox="0 0 44 34" aria-hidden="true"><path d="M7 4V30M17 4V30M27 4V30M37 4V30M2 27L42 8"/></svg>';
+  if(r){ d=''; for(k=0;k<r;k++) d+='M'+(7+10*k)+' 4V30'; out+='<svg class="tm" viewBox="0 0 44 34" aria-hidden="true"><path d="'+d+'"/></svg>'; }
+  return out;
+}
+function pager(prev,next){
+  return '<div class="pager"><div>'+(prev?'<button class="btn ghost" data-act="prev">← Précédent</button>':'')+'</div><div>'+(next?'<button class="btn" data-act="next">Suivant →</button>':'')+'</div></div>';
+}
+
+/* ---------- En-tête ---------- */
+function header(){
+  var tl={auto:'Automatique',light:'Clair',dark:'Sombre'}[S.theme], ic={auto:'◐',light:'☀',dark:'☾'}[S.theme];
+  return '<header class="top"><div class="brand"><span aria-hidden="true">🗳️</span> Délégués '+esc(S.classe)+'</div>'+
+    '<nav class="steps" aria-label="Étapes du chapitre">'+SCENES.map(function(s,i){
+      return '<button class="step" data-act="go" data-i="'+i+'"'+(i===S.scene?' aria-current="step"':'')+'>'+s.label+'</button>';
+    }).join('')+'</nav>'+
+    '<button class="step theme" data-act="theme" aria-label="Changer le thème (actuel : '+tl+')" title="Thème : '+tl+'">'+ic+'</button></header>';
+}
+
+/* ---------- Scènes ---------- */
+function sceneAccueil(){
+  return '<div class="wrap"><section class="hero"><div>'+
+  '<h1>Qui parlera pour la '+esc(S.classe)+'&nbsp;?</h1>'+
+  '<p class="lead">Les délégués sont la voix de la classe. Aujourd’hui, tu découvres leur rôle, tu écoutes les candidats, puis on vote pour de vrai : bulletin secret, isoloir, urne et dépouillement en direct.</p>'+
+  '<ol class="plan"><li>On découvre le rôle des délégués</li><li>Les binômes se présentent</li><li>On vote, tour après tour</li><li>On compte les bulletins ensemble</li></ol>'+
+  '<div class="row"><button class="btn big" data-act="go" data-i="1">On commence !</button><button class="btn ghost" data-act="go" data-i="4">Aller aux candidats</button></div>'+
+  '<p class="school" style="margin-top:22px">Collège Yves du Manoir</p>'+
+  '<details class="settings"'+(E.settingsOpen?' open':'')+'><summary>Réglages du professeur</summary>'+
+    '<div class="fields"><label>Classe<input id="set-classe" value="'+esc(S.classe)+'" maxlength="12"></label>'+
+    '<label>Élèves qui votent<input id="set-electeurs" type="number" min="1" max="60" value="'+S.electeurs+'"></label></div>'+
+    '<p class="hint">Tout est enregistré automatiquement dans ce navigateur : tu peux actualiser la page sans perdre les votes.</p>'+
+    '<button class="btn small ghost" data-act="reset" data-confirm="1">'+(E.confirm==='reset'?'Cliquer encore pour tout effacer':'Tout effacer et recommencer')+'</button>'+
+  '</details></div>'+
+  '<div class="hero-art">'+urne({hero:true})+'</div></section></div>';
+}
+
+function sceneVF(){
+  var answered=0, good=0;
+  VF.forEach(function(q,i){ if(E.quiz[i]!==undefined){ answered++; if(E.quiz[i]===q.a) good++; } });
+  var cards=VF.map(function(q,i){
+    var a=E.quiz[i];
+    if(a===undefined){
+      return '<article class="vf"><p class="vf-q">'+esc(q.s)+'</p><div class="row"><button class="btn small blue" data-act="vf" data-i="'+i+'" data-v="1">Vrai</button><button class="btn small red" data-act="vf" data-i="'+i+'" data-v="0">Faux</button></div></article>';
+    }
+    var ok=(a===q.a);
+    return '<article class="vf '+(ok?'ok':'ko')+'"><p class="vf-q">'+esc(q.s)+'</p><p class="vf-res">'+(ok?'Bravo !':'Raté !')+' C’est '+(q.a?'vrai':'faux')+'.</p><p class="vf-exp">'+esc(q.e)+'</p></article>';
+  }).join('');
+  return '<div class="wrap"><div class="head"><h1>Un délégué, c’est quoi ?</h1><p class="lead">Vrai ou faux ? Décidez ensemble, puis clique sur votre réponse.</p></div>'+
+  '<div class="row"><span class="score" aria-live="polite">Score de la classe : '+good+' / '+answered+'</span>'+
+  (answered?'<button class="btn small ghost" data-act="vfreset">Rejouer</button>':'')+'</div>'+
+  '<div class="vf-grid">'+cards+'</div>'+pager(true,true)+'</div>';
+}
+
+function sceneMissions(){
+  var roles=[
+    ['📣','Porte-parole','Il représente la classe, par exemple au conseil de classe.'],
+    ['🤝','Médiateur','Il aide et conseille ses camarades et encourage l’entraide.'],
+    ['🔗','Relais','Il dialogue avec les adultes de l’établissement.'],
+    ['🎤','Animateur','Il favorise les échanges avec toute la classe.'],
+    ['🏫','Acteur de la vie du collège','Il participe aux instances du collège, comme le conseil d’administration, et élit ses représentants.']
+  ];
+  var year=[
+    ['🗓️','Il peut demander des réunions de classe au professeur, en dehors des heures de cours.'],
+    ['👂','Il écoute ses camarades et transmet les informations, sans les déformer.'],
+    ['🤐','Il garde une certaine réserve sur ce qui se dit au conseil de classe.'],
+    ['🎓','Il peut suivre une formation de délégué.'],
+    ['🌱','Il peut proposer des projets, comme un potager pédagogique, au chef d’établissement.']
+  ];
+  return '<div class="wrap"><div class="head"><h1>À quoi sert un délégué ?</h1><p class="lead">Un délégué représente ses camarades et fait le lien avec les adultes du collège. Voici ses cinq rôles.</p></div>'+
+  '<div class="roles">'+roles.map(function(r,i){ var c=PALETTE[i]; return '<article class="role" style="--c:'+c.bg+';--cfg:'+c.fg+'"><span class="emo" aria-hidden="true">'+r[0]+'</span><h3>'+r[1]+'</h3><p>'+r[2]+'</p></article>'; }).join('')+'</div>'+
+  '<section class="sec"><h2>Au conseil de classe, trois missions</h2><ol class="strip">'+
+    '<li><b>Recueillir</b>les avis et les propositions des élèves de la classe.</li>'+
+    '<li><b>Transmettre</b>ces avis aux adultes présents au conseil de classe.</li>'+
+    '<li><b>Diffuser</b>à la classe les informations données pendant le conseil.</li></ol></section>'+
+  '<section class="sec"><h2>Et tout au long de l’année</h2><ul class="year">'+year.map(function(y){ return '<li><span class="emo" aria-hidden="true">'+y[0]+'</span><span>'+y[1]+'</span></li>'; }).join('')+'</ul></section>'+
+  '<section class="livret"><h3>📒 Dans ton livret, page 7 : quels sont les rôles des délégués de classe ?</h3><ol>'+
+    '<li>Recueillir les avis et les propositions des élèves.</li><li>Les transmettre lors du conseil de classe.</li><li>Informer les camarades de ce qui a été dit au conseil.</li></ol></section>'+
+  pager(true,true)+'</div>';
+}
+
+function sceneElection(){
+  var C=E.calc, ex=C.v-C.inv, maj=majorite(ex), N=majorite(S.electeurs);
+  var rules=[
+    ['👥','2 titulaires et 2 suppléants','Dans chaque classe, on élit 2 délégués titulaires et 2 suppléants.'],
+    ['🧑‍🎓','Tous les élèves votent','Chaque élève de la classe peut voter, sans aucune exception.'],
+    ['🙋','Tous les élèves peuvent se présenter','Chacun peut être candidat, même en se déclarant le jour de l’élection. On se présente en binôme : un titulaire et un suppléant que l’on choisit.'],
+    ['🤫','Le vote est secret','Tu passes dans l’isoloir, tu écris sur ton bulletin le nom du titulaire, sans faute, puis tu le glisses dans l’urne. Son suppléant est élu avec lui. Un bulletin blanc ou nul n’est pas compté comme une voix.'],
+    ['⭐','On peut être élu sans s’être présenté','Il faut avoir assez de voix, et accepter d’être délégué.'],
+    ['📅','On est délégué toute l’année','Le mandat dure l’année scolaire. Si un délégué démissionne, on élit un remplaçant.']
+  ];
+  return '<div class="wrap"><div class="head"><h1>Comment élit-on les délégués ?</h1><p class="lead">L’élection se fait à bulletin secret, en un ou deux tours.</p></div>'+
+  '<div class="rules">'+rules.map(function(r){ return '<div class="rule"><span class="emo" aria-hidden="true">'+r[0]+'</span><div><h3>'+r[1]+'</h3><p>'+r[2]+'</p></div></div>'; }).join('')+'</div>'+
+  '<section class="sec"><h2>Les deux tours</h2><div class="flow">'+
+    '<div class="node"><b>Tour 1</b> : on compte les voix de chaque binôme.</div><div class="arrow" aria-hidden="true">↓</div>'+
+    '<div class="node q">Un binôme a-t-il la majorité absolue, c’est-à-dire plus de la moitié des voix exprimées ?</div>'+
+    '<div class="branches"><div class="branch yes"><b>Oui</b><span>Il est élu dès le tour 1. Il reste un siège : on fait un tour 2.</span></div>'+
+    '<div class="branch no"><b>Non</b><span>Tour 2 : les deux binômes qui ont le plus de voix sont élus.</span></div></div>'+
+    '<p class="hint" style="margin:0">En cas d’égalité, le plus jeune est élu. Pour le siège restant, le plus grand nombre de voix suffit.</p></div></section>'+
+  '<section class="sec"><h2>Combien de voix pour gagner ?</h2>'+
+    '<p class="lead" style="margin-bottom:16px">Un suffrage exprimé est un bulletin avec le nom d’un candidat (ni blanc, ni nul). La majorité absolue, c’est plus de la moitié des suffrages exprimés. Essaie !</p>'+
+    '<div class="calc"><div class="ctrl">'+
+      '<div><label id="l-v">Élèves qui votent</label><div class="stepper" role="group" aria-labelledby="l-v"><button class="btn" data-act="calc" data-k="v" data-d="-1" aria-label="Un élève de moins">−</button><output>'+C.v+'</output><button class="btn" data-act="calc" data-k="v" data-d="1" aria-label="Un élève de plus">+</button></div></div>'+
+      '<div><label id="l-i">Bulletins blancs ou nuls</label><div class="stepper" role="group" aria-labelledby="l-i"><button class="btn" data-act="calc" data-k="i" data-d="-1" aria-label="Un bulletin de moins">−</button><output>'+C.inv+'</output><button class="btn" data-act="calc" data-k="i" data-d="1" aria-label="Un bulletin de plus">+</button></div></div>'+
+    '</div><p class="res" aria-live="polite">'+plural(ex,'suffrage exprimé','suffrages exprimés')+' : il faut <b>'+maj+' voix</b> pour gagner au tour 1.</p></div></section>'+
+  '<section class="livret"><h3>📒 Dans ton livret, page 7 : complète les phrases</h3><ul>'+
+    '<li>On vote à bulletins <span class="fill">secrets</span>, en allant dans un <span class="fill">isoloir</span>.</li>'+
+    '<li>Je dois inscrire <span class="fill">le nom du candidat</span> sur mon bulletin sans faire de fautes.</li>'+
+    '<li>Je dépose ensuite mon bulletin dans l’<span class="fill">urne</span>.</li>'+
+    '<li>Il faudra <span class="fill">'+N+'</span> voix pour être élu au 1<sup>er</sup> tour dans notre classe, si les '+S.electeurs+' élèves votent et que tous les bulletins comptent.</li></ul></section>'+
+  pager(true,true)+'</div>';
+}
+
+function posterHTML(c,actions){
+  var k=col(c);
+  return '<article class="poster" style="--c:'+k.bg+';--cfg:'+k.fg+'"><span class="tape" aria-hidden="true"></span>'+
+    '<p class="slogan'+(c.slogan?'':' none')+'">'+(c.slogan?'« '+esc(c.slogan)+' »':'Le slogan arrive…')+'</p>'+
+    '<div class="duo"><div><small>Titulaire</small><strong>'+esc(c.titulaire)+'</strong></div><div><small>Suppléant</small><strong>'+(c.suppleant?esc(c.suppleant):'à choisir')+'</strong></div></div>'+
+    (actions||'')+'</article>';
+}
+function timerHTML(){
+  var T=E.timer; if(!T) return '';
+  var c=cand(T.id); if(!c) return '';
+  var done=T.remaining<=0;
+  return '<div class="timerbar'+(done?' done':'')+'" role="timer"><div class="t-who">'+(done?'Le temps est écoulé, merci !':'Prise de parole : '+esc(duoName(c)))+'</div>'+
+    '<div class="t-clock" id="tclock">'+fmtTime(T.remaining)+'</div>'+
+    '<div class="row"><div class="t-track" style="flex:1;min-width:140px"><div class="t-fill" id="tfill" style="width:'+(T.total?Math.round(T.remaining/T.total*100):0)+'%"></div></div>'+
+    (done?'':'<button class="btn small ghost" data-act="tpause">'+(T.running?'Pause':'Reprendre')+'</button>')+
+    '<button class="btn small ghost" data-act="speak" data-id="'+c.id+'">Recommencer</button><button class="btn small ghost" data-act="tclose">Fermer</button></div></div>';
+}
+function fmtTime(s){ var m=Math.floor(s/60), r=s%60; return m+':'+(r<10?'0':'')+r; }
+
+function sceneCandidats(){
+  var ed=S.editing!=null?cand(S.editing):null;
+  var form='<form class="cform" id="cform" autocomplete="off"><h2>'+(ed?'Modifier le binôme':'Ajouter un binôme')+'</h2>'+
+    '<label>Titulaire<input id="f-t" name="t" maxlength="40" required value="'+esc(ed?ed.titulaire:'')+'" placeholder="Prénom du titulaire"></label>'+
+    '<label>Suppléant<input name="s" maxlength="40" value="'+esc(ed?ed.suppleant:'')+'" placeholder="Prénom du suppléant"></label>'+
+    '<label class="wide">Slogan<input name="sl" maxlength="70" value="'+esc(ed?ed.slogan:'')+'" placeholder="Ex. : Ensemble, on est plus forts !"></label>'+
+    '<label class="wide">Date de naissance du titulaire <span class="hint">(facultatif, sert seulement à départager une égalité)</span><input name="n" type="date" value="'+esc(ed?ed.naissance:'')+'"></label>'+
+    (E.err?'<p class="err" role="alert">'+esc(E.err)+'</p>':'')+
+    '<div class="row wide"><button class="btn" type="submit">'+(ed?'Enregistrer':'Ajouter le binôme')+'</button>'+(ed?'<button class="btn ghost" type="button" data-act="ccancel">Annuler</button>':'')+'</div></form>';
+  var posters=S.candidates.map(function(c){
+    var del=hasVotes(c.id)?'':'<button class="btn small ghost" data-act="cdel" data-id="'+c.id+'" data-confirm="1">'+(E.confirm==='cdel'+c.id?'Confirmer ?':'Retirer')+'</button>';
+    return posterHTML(c,'<div class="row"><button class="btn small ghost" data-act="speak" data-id="'+c.id+'">⏱ Prise de parole</button><button class="btn small ghost" data-act="cedit" data-id="'+c.id+'">Modifier</button>'+del+'</div>');
+  }).join('');
+  return '<div class="wrap"><div class="head"><h1>Les binômes en campagne</h1><p class="lead">Chaque binôme a un titulaire, un suppléant et un slogan. Un bon slogan est court, positif et facile à retenir.</p></div>'+
+  timerHTML()+form+
+  '<div class="tools"><h2 style="margin:0">Les candidats ('+S.candidates.length+')</h2>'+
+    '<label>Durée de la prise de parole<select id="timer-sec">'+[30,60,90,120].map(function(s){ return '<option value="'+s+'"'+(S.timerSec===s?' selected':'')+'>'+fmtTime(s)+'</option>'; }).join('')+'</select></label></div>'+
+  (S.candidates.length?'<div class="posters">'+posters+'</div>':'<div class="empty-note">Aucun binôme pour l’instant. Les candidats peuvent aussi se déclarer le jour même : ajoute-les ici dès qu’ils lèvent la main.</div>')+
+  pager(true,true)+'</div>';
+}
+
+function roundTabs(){
+  var can2=S.rounds[1].closed;
+  return '<div class="rounds" role="group" aria-label="Choisir le tour"><button class="btn small '+(S.round===1?'blue':'ghost')+'" data-act="round" data-r="1" aria-pressed="'+(S.round===1)+'">Tour 1</button>'+
+    '<button class="btn small '+(S.round===2?'blue':'ghost')+'" data-act="round" data-r="2" aria-pressed="'+(S.round===2)+'"'+(can2?'':' disabled')+'>Tour 2</button></div>';
+}
+function sceneVote(){
+  var r=S.round, R=S.rounds[r], cands=activeCands(r), o1=outcome(1);
+  var pct=S.electeurs?Math.min(100,Math.round(R.votants/S.electeurs*100)):0;
+  var extra='';
+  if(r===2&&o1){
+    extra='<div class="info">Il reste <b>'+plural(SEATS-o1.elected.length,'siège')+'</b> à pourvoir. '+(o1.elected.length?'Déjà élu(e) au tour 1 : <b>'+esc(duoName(cand(o1.elected[0])))+'</b>.':'Personne n’a eu la majorité absolue au tour 1 : les deux binômes qui auront le plus de voix seront élus.')+'</div>';
+  }
+  var names=cands.length?'<ul class="names">'+cands.map(function(c){ var k=col(c); return '<li style="--c:'+k.bg+'"><span class="dot" aria-hidden="true"></span><b>'+esc(c.titulaire)+'</b><span class="sup">'+(c.suppleant?'avec '+esc(c.suppleant):'')+'</span></li>'; }).join('')+'</ul>'
+    :'<div class="empty-note">Aucun candidat. <button class="btn small" data-act="go" data-i="4">Ajouter des binômes</button></div>';
+  return '<div class="wrap"><div class="head"><h1>'+(r===1?'Tour 1 : à toi de voter !':'Tour 2 : on vote encore !')+'</h1></div>'+roundTabs()+extra+
+  '<div class="votegrid"><div><h2>Comment je vote ?</h2><ol class="howto">'+
+    '<li>Mon nom est coché sur la liste : je vote une seule fois.</li>'+
+    '<li>Je passe dans l’isoloir avec mon bulletin.</li>'+
+    '<li>J’écris le nom du titulaire, sans faute.</li>'+
+    '<li>Je plie mon bulletin et je le glisse dans l’urne.</li></ol>'+
+    '<h2>Les candidats</h2><p class="hint" style="margin:0">Recopie bien le nom du titulaire.</p>'+names+'</div>'+
+  '<div class="urnepanel">'+urne({count:R.votants,total:S.electeurs})+
+    '<div class="prog'+(R.votants>S.electeurs?' over':'')+'" role="progressbar" aria-valuemin="0" aria-valuemax="'+S.electeurs+'" aria-valuenow="'+R.votants+'" aria-label="Élèves qui ont voté"><i style="width:'+pct+'%"></i></div>'+
+    '<p class="hint" aria-live="polite">'+(R.votants>S.electeurs?'Il y a plus de votants que d’élèves inscrits : vérifie la liste.':plural(R.votants,'élève a voté','élèves ont voté')+' sur '+S.electeurs)+'</p>'+
+    '<div class="row"><button class="btn big" data-act="voter" data-d="1" data-fid="voter-plus"'+(R.closed?' disabled':'')+'>+1 a voté</button><button class="btn ghost" data-act="voter" data-d="-1" data-fid="voter-moins"'+(R.closed||!R.votants?' disabled':'')+'>−1</button></div>'+
+    '<p class="hint" style="margin-top:12px">Touches : + et − au clavier.</p>'+
+    '<div class="row" style="margin-top:22px"><button class="btn blue big" data-act="go" data-i="6">Le vote est terminé : dépouillons !</button></div></div></div>'+
+  pager(true,false)+'</div>';
+}
+
+function boardRow(idx,c,t,scale,o,closed){
+  var k=c?col(c):null, n=c?(t.counts[c.id]||0):0;
+  var won=c&&o&&o.elected.indexOf(c.id)>-1;
+  var maj=(closed&&S.round===1&&t.maj>0)?Math.min(100,t.maj/scale*100):null;
+  var inner='<span class="bkey">'+idx+'</span><span class="bname">'+esc(duoName(c))+'</span><span class="marks">'+marks(n)+'</span><span class="bcount">'+n+'</span>'+
+    '<span class="btrack"><span class="bfill" style="width:'+Math.min(100,n/scale*100)+'%"></span>'+(maj!=null?'<span class="bmaj" style="left:'+maj+'%" title="Majorité absolue"></span>':'')+'</span>';
+  var style='style="--c:'+k.bg+'"';
+  if(closed) return '<div class="brow'+(won?' won':'')+'" '+style+'>'+inner+'</div>';
+  return '<button class="brow" '+style+' data-act="vote" data-v="'+c.id+'" data-fid="v-'+c.id+'" aria-label="Ajouter une voix pour '+esc(duoName(c))+' (actuellement '+n+')">'+inner+'</button>';
+}
+function neutralRow(key,label,n,scale,fid,closed){
+  var inner='<span class="bkey">'+key+'</span><span class="bname">'+label+'</span><span class="marks">'+marks(n)+'</span><span class="bcount">'+n+'</span><span class="btrack"><span class="bfill" style="width:'+Math.min(100,n/scale*100)+'%"></span></span>';
+  if(closed) return '<div class="brow small">'+inner+'</div>';
+  return '<button class="brow small" data-act="vote" data-v="'+(key==='B'?'B':'N')+'" data-fid="'+fid+'" aria-label="Ajouter un bulletin '+label.toLowerCase()+' (actuellement '+n+')">'+inner+'</button>';
+}
+function sceneDepouillement(){
+  var r=S.round, R=S.rounds[r], t=tally(r), cands=activeCands(r), closed=R.closed, o=outcome(r);
+  var scale=Math.max(R.votants,t.lus,1);
+  var chip;
+  if(!R.votants) chip='<span class="chip warn">Renseigne le nombre de votants dans la page Vote</span>';
+  else if(t.lus===R.votants) chip='<span class="chip good">✔ Tous les bulletins sont comptés</span>';
+  else if(t.lus<R.votants) chip='<span class="chip warn">Il reste '+plural(R.votants-t.lus,'bulletin')+' dans l’urne</span>';
+  else chip='<span class="chip warn">⚠ '+plural(t.lus-R.votants,'bulletin')+' de trop : vérifie la liste d’émargement</span>';
+  var last='';
+  var L=E.last&&E.last.round===r&&R.events.length?E.last:null;
+  if(!R.events.length){
+    last='<div class="last"><span class="lab">Le premier bulletin sort de l’urne…</span></div>';
+  }else{
+    var v=R.events[R.events.length-1], who, style='';
+    if(v==='B') who='Bulletin blanc'; else if(v==='N') who='Bulletin nul';
+    else{ var cc=cand(v); if(cc){ var kk=col(cc); who=esc(cc.titulaire); style=' style="--c:'+kk.bg+';--cfg:'+kk.fg+'"'; } else who='Bulletin nul'; }
+    last='<div class="last"><span class="lab">Bulletin n° '+R.events.length+', dernier lu :</span><span class="who'+(L&&L.fresh?' pop':'')+'"'+style+'>'+who+'</span></div>';
+  }
+  var rows=cands.map(function(c,i){ return boardRow(i+1,c,t,scale,o,closed); }).join('');
+  rows+=neutralRow('B','Blanc',t.blank,scale,'v-b',closed)+neutralRow('N','Nul',t.nul,scale,'v-n',closed);
+  var bar='';
+  if(!closed){
+    bar='<div class="boardbar"><button class="btn ghost" data-act="undo" data-fid="undo"'+(R.events.length?'':' disabled')+'>Annuler le dernier</button>'+
+      '<button class="btn" data-act="close" data-fid="close"'+(t.lus?'':' disabled')+'>Terminer le dépouillement</button>'+
+      '<form id="wform"><label>Un nom qui n’est pas dans la liste ?<input name="w" maxlength="40" placeholder="Nom lu sur le bulletin"></label><button class="btn small" type="submit">Compter cette voix</button></form></div>'+
+      '<p class="keys">Les assesseurs lisent les bulletins à voix haute. Le professeur clique sur le nom lu, ou tape son numéro. Touches : 1 à 9, B (blanc), N (nul), Z (annuler).</p>';
+  }
+  var title='Dépouillement, tour '+r;
+  var empty=!cands.length?'<p class="lab" style="color:var(--chalk-dim)">Aucun candidat : ajoute des binômes dans la page Candidats.</p>':'';
+  return '<div class="wrap"><div class="rounds-wrap">'+roundTabs()+'</div>'+
+    '<section class="board" aria-label="Tableau de dépouillement"><div class="bhead"><h2>'+title+'</h2>'+chip+'</div>'+
+    '<div class="bhead" style="margin-top:6px"><span class="chip">'+t.lus+' lu'+(t.lus>1?'s':'')+' sur '+R.votants+' votant'+(R.votants>1?'s':'')+'</span></div>'+
+    last+empty+'<div role="group" aria-label="Voix par binôme">'+rows+'</div>'+bar+'</section>'+
+    outcomePanel(r)+pager(true,false)+'</div>';
+}
+
+function outcomePanel(r){
+  var o=outcome(r); if(!o) return '';
+  var t=o.t, nm=function(id){ var c=cand(id); return c?esc(duoName(c)):'?'; };
+  var votesOf=function(id){ return t.counts[id]||0; };
+  var h='<section class="outcome" aria-live="polite"><h2>Résultat du tour '+r+'</h2>', actions='';
+  if(t.exprimes===0){
+    h+='<p class="verdict">Aucune voix exprimée.</p><p>Vérifie le dépouillement, ou rouvre-le pour corriger.</p>';
+  }else{
+    h+=(r===1?'<p>'+plural(t.exprimes,'suffrage exprimé','suffrages exprimés')+' : la majorité absolue est de <b>'+t.maj+' voix</b>.</p>':'<p>'+plural(t.exprimes,'suffrage exprimé','suffrages exprimés')+'. Au tour 2, le plus grand nombre de voix suffit.</p>');
+    if(r===1){
+      if(o.elected.length){
+        h+='<p class="verdict good">Le binôme '+nm(o.elected[0])+' a '+votesOf(o.elected[0])+' voix : élu(e) dès le tour 1 !</p><p>Il reste 1 siège à pourvoir. Au tour 2, le plus grand nombre de voix suffit.</p>';
+      }else{
+        h+='<p class="verdict">Personne n’atteint '+t.maj+' voix.</p><p>Place au tour 2 : les deux binômes qui auront le plus de voix seront élus.</p>';
+      }
+      actions='<button class="btn blue big" data-act="to2">Passer au tour 2</button>';
+    }else{
+      if(o.elected.length){
+        h+='<ul class="won">'+o.elected.map(function(id){ return '<li>★ '+nm(id)+' : '+plural(votesOf(id),'voix','voix')+'</li>'; }).join('')+'</ul>';
+      }
+      if(o.tie){
+        h+='<div class="tie"><p class="verdict" style="margin:0">Égalité !</p><p style="margin:.3em 0 0">'+o.tie.tied.length+' binômes ont '+plural(o.tie.v,'voix','voix')+' pour '+plural(o.tie.need,'siège')+'. Le plus jeune est élu.'+
+          (o.tie.resolved?' '+(o.tie.by==='age'?'Les dates de naissance ont permis de les départager.':'Tu as désigné le plus jeune.'):' Renseigne les dates de naissance dans la page Candidats, ou choisis ici le plus jeune :')+'</p>'+
+          (o.tie.by==='age'?'':'<div class="row">'+o.tie.tied.map(function(id){ return '<button class="btn small ghost" data-act="tie" data-id="'+id+'" aria-pressed="'+(S.tieWinners.indexOf(id)>-1)+'">'+nm(id)+'</button>'; }).join('')+'</div>')+'</div>';
+      }
+      var got=finalElected().length;
+      if(got<SEATS&&!o.tie) h+='<p class="verdict">Il reste '+plural(SEATS-got,'siège')+' vide'+(SEATS-got>1?'s':'')+'.</p><p>Avec les candidats actuels, tous les sièges ne peuvent pas être pourvus. De nouvelles candidatures sont possibles : ajoute-les puis rouvre le dépouillement.</p>';
+      actions='<button class="btn blue big" data-act="go" data-i="7">Voir la proclamation</button>';
+    }
+  }
+  var canReopen=!(r===1&&(S.rounds[2].events.length||S.rounds[2].votants));
+  h+='<div class="row">'+actions+'<button class="btn ghost" data-act="reopen"'+(canReopen?'':' disabled')+'>Rouvrir le dépouillement</button></div></section>';
+  return h;
+}
+
+function pvText(){
+  var L=[];
+  L.push('PROCÈS-VERBAL DE L’ÉLECTION DES DÉLÉGUÉS');
+  L.push('Classe de '+S.classe+', collège Yves du Manoir');
+  L.push('Élèves inscrits : '+S.electeurs); L.push('');
+  [1,2].forEach(function(r){
+    var R=S.rounds[r]; if(!R.events.length&&!R.closed&&!R.votants) return;
+    var t=tally(r);
+    L.push('TOUR '+r+(R.closed?'':' (non terminé)'));
+    L.push('Votants : '+R.votants+', bulletins dépouillés : '+t.lus);
+    L.push('Blancs : '+t.blank+', nuls : '+t.nul+', suffrages exprimés : '+t.exprimes+(r===1?', majorité absolue : '+t.maj:''));
+    activeCands(r).map(function(c){ return {c:c,v:t.counts[c.id]||0}; }).sort(function(a,b){ return b.v-a.v; }).forEach(function(x){
+      L.push('- '+x.c.titulaire+' (suppléant : '+(x.c.suppleant||'à préciser')+') : '+x.v+' voix');
+    });
+    L.push('');
+  });
+  var fe=finalElected();
+  L.push('DÉLÉGUÉS ÉLUS');
+  if(!fe.length) L.push('Aucun pour le moment.');
+  fe.forEach(function(x){ var c=cand(x.id); if(c) L.push('- '+c.titulaire+', suppléant : '+(c.suppleant||'à préciser')+' (élu(e) au tour '+x.round+')'); });
+  return L.join('\n');
+}
+function sceneResultats(){
+  var fe=finalElected(), done=fe.length>=SEATS;
+  var seats='';
+  for(var i=0;i<SEATS;i++){
+    var x=fe[i];
+    if(x&&cand(x.id)){
+      var c=cand(x.id);
+      seats+=posterHTML(c,'<p class="seat-title" style="margin:0">Délégué(e) de la '+esc(S.classe)+', élu(e) au tour '+x.round+'</p>');
+    }else{
+      seats+='<article class="poster empty"><p style="margin:0">Siège à pourvoir</p></article>';
+    }
+  }
+  return '<div class="wrap"><div class="head"><h1>'+(done?'Voici vos délégués !':'Résultats de l’élection')+'</h1>'+
+    '<p class="lead">'+(done?'Félicitations aux élus et merci à tous les candidats. Les délégués sont élus pour toute l’année scolaire.':'Les résultats apparaissent ici au fur et à mesure des tours.')+'</p></div>'+
+    '<div class="seats">'+seats+'</div>'+
+    '<section class="sec pv"><h2>Procès-verbal</h2><p class="hint">À copier, puis à coller dans un document ou dans le livret.</p>'+
+    '<textarea id="pv" readonly aria-label="Procès-verbal de l’élection">'+esc(pvText())+'</textarea>'+
+    '<div class="row" style="margin-top:12px"><button class="btn" data-act="copy">Copier le procès-verbal</button><span class="hint" id="copied" aria-live="polite"></span></div></section>'+
+    pager(true,false)+'</div>';
+}
+var SCENE_FN=[sceneAccueil,sceneVF,sceneMissions,sceneElection,sceneCandidats,sceneVote,sceneDepouillement,sceneResultats];
+
+/* ---------- Rendu ---------- */
+function applyTheme(){
+  var d=document.documentElement;
+  if(S.theme==='auto') d.removeAttribute('data-theme'); else d.setAttribute('data-theme',S.theme);
+}
+function render(){
+  var y=window.scrollY, ae=document.activeElement, fid=(ae&&ae.dataset)?ae.dataset.fid:null;
+  var stepsEl=document.querySelector('.steps'), sl=stepsEl?stepsEl.scrollLeft:0;
+  S.scene=clamp(S.scene,0,SCENES.length-1);
+  app.innerHTML=header()+'<main id="main">'+SCENE_FN[S.scene]()+'</main>';
+  var st=document.querySelector('.steps'); if(st&&!E.nav) st.scrollLeft=sl;
+  if(!E.nav){ try{ window.scrollTo(0,y); }catch(e){} }
+  afterRender(fid);
+}
+function afterRender(fid){
+  if(fid){ var el=document.querySelector('[data-fid="'+fid+'"]'); if(el&&!el.disabled) el.focus({preventScroll:true}); }
+  if(E.nav){
+    var cur=document.querySelector('.step[aria-current]'); if(cur&&cur.scrollIntoView){ try{ cur.scrollIntoView({inline:'center',block:'nearest'}); }catch(e){} }
+  }
+  if(E.focusForm){ var f=document.getElementById('f-t'); if(f) f.focus(); E.focusForm=false; }
+  if(E.drop){
+    E.drop=false;
+    var b=document.querySelector('.ballot:not(.hero-ballot)');
+    if(b&&b.animate&&!reduced()){
+      b.animate([{transform:'translateY(-50px) rotate(-6deg)',opacity:0},{transform:'translateY(-20px) rotate(-3deg)',opacity:1,offset:.25},{transform:'translateY(96px)',opacity:1}],{duration:750,easing:'ease-in'});
+    }
+  }
+  if(E.celebrate){ E.celebrate=false; confetti(); }
+  if(E.last) E.last.fresh=false;
+}
+function navigate(i){
+  i=clamp(i,0,SCENES.length-1);
+  if(i!==CAN) stopTimer();
+  S.scene=i; E.confirm=null; E.err=null; E.nav=true; save(); render(); E.nav=false;
+  try{ window.scrollTo(0,0); }catch(e){}
+}
+function confetti(){
+  if(reduced()) return;
+  var box=document.createElement('div'); box.className='confetti'; box.setAttribute('aria-hidden','true');
+  var cs=PALETTE.map(function(p){ return p.bg; }), h='';
+  for(var i=0;i<70;i++){
+    h+='<i style="left:'+(Math.random()*100).toFixed(1)+'%;background:'+cs[i%cs.length]+';--d:'+(2.4+Math.random()*1.8).toFixed(2)+'s;--dl:'+(Math.random()*.8).toFixed(2)+'s;transform:rotate('+Math.round(Math.random()*360)+'deg)"></i>';
+  }
+  box.innerHTML=h; document.body.appendChild(box);
+  setTimeout(function(){ if(box.parentNode) box.parentNode.removeChild(box); },4800);
+}
+
+/* ---------- Minuteur de prise de parole ---------- */
+function stopTimer(){ if(E.timer&&E.timer.iv) clearInterval(E.timer.iv); E.timer=null; }
+function startTimer(id){
+  if(E.timer&&E.timer.iv) clearInterval(E.timer.iv);
+  var T={id:id,total:S.timerSec,remaining:S.timerSec,running:true,end:Date.now()+S.timerSec*1000,iv:null};
+  T.iv=setInterval(tick,250); E.timer=T; render();
+}
+function tick(){
+  var T=E.timer; if(!T||!T.running) return;
+  T.remaining=Math.max(0,Math.ceil((T.end-Date.now())/1000));
+  var c=document.getElementById('tclock'), f=document.getElementById('tfill');
+  if(c) c.textContent=fmtTime(T.remaining);
+  if(f) f.style.width=(T.total?Math.round(T.remaining/T.total*100):0)+'%';
+  if(T.remaining<=0){ T.running=false; clearInterval(T.iv); render(); }
+}
+
+/* ---------- Actions ---------- */
+function castVote(v){
+  var R=S.rounds[S.round]; if(R.closed) return;
+  R.events.push(v);
+  E.last={round:S.round,fresh:true}; save(); render();
+}
+function undoVote(){
+  var R=S.rounds[S.round]; if(R.closed||!R.events.length) return;
+  R.events.pop(); E.last={round:S.round,fresh:false}; save(); render();
+}
+function confirmTwice(key,fn){
+  if(E.confirm===key){ E.confirm=null; fn(); } else { E.confirm=key; render(); }
+}
+var A={
+  go:function(el){ navigate(+el.dataset.i); },
+  prev:function(){ navigate(S.scene-1); },
+  next:function(){ navigate(S.scene+1); },
+  theme:function(){ var o=['auto','light','dark']; S.theme=o[(o.indexOf(S.theme)+1)%3]; applyTheme(); save(); render(); },
+  vf:function(el){ E.quiz[el.dataset.i]=(el.dataset.v==='1'); render(); },
+  vfreset:function(){ E.quiz={}; render(); },
+  calc:function(el){
+    var C=E.calc, d=+el.dataset.d;
+    if(el.dataset.k==='v') C.v=clamp(C.v+d,1,60); else C.inv=C.inv+d;
+    C.inv=clamp(C.inv,0,C.v); render();
+  },
+  cedit:function(el){ S.editing=+el.dataset.id; E.err=null; E.focusForm=true; render(); var f=document.getElementById('cform'); if(f&&f.scrollIntoView){ try{ f.scrollIntoView({block:'center'}); }catch(e){} } },
+  ccancel:function(){ S.editing=null; E.err=null; render(); },
+  cdel:function(el){
+    var id=+el.dataset.id;
+    confirmTwice('cdel'+id,function(){ S.candidates=S.candidates.filter(function(c){ return c.id!==id; }); S.tieWinners=S.tieWinners.filter(function(x){ return x!==id; }); if(S.editing===id) S.editing=null; save(); render(); });
+  },
+  speak:function(el){ startTimer(+el.dataset.id); },
+  tpause:function(){
+    var T=E.timer; if(!T) return;
+    if(T.running){ T.running=false; } else { T.running=true; T.end=Date.now()+T.remaining*1000; }
+    render();
+  },
+  tclose:function(){ stopTimer(); render(); },
+  voter:function(el){
+    var R=S.rounds[S.round]; if(R.closed) return;
+    var d=+el.dataset.d; R.votants=Math.max(0,R.votants+d);
+    if(d>0) E.drop=true; save(); render();
+  },
+  vote:function(el){ var v=el.dataset.v; castVote((v==='B'||v==='N')?v:+v); },
+  undo:function(){ undoVote(); },
+  close:function(){ var R=S.rounds[S.round]; if(!R.events.length) return; R.closed=true; E.celebrate=true; save(); render(); },
+  reopen:function(){ var R=S.rounds[S.round]; R.closed=false; save(); render(); },
+  round:function(el){ var r=+el.dataset.r; if(r===2&&!S.rounds[1].closed) return; S.round=r; save(); render(); },
+  to2:function(){ S.round=2; save(); navigate(VOTE); },
+  tie:function(el){
+    var id=+el.dataset.id, o=outcome(2), need=o&&o.tie?o.tie.need:1, i=S.tieWinners.indexOf(id);
+    if(i>-1) S.tieWinners.splice(i,1); else { S.tieWinners.push(id); while(S.tieWinners.length>need) S.tieWinners.shift(); }
+    save(); render();
+  },
+  reset:function(){ confirmTwice('reset',function(){ S=defaults(); E.quiz={}; E.last=null; E.calc={v:S.electeurs,inv:1}; stopTimer(); applyTheme(); save(); render(); }); },
+  copy:function(){
+    var ta=document.getElementById('pv'), msg=document.getElementById('copied'); if(!ta) return;
+    var done=function(ok){ if(msg) msg.textContent=ok?'Copié !':'Sélectionne le texte et copie-le avec Ctrl+C.'; };
+    ta.focus(); ta.select();
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(ta.value).then(function(){ done(true); },function(){ var ok=false; try{ ok=document.execCommand('copy'); }catch(e){} done(ok); });
+    }else{ var ok=false; try{ ok=document.execCommand('copy'); }catch(e){} done(ok); }
+  }
+};
+document.addEventListener('click',function(e){
+  var el=e.target.closest?e.target.closest('[data-act]'):null; if(!el||el.disabled) return;
+  if(!el.dataset.confirm&&E.confirm) E.confirm=null;
+  var fn=A[el.dataset.act]; if(fn) fn(el);
+});
+document.addEventListener('submit',function(e){
+  e.preventDefault();
+  var f=e.target;
+  if(f.id==='cform'){
+    var t=f.elements.t.value.trim(), s=f.elements.s.value.trim(), sl=f.elements.sl.value.trim(), n=f.elements.n.value;
+    if(!t){ E.err='Écris au moins le nom du titulaire.'; render(); return; }
+    E.err=null;
+    var ed=S.editing!=null?cand(S.editing):null;
+    if(ed){ ed.titulaire=t; ed.suppleant=s; ed.slogan=sl; ed.naissance=n; S.editing=null; }
+    else{ S.candidates.push({id:S.nextId,titulaire:t,suppleant:s,slogan:sl,naissance:n,ci:(S.nextId-1)%PALETTE.length}); S.nextId++; }
+    E.focusForm=!ed; save(); render();
+  }else if(f.id==='wform'){
+    var w=f.elements.w.value.trim(); if(!w) return;
+    var found=null; S.candidates.forEach(function(c){ if(c.titulaire.toLowerCase()===w.toLowerCase()) found=c; });
+    if(!found){
+      found={id:S.nextId,titulaire:w,suppleant:'',slogan:'',naissance:'',ci:(S.nextId-1)%PALETTE.length,spontane:true};
+      S.candidates.push(found); S.nextId++;
+    }
+    castVote(found.id);
+  }
+});
+document.addEventListener('change',function(e){
+  var t=e.target;
+  if(t.id==='set-classe'){ S.classe=t.value.trim()||'6B'; save(); render(); }
+  else if(t.id==='set-electeurs'){ S.electeurs=clamp(parseInt(t.value,10)||25,1,60); E.calc.v=S.electeurs; E.calc.inv=clamp(E.calc.inv,0,E.calc.v); save(); render(); }
+  else if(t.id==='timer-sec'){ S.timerSec=+t.value; save(); }
+});
+document.addEventListener('toggle',function(e){ if(e.target.classList&&e.target.classList.contains('settings')) E.settingsOpen=e.target.open; },true);
+document.addEventListener('keydown',function(e){
+  var tg=e.target, tag=tg&&tg.tagName;
+  if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||e.ctrlKey||e.metaKey||e.altKey) return;
+  var R=S.rounds[S.round], k=e.key;
+  if(S.scene===DEP&&!R.closed){
+    if(/^[1-9]$/.test(k)){ var c=activeCands(S.round)[+k-1]; if(c){ e.preventDefault(); castVote(c.id); } return; }
+    if(k==='b'||k==='B'){ e.preventDefault(); castVote('B'); return; }
+    if(k==='n'||k==='N'){ e.preventDefault(); castVote('N'); return; }
+    if(k==='z'||k==='Z'||k==='Backspace'){ e.preventDefault(); undoVote(); return; }
+    return;
+  }
+  if(S.scene===VOTE&&!R.closed){
+    if(k==='+'||k==='='){ e.preventDefault(); A.voter({dataset:{d:'1'}}); return; }
+    if(k==='-'){ e.preventDefault(); A.voter({dataset:{d:'-1'}}); return; }
+  }
+  if(k==='ArrowRight'&&S.scene<SCENES.length-1&&S.scene!==DEP){ navigate(S.scene+1); }
+  else if(k==='ArrowLeft'&&S.scene>0&&S.scene!==DEP){ navigate(S.scene-1); }
+});
+
+applyTheme();
+render();
+})();
+</script>
+</body>
+</html>
