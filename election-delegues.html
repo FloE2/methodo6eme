@@ -207,6 +207,10 @@ input[type=number]{width:7em}
 /* Vote */
 .pill{display:inline-block;font-family:var(--display);font-weight:800;font-size:1.05rem;background:var(--blue);color:#fff;border:2.5px solid var(--edge);border-radius:999px;padding:.1em .8em;vertical-align:middle}
 .rounds{display:flex;gap:10px;margin-bottom:20px}
+.one{display:grid;grid-template-columns:auto 1fr;gap:clamp(14px,3vw,28px);align-items:center;background:var(--yellow);color:#111B3D;border:3px solid var(--edge);border-radius:24px;padding:clamp(14px,2.5vw,26px) clamp(16px,3vw,32px);margin:0 0 34px;box-shadow:8px 8px 0 var(--edge-shadow)}
+.one .n{display:grid;place-items:center;width:clamp(76px,13vw,150px);aspect-ratio:1;border-radius:50%;background:#111B3D;color:var(--yellow);font-family:var(--display);font-weight:800;font-size:clamp(3.2rem,9vw,7rem);line-height:1}
+.one h2{font-size:clamp(1.8rem,4.6vw,3.8rem);line-height:1.02;margin:0 0 8px}
+.one p{margin:0;font-size:clamp(1.1rem,2vw,1.5rem);font-weight:700}
 .votegrid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:start}
 .howto{list-style:none;counter-reset:h;padding:0;margin:0 0 28px;display:grid;gap:14px}
 .howto li{counter-increment:h;display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:center;font-size:1.25rem;font-weight:700}
@@ -525,7 +529,7 @@ function sceneElection(){
     ['👥','2 titulaires et 2 suppléants','Dans chaque classe, on élit 2 délégués titulaires et 2 suppléants.'],
     ['🧑‍🎓','Tous les élèves votent','Chaque élève de la classe peut voter, sans aucune exception.'],
     ['🙋','Tous les élèves peuvent se présenter','Chacun peut être candidat, même en se déclarant le jour de l’élection. On se présente en binôme : un titulaire et un suppléant que l’on choisit.'],
-    ['🤫','Le vote est secret','Tu écris sur ton bulletin le nom du titulaire, sans faute et sans le montrer, puis tu le plies et tu le glisses dans l’urne. Personne ne sait pour qui tu as voté. Son suppléant est élu avec lui.'],
+    ['🤫','Le vote est secret','Tu ne votes que pour 1 seul délégué : tu écris 1 seul nom sur ton bulletin, celui du titulaire, sans faute et sans le montrer, puis tu le plies et tu le glisses dans l’urne. Personne ne sait pour qui tu as voté. Son suppléant est élu avec lui.'],
     ['🗒️','Bulletin blanc, bulletin nul : c’est quoi ?','Un bulletin <b>blanc</b> est un bulletin vide : personne n’y a écrit de nom. Un bulletin <b>nul</b> est un bulletin qu’on ne peut pas compter : nom illisible ou qui n’est pas celui d’un élève de la classe, plusieurs noms, dessin ou message écrit dessus. Ni l’un ni l’autre ne donne de voix à un candidat, et on ne les compte pas dans les suffrages exprimés.'],
     ['⭐','On peut être élu sans s’être présenté','Il faut avoir assez de voix, et accepter d’être délégué.'],
     ['📅','On est délégué toute l’année','Le mandat dure l’année scolaire. Si un délégué démissionne, on élit un remplaçant.']
@@ -607,9 +611,10 @@ function sceneVote(){
   var names=cands.length?'<ul class="names">'+cands.map(function(c){ var k=col(c); return '<li style="--c:'+k.bg+'"><span class="dot" aria-hidden="true"></span><b>'+esc(c.titulaire)+'</b><span class="sup">'+(c.suppleant?'avec '+esc(c.suppleant):'')+'</span></li>'; }).join('')+'</ul>'
     :'<div class="empty-note">Aucun candidat. <button class="btn small" data-act="go" data-i="4">Ajouter des binômes</button></div>';
   return '<div class="wrap"><div class="head"><h1>'+(r===1?'Tour 1 : à toi de voter !':'Tour 2 : on vote encore !')+'</h1></div>'+roundTabs()+extra+
+  '<div class="one" role="note"><span class="n" aria-hidden="true">1</span><div><h2>Tu votes pour 1 seul délégué !</h2><p>Écris 1 seul nom sur ton bulletin. Avec deux noms ou plus, ton bulletin est nul.</p></div></div>'+
   '<div class="votegrid"><div><h2>Comment je vote ?</h2><ol class="howto">'+
     '<li>Mon nom est coché sur la liste : je vote une seule fois.</li>'+
-    '<li>J’écris le nom du titulaire sur mon bulletin, sans faute et sans le montrer.</li>'+
+    '<li>J’écris 1 seul nom, celui du titulaire, sans faute et sans le montrer.</li>'+
     '<li>Je plie mon bulletin et je le glisse dans l’urne.</li></ol>'+
     '<h2>Les candidats</h2><p class="hint" style="margin:0">Recopie bien le nom du titulaire.</p>'+names+'</div>'+
   '<div class="urnepanel">'+urne({count:R.votants,total:S.electeurs})+
@@ -655,7 +660,7 @@ function sceneDepouillement(){
     last='<div class="last"><span class="lab">Bulletin n° '+R.events.length+', dernier lu :</span><span class="who'+(L&&L.fresh?' pop':'')+'"'+style+'>'+who+'</span></div>';
   }
   var rows=cands.map(function(c,i){ return boardRow(i+1,c,t,scale,o,closed); }).join('');
-  rows+=neutralRow('B','Blanc',t.blank,scale,'v-b',closed,'bulletin vide, sans aucun nom')+neutralRow('N','Nul',t.nul,scale,'v-n',closed,'bulletin qu’on ne peut pas compter');
+  rows+=neutralRow('B','Blanc',t.blank,scale,'v-b',closed,'bulletin vide, sans aucun nom')+neutralRow('N','Nul',t.nul,scale,'v-n',closed,'bulletin qu’on ne peut pas compter (2 noms, illisible…)');
   var bar='';
   if(!closed){
     bar='<div class="boardbar"><button class="btn ghost" data-act="undo" data-fid="undo"'+(R.events.length?'':' disabled')+'>Annuler le dernier</button>'+
