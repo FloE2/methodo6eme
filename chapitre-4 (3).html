@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapitre 4 · Découvrir PRONOTE — Heure Bleue 6ème B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #eef3f8;
+    --surface: #ffffff;
+    --border: #dbe4ee;
+    --border-light: #e9eff5;
+    --text-primary: #172431;
+    --text-secondary: #5c6b7a;
+    --text-muted: #a2afba;
+    --blue: #2d6ca8;
+    --blue-light: #e5eff9;
+    --amber: #d98e2b;
+    --amber-light: #fbf1e2;
+    --green: #1d9e75;
+    --green-light: #e8f5ef;
+    --red: #c0392b;
+    --red-light: #fbeae8;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background-color: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
+    color: var(--text-muted); text-decoration: none; margin-bottom: 1.5rem;
+  }
+  .back-link:hover { color: var(--blue); }
+
+  .chapter-head {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 26px; margin-bottom: 1.75rem;
+  }
+  .chapter-head .badge {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--blue); margin-bottom: 8px;
+  }
+  .chapter-head h1 { font-size: 26px; font-weight: 500; margin-bottom: 10px; }
+  .chapter-head p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+  .mode-note {
+    margin-top: 14px; background: var(--amber-light); color: #8a5c14;
+    border-radius: 8px; padding: 10px 14px; font-size: 12.5px; line-height: 1.5;
+  }
+
+  .section-lbl {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-muted);
+    display: flex; align-items: center; gap: 10px; margin: 2rem 0 1rem;
+  }
+  .section-lbl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* QUIZ */
+  .quiz-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 26px;
+  }
+  .quiz-progress { display: flex; gap: 6px; margin-bottom: 20px; }
+  .quiz-dot { flex: 1; height: 4px; border-radius: 4px; background: var(--border-light); }
+  .quiz-dot.done { background: var(--blue); }
+  .quiz-dot.active { background: var(--amber); }
+
+  .q-count {
+    font-family: var(--mono); font-size: 10.5px; color: var(--text-muted);
+    letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .q-text { font-size: 16.5px; font-weight: 500; margin-bottom: 18px; line-height: 1.45; }
+
+  .vote-row {
+    display: flex; align-items: center; gap: 12px;
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 11px 14px; margin-bottom: 10px; background: var(--bg);
+  }
+  .vote-row.is-correct-reveal { border-color: var(--green); background: var(--green-light); }
+  .vote-label { flex: 1; font-size: 13.5px; line-height: 1.4; }
+  .vote-input {
+    width: 68px; flex-shrink: 0; text-align: center; font-family: var(--mono);
+    font-size: 17px; font-weight: 500; border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 8px 6px; background: var(--surface); color: var(--text-primary);
+  }
+  .vote-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(45,108,168,0.15); }
+  .vote-input:disabled { background: var(--border-light); color: var(--text-muted); }
+  .vote-input::-webkit-inner-spin-button { opacity: 1; }
+
+  .vote-total {
+    font-size: 12px; color: var(--text-muted); margin: 8px 0 18px; text-align: right;
+  }
+
+  .btn {
+    font-family: var(--font); font-size: 13.5px; font-weight: 500;
+    background: var(--blue); color: #fff; border: none;
+    border-radius: 9px; padding: 11px 22px; cursor: pointer;
+    transition: background .15s, opacity .15s;
+  }
+  .btn:hover { background: #235682; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.ghost { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); }
+  .btn.ghost:hover { border-color: var(--blue); color: var(--blue); }
+
+  .quiz-nav { display: flex; justify-content: flex-end; gap: 10px; }
+
+  .reveal-panel {
+    margin-top: 6px; margin-bottom: 18px; padding: 14px 16px;
+    border-radius: 10px; background: var(--blue-light);
+  }
+  .reveal-stat { font-size: 22px; font-weight: 700; color: var(--blue); margin-bottom: 4px; }
+  .reveal-detail { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; }
+  .reveal-explain { font-size: 13px; color: var(--text-primary); line-height: 1.5; }
+
+  /* QUIZ RESULT / BILAN */
+  .bilan-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  .bilan-table th, .bilan-table td {
+    text-align: left; padding: 8px 6px; font-size: 12.5px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .bilan-table th {
+    font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--text-muted); font-weight: 500;
+  }
+  .bilan-bar-wrap { width: 90px; height: 8px; background: var(--border-light); border-radius: 4px; overflow: hidden; }
+  .bilan-bar { height: 100%; background: var(--blue); }
+  .quiz-result { text-align: center; padding: 6px 0 10px; }
+  .quiz-result .score { font-size: 40px; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
+  .quiz-result .msg { font-size: 14px; color: var(--text-secondary); margin-bottom: 22px; }
+
+  /* TROUVE L'ERREUR */
+  .error-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; }
+  .error-intro { font-size: 13.5px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 20px; }
+  .error-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+  @media (max-width: 640px) { .error-grid { grid-template-columns: 1fr; } }
+  .error-item {
+    border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 16px;
+    font-size: 13px; line-height: 1.45; cursor: pointer; position: relative;
+    transition: border-color .15s, background .15s;
+  }
+  .error-item:hover { border-color: var(--blue); }
+  .error-item.selected { border-color: var(--amber); background: var(--amber-light); }
+  .error-item.selected::before {
+    content: '🚩 suspect'; position: absolute; top: -9px; right: 10px;
+    font-family: var(--mono); font-size: 9.5px; background: var(--amber); color: #fff;
+    padding: 2px 7px; border-radius: 5px;
+  }
+  .error-item.reveal-error { border-color: var(--red); background: var(--red-light); cursor: default; }
+  .error-item.reveal-ok { border-color: var(--green); background: var(--green-light); cursor: default; }
+  .error-item .error-tag { display: block; font-size: 12px; margin-top: 8px; line-height: 1.4; }
+  .error-item.reveal-error .error-tag { color: #8f2a1d; }
+  .error-item.reveal-ok .error-tag { color: #146a4e; }
+  .error-summary {
+    background: var(--blue-light); border-radius: 10px; padding: 14px 16px;
+    margin-bottom: 18px; font-size: 13px; color: var(--text-primary); line-height: 1.5;
+  }
+  .error-summary .big { font-size: 22px; font-weight: 700; color: var(--blue); }
+
+  /* RECAP CHECKLIST */
+  .recap-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; }
+  .recap-card h2 { font-size: 18px; font-weight: 500; margin-bottom: 4px; }
+  .recap-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 18px; }
+
+  .check-group { margin-bottom: 18px; }
+  .check-group-title {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--amber); margin-bottom: 10px;
+  }
+  .check-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 0; border-bottom: 1px solid var(--border-light);
+    cursor: pointer; user-select: none;
+  }
+  .check-item:last-child { border-bottom: none; }
+  .check-box {
+    width: 19px; height: 19px; border-radius: 5px; border: 1.5px solid var(--border);
+    flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: transparent; transition: background .15s, border-color .15s;
+  }
+  .check-item.checked .check-box { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .check-item.checked .check-text { color: var(--text-muted); text-decoration: line-through; }
+  .check-text { font-size: 13.5px; line-height: 1.4; }
+
+  .finish-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.75rem; gap: 12px; flex-wrap: wrap; }
+  .finish-hint { font-size: 12px; color: var(--text-muted); }
+
+  .hidden { display: none; }
+
+  .foot { text-align: center; padding: 2.5rem 0 0; font-family: var(--mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.05em; }
+
+  /* PRINT BUTTON (chapter head) */
+  .head-actions { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .print-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font); font-size: 13px; font-weight: 500;
+    background: var(--surface); color: var(--blue);
+    border: 1.5px solid var(--blue); border-radius: 9px;
+    padding: 9px 16px; cursor: pointer; transition: background .15s, color .15s;
+  }
+  .print-btn:hover { background: var(--blue); color: #fff; }
+
+  /* EDT PRINT OVERLAY */
+  .edt-overlay {
+    position: fixed; inset: 0; background: rgba(23,36,49,0.72);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px; z-index: 1000;
+  }
+  .edt-overlay.hidden { display: none; }
+  .edt-sheet {
+    background: #fff; border-radius: 16px; padding: 28px;
+    max-width: 920px; width: 100%; max-height: 92vh; overflow: auto;
+    text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+  .edt-sheet h2 { font-size: 20px; font-weight: 500; margin-bottom: 4px; color: var(--text-primary); }
+  .edt-sheet .edt-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 18px; }
+  .edt-sheet img { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 8px; display: block; }
+  .edt-actions { margin-top: 20px; display: flex; gap: 10px; justify-content: center; }
+
+  @media print {
+    body * { visibility: hidden; }
+    #edtPrintSheet, #edtPrintSheet *,
+    #planningPrintSheet, #planningPrintSheet * { visibility: visible; }
+    #edtPrintSheet, #planningPrintSheet {
+      position: absolute; top: 0; left: 0; width: 100%; max-width: none; max-height: none;
+      margin: 0; box-shadow: none; border-radius: 0; padding: 0; overflow: visible;
+    }
+    .no-print { display: none !important; }
+    @page { size: A4 landscape; margin: 10mm 10mm 16mm 10mm; }
+  }
+
+  .game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 1.75rem; }
+  .game-card { display: block; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; text-decoration: none; color: var(--text-primary); transition: border-color .15s, transform .15s; }
+  .game-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+  .game-card .g-tag { font-family: var(--mono); font-size: 11px; color: var(--blue); margin-bottom: 6px; }
+  .game-card h3 { font-size: 18px; font-weight: 500; margin-bottom: 6px; }
+  .game-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
+  .game-card .g-go { display: inline-block; margin-top: 12px; font-size: 13px; font-weight: 700; color: var(--blue); }
+  .roles { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 22px; margin-bottom: 1.75rem; font-size: 14px; line-height: 1.6; color: var(--text-secondary); }
+  .roles strong { color: var(--text-primary); }
+  .roles ul { margin: 8px 0 0 18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a href="index.html" class="back-link">← Retour au sommaire</a>
+
+  <div class="chapter-head">
+    <div class="badge">Chapitre 4</div>
+    <h1>💻 Découvrir PRONOTE</h1>
+    <p>Emploi du temps, devoirs, notes et compétences, absences, punitions, messages : tout ce qui concerne ta scolarité se trouve dans PRONOTE. Aujourd'hui, tu vas apprendre à t'y retrouver en jouant à un escape game en équipe, avant de remplir ta fiche récap.</p>
+    <div class="mode-note">👥 <strong>En équipe de 5, avec 2 ordinateurs :</strong> sur le premier, un élève de l'équipe se connecte à PRONOTE avec son compte. Sur le second, ouvrez l'escape game indiqué par votre professeur.</div>
+  </div>
+
+  <div class="section-lbl">Étape 1 · L'escape game</div>
+  <div class="game-grid">
+    <a class="game-card" href="escape-pronote-1.html">
+      <div class="g-tag">Groupe 1 · 6 missions</div>
+      <h3>🎒 Le cartable perdu</h3>
+      <p>Léo n'a pas préparé son cartable. Aidez-le à retrouver ses cours, ses devoirs et sa salle grâce à PRONOTE.</p>
+      <span class="g-go">Ouvrir l'escape game</span>
+    </a>
+    <a class="game-card" href="escape-pronote-2.html">
+      <div class="g-tag">Groupe 2 · 7 missions</div>
+      <h3>🩹 Le rattrapage d'Inès</h3>
+      <p>Inès revient après une semaine d'absence. Aidez-la à rattraper tout ce qu'elle a manqué.</p>
+      <span class="g-go">Ouvrir l'escape game</span>
+    </a>
+  </div>
+
+  <div class="roles">
+    <strong>Les rôles dans l'équipe</strong> (on change toutes les 2 missions) :
+    <ul>
+      <li><strong>Pilote :</strong> cherche dans PRONOTE.</li>
+      <li><strong>Copilote :</strong> aide le pilote et lit ce qu'il voit.</li>
+      <li><strong>Secrétaire :</strong> tape les réponses dans l'escape game.</li>
+      <li><strong>Lecteur :</strong> lit les missions à voix haute.</li>
+      <li><strong>Gardien du temps :</strong> décide quand demander un coup de pouce.</li>
+    </ul>
+  </div>
+
+  <div class="section-lbl">Étape 2 · Fiche récap</div>
+  <div class="recap-card">
+    <h2>Mes réflexes PRONOTE</h2>
+    <div class="recap-sub">Coche au fur et à mesure — ta progression est enregistrée sur cet ordinateur.</div>
+
+    <div class="check-group">
+      <div class="check-group-title">Mon compte en sécurité</div>
+      <div class="check-item" data-id="c1"><div class="check-box">✓</div><div class="check-text">J'ai personnalisé mon mot de passe et je ne le donne à personne, même pas à un ami</div></div>
+      <div class="check-item" data-id="c2"><div class="check-box">✓</div><div class="check-text">Je me connecte avec MON compte, pas avec celui de mes parents</div></div>
+      <div class="check-item" data-id="c3"><div class="check-box">✓</div><div class="check-text">Je me déconnecte quand j'utilise un ordinateur du collège ou du CDI</div></div>
+    </div>
+
+    <div class="check-group">
+      <div class="check-group-title">Chaque soir</div>
+      <div class="check-item" data-id="c4"><div class="check-box">✓</div><div class="check-text">Je regarde mon emploi du temps du lendemain : cours annulé, changement de salle, semaine A ou B</div></div>
+      <div class="check-item" data-id="c5"><div class="check-box">✓</div><div class="check-text">Je vérifie le travail à faire dans le cahier de textes et je le note dans mon agenda</div></div>
+      <div class="check-item" data-id="c6"><div class="check-box">✓</div><div class="check-text">Je coche « J'ai terminé » quand un devoir est fait</div></div>
+      <div class="check-item" data-id="c7"><div class="check-box">✓</div><div class="check-text">Je lis mes nouveaux messages</div></div>
+    </div>
+
+    <div class="check-group">
+      <div class="check-group-title">Suivre ma scolarité</div>
+      <div class="check-item" data-id="c8"><div class="check-box">✓</div><div class="check-text">Je sais lire les couleurs des compétences : rouge, jaune, vert clair, vert foncé</div></div>
+      <div class="check-item" data-id="c9"><div class="check-box">✓</div><div class="check-text">Je sais où trouver mes absences, mes retards et mes punitions (onglet Vie scolaire)</div></div>
+      <div class="check-item" data-id="c10"><div class="check-box">✓</div><div class="check-text">Si j'ai un problème avec PRONOTE, je demande à la vie scolaire ou à mon professeur principal</div></div>
+    </div>
+
+    <div class="finish-row">
+      <div class="finish-hint" id="checkCount">0 / 10 cochées</div>
+      <button class="btn" id="finishBtn" onclick="finishChapter()">Terminer le chapitre</button>
+    </div>
+  </div>
+
+</div>
+<script>
+  const CHECK_KEY = 'hvc_ch4_checks_v1';
+  function loadChecks() {
+    try { const r = localStorage.getItem(CHECK_KEY); return r ? JSON.parse(r) : {}; }
+    catch(e) { return {}; }
+  }
+  function saveChecks(c) { try { localStorage.setItem(CHECK_KEY, JSON.stringify(c)); } catch(e) {} }
+  let checks = loadChecks();
+  function renderChecks() {
+    document.querySelectorAll('.check-item').forEach(el => {
+      el.classList.toggle('checked', !!checks[el.getAttribute('data-id')]);
+    });
+    const total = document.querySelectorAll('.check-item').length;
+    const done = Object.values(checks).filter(Boolean).length;
+    document.getElementById('checkCount').textContent = done + ' / ' + total + ' cochées';
+  }
+  document.querySelectorAll('.check-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const id = el.getAttribute('data-id');
+      checks[id] = !checks[id];
+      saveChecks(checks);
+      renderChecks();
+    });
+  });
+  function finishChapter() { window.location.href = 'index.html?done=4'; }
+  renderChecks();
+</script>
+</body>
+</html>
