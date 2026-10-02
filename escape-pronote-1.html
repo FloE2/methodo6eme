@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le cartable perdu – Escape game PRONOTE 6B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --paper:#FFFFFF;
+  --line-fine:#E4E0F5;
+  --line-strong:#C7BFEA;
+  --margin:#E2504C;
+  --ink:#1F3FAE;
+  --green:#1E8A4C;
+  --text:#24263A;
+  --muted:#5D6078;
+  --card:#FFFFFFEE;
+  --slot:#F3F1FB;
+  --shadow:0 2px 0 #C7BFEA;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#1C2622; --line-fine:#26332E; --line-strong:#33443D;
+    --margin:#F07A70; --ink:#9FB4FF; --green:#6FD39A;
+    --text:#ECEFEA; --muted:#A9B3AD; --card:#1C2622EE; --slot:#26332E; --shadow:0 2px 0 #33443D;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1C2622; --line-fine:#26332E; --line-strong:#33443D;
+  --margin:#F07A70; --ink:#9FB4FF; --green:#6FD39A;
+  --text:#ECEFEA; --muted:#A9B3AD; --card:#1C2622EE; --slot:#26332E; --shadow:0 2px 0 #33443D;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0;color:var(--text);
+  font-family:"Atkinson Hyperlegible",Verdana,Arial,sans-serif;font-size:1.05rem;line-height:1.55;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(90deg,transparent calc(3.2rem - 1px),var(--margin) calc(3.2rem - 1px),var(--margin) calc(3.2rem + 1px),transparent calc(3.2rem + 1px)),
+    repeating-linear-gradient(0deg,var(--line-strong) 0 1px,transparent 1px 32px),
+    repeating-linear-gradient(0deg,var(--line-fine) 0 1px,transparent 1px 8px),
+    repeating-linear-gradient(90deg,var(--line-fine) 0 1px,transparent 1px 32px);
+  min-height:100vh;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:1.5rem 1rem 3rem 4.2rem}
+h1,h2,.hand{font-family:"Kalam","Comic Sans MS",cursive;color:var(--ink);font-weight:700}
+h1{font-size:clamp(2rem,6vw,2.9rem);line-height:1.1;margin:.5rem 0 .4rem;transform:rotate(-1deg)}
+h2{font-size:1.45rem;margin:0;line-height:1.2}
+p{margin:.4rem 0}
+.intro{max-width:38rem}
+.muted{color:var(--muted)}
+
+/* Barre d'état */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;align-items:center;
+  background:var(--card);backdrop-filter:blur(4px);padding:.5rem .8rem;border:2px solid var(--line-strong);border-radius:10px;margin:1rem 0}
+.bar strong{font-family:"Kalam",cursive;font-size:1.3rem;color:var(--ink)}
+.bar .team{flex:1;min-width:8rem}
+
+/* Le mot à reconstituer : élément central */
+.word{display:flex;gap:.5rem;justify-content:flex-start;margin:1.2rem 0 .3rem;flex-wrap:wrap}
+.slot{width:3.1rem;height:3.6rem;border:2px dashed var(--line-strong);border-radius:8px;background:var(--slot);
+  display:grid;place-items:center;font-family:"Kalam",cursive;font-size:2.2rem;color:var(--ink);font-weight:700}
+.slot.on{border-style:solid;border-color:var(--ink);animation:ink .5s ease-out}
+@keyframes ink{from{transform:scale(.6) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+
+/* Missions */
+.missions{display:grid;gap:1.1rem;margin-top:1.4rem}
+.mission{position:relative;background:var(--card);border:2px solid var(--line-strong);border-radius:4px 14px 6px 12px;padding:1rem 1.1rem;box-shadow:var(--shadow)}
+.mission .num{position:absolute;left:-3.55rem;top:.7rem;width:2.4rem;text-align:center;font-family:"Kalam",cursive;font-size:1.8rem;color:var(--margin);font-weight:700}
+.mission .theme{font-size:.95rem;color:var(--muted);margin:0 0 .2rem}
+.mission.done{border-color:var(--green)}
+.mission.done h2::after{content:" ✓";color:var(--green)}
+.row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem}
+input[type=text]{flex:1;min-width:9rem;font:inherit;padding:.55rem .7rem;border:2px solid var(--line-strong);border-radius:8px;background:var(--paper);color:var(--text)}
+button{font:inherit;font-weight:700;cursor:pointer;border-radius:8px;padding:.55rem 1rem;border:2px solid var(--ink);background:var(--ink);color:var(--paper)}
+button.ghost{background:transparent;color:var(--ink)}
+button:focus-visible,input:focus-visible,label:focus-within{outline:3px solid var(--margin);outline-offset:2px}
+.choices{display:grid;gap:.4rem;margin-top:.6rem}
+.choices label{display:flex;gap:.5rem;align-items:center;padding:.4rem .6rem;border:2px solid var(--line-strong);border-radius:8px;cursor:pointer}
+.vf{display:grid;gap:.45rem;margin-top:.6rem}
+.vf .item{display:flex;gap:.6rem;align-items:flex-start;justify-content:space-between;border-bottom:1px dashed var(--line-strong);padding-bottom:.4rem}
+.vf .toggle{display:flex;gap:.3rem;flex-shrink:0}
+.vf .toggle button{padding:.25rem .6rem}
+.vf .toggle button[aria-pressed="false"]{background:transparent;color:var(--ink)}
+.msg{min-height:1.4rem;margin-top:.5rem;font-weight:700}
+.msg.ok{color:var(--green)} .msg.ko{color:var(--margin)}
+.hint{margin-top:.5rem;padding:.5rem .7rem;border-left:4px solid var(--margin);background:var(--slot);border-radius:0 8px 8px 0}
+.final{margin-top:2rem;padding:1.2rem;border:3px solid var(--ink);border-radius:14px;background:var(--card)}
+.final[hidden],.win[hidden],.bar[hidden],.missions[hidden],[hidden]{display:none !important}
+.win{text-align:left}
+.win h2{font-size:2rem}
+.win ol{padding-left:1.3rem}
+.start{margin:1.2rem 0}
+.foot{margin-top:2.5rem;font-size:.9rem}
+@media (max-width:520px){
+  .wrap{padding-left:3.8rem;padding-right:.7rem}
+  .slot{width:2.5rem;height:3rem;font-size:1.8rem}
+}
+@media (prefers-reduced-motion:reduce){.slot.on{animation:none}h1{transform:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <a href="chapitre-4.html" style="display:inline-block;margin-bottom:.4rem;color:var(--muted);text-decoration:none;font-size:.9rem">← Retour au chapitre 4</a>
+  <h1>Le cartable perdu de la 6B</h1>
+  <div class="intro">
+    <p>Hier soir, Léo n'a pas préparé son cartable. Ce matin, il ne sait plus quels cours il a, ni ce qu'il devait faire, ni même dans quelle salle aller. Heureusement, tout se trouve dans PRONOTE.</p>
+    <p>Votre équipe doit réussir les 6 missions. Chaque mission réussie vous donne une lettre. Avec les 6 lettres, vous trouverez l'objet qui aurait sauvé Léo.</p>
+    <p class="muted">Ordinateur 1 : PRONOTE, connecté avec le compte d'un élève du groupe. Ordinateur 2 : cette page. Les missions se font dans l'ordre que vous voulez. Un coup de pouce ajoute 2 minutes à votre temps.</p>
+    <p class="muted">Les rôles : le pilote cherche dans PRONOTE (ordinateur 1), le copilote l'aide et lit ce qu'il voit, le secrétaire tape les réponses ici (ordinateur 2), le lecteur lit les missions à voix haute, le gardien du temps décide des coups de pouce. Changez de rôle toutes les 2 missions.</p>
+  </div>
+
+  <div class="start" id="startBox">
+    <div class="row">
+      <input type="text" id="teamInput" placeholder="Nom de votre équipe" aria-label="Nom de votre équipe" maxlength="30">
+      <button id="startBtn">Lancer le chrono</button>
+    </div>
+  </div>
+
+  <div class="bar" id="bar" hidden>
+    <span class="team">Équipe : <strong id="teamName"></strong></span>
+    <span>Temps : <strong id="clock">00:00</strong></span>
+    <span>Coups de pouce : <strong id="hintCount">0</strong></span>
+  </div>
+
+  <div class="word" id="word" aria-label="Lettres trouvées"></div>
+  <p class="muted" id="wordInfo">0 lettre sur 6</p>
+
+  <section class="missions" id="missions"></section>
+
+  <section class="final" id="final" hidden>
+    <h2>Le code final</h2>
+    <p>Vous avez les 6 lettres. Remettez-les dans le bon ordre : quel objet aurait sauvé Léo ?</p>
+    <div class="row">
+      <input type="text" id="finalInput" placeholder="Votre réponse" aria-label="Code final">
+      <button id="finalBtn">Valider le code final</button>
+    </div>
+    <div class="msg" id="finalMsg" role="status"></div>
+  </section>
+
+  <section class="final win" id="win" hidden>
+    <h2>Cartable retrouvé !</h2>
+    <p>Bravo <strong id="winTeam"></strong> : vous avez terminé en <strong id="winTime"></strong>.</p>
+    <p>La réponse était l'AGENDA. PRONOTE et ton agenda papier vont ensemble : PRONOTE t'informe, ton agenda t'aide à t'organiser chaque soir.</p>
+    <p class="hand" style="font-size:1.3rem">En attendant les autres équipes, discutez de ces questions :</p>
+    <ol>
+      <li>Pourquoi faut-il choisir un mot de passe difficile à deviner ?</li>
+      <li>Si je n'ai pas de téléphone portable, est-ce que je peux consulter PRONOTE ?</li>
+      <li>À quelle fréquence faut-il se connecter à PRONOTE ?</li>
+      <li>À qui demander si j'ai un problème avec PRONOTE ?</li>
+    </ol>
+    <p>Levez la main pour montrer cet écran au professeur.</p>
+  </section>
+
+  <p class="foot muted">Collège Yves du Manoir – 6B – Heure de vie de classe. <button class="ghost" id="resetBtn" style="padding:.2rem .6rem;font-size:.85rem">Recommencer</button></p>
+</main>
+
+<script>
+/* ===== Réponses (encodées pour ne pas apparaître en clair) ===== */
+const enc = s => btoa(unescape(encodeURIComponent(s)));
+const norm = s => (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+
+const MISSIONS = [
+  {
+    id:"edt", theme:"Mon emploi du temps", title:"Où est la musique ?", letter:"A",
+    text:"Ouvre ton emploi du temps dans PRONOTE. Le mardi, de 11h10 à 12h05, tu as Éducation musicale. Dans quelle salle ? Tape son numéro.",
+    type:"text", answers:["MDk=","OQ=="], /* 09, 9 */
+    hint:"Clique sur l'onglet Mes données puis Emploi du temps, ou regarde l'emploi du temps sur la page d'accueil. Change de jour avec les flèches."
+  },
+  {
+    id:"devoirs", theme:"Mes devoirs", title:"Le travail à faire", letter:"G",
+    text:"M. Eude a déposé un travail à faire appelé « Mission cartable ». Trouve-le et lis-le : quel numéro de page est demandé ? Ensuite, coche « J'ai terminé » sur ce travail.",
+    type:"text", answers:["NDI="], /* 42 */
+    hint:"Regarde le cadre « Travail à faire pour les prochains jours » sur la page d'accueil, ou l'onglet Cahier de textes."
+  },
+  {
+    id:"competences", theme:"Mes notes et compétences", title:"Les couleurs des compétences", letter:"E",
+    text:"En 6e, beaucoup de travaux sont évalués avec des pastilles de couleur. Va voir tes dernières évaluations. Quelle couleur veut dire « maîtrise fragile » ?",
+    type:"choice", options:["Rouge","Jaune","Vert clair","Vert foncé"], answers:["SkFVTkU="], /* JAUNE */
+    hint:"Ouvre l'onglet Compétences. Passe la souris sur une pastille ou cherche la légende des couleurs."
+  },
+  {
+    id:"viescolaire", theme:"Mes absences et retards", title:"La vie scolaire", letter:"N",
+    text:"Tu arrives en retard un matin. Dans quel onglet de PRONOTE pourras-tu ensuite vérifier ce retard ?",
+    type:"choice", options:["Mes données","Cahier de textes","Vie scolaire","Communication"], answers:["VklFU0NPTEFJUkU="], /* VIESCOLAIRE */
+    hint:"Clique sur chaque onglet du menu du haut et cherche le mot « Retards »."
+  },
+  {
+    id:"carnet", theme:"Carnet, observations et punitions", title:"Vrai ou faux ?", letter:"D",
+    text:"Lis chaque phrase et choisis Vrai ou Faux. Toutes les phrases doivent être justes pour gagner la lettre.",
+    type:"vf",
+    items:[
+      "Un oubli de matériel ou une observation d'un professeur peut être noté dans PRONOTE.",
+      "Mes parents peuvent voir sur leur propre compte les punitions qui me sont données.",
+      "Si je ne me connecte pas à PRONOTE, mes parents ne seront pas au courant.",
+      "Je peux effacer moi-même une punition de mon compte."
+    ],
+    answers:["VlZGRg=="], /* VVFF */
+    hint:"Souviens-toi : tes parents ont leur propre compte, avec leur propre identifiant. Et un élève ne peut rien modifier de ce que les adultes écrivent."
+  },
+  {
+    id:"messagerie", theme:"Ma messagerie", title:"Un message pour toi", letter:"A",
+    text:"M. Eude a envoyé un message à tous les élèves de la 6B. Ouvre ta messagerie, lis le message : quel est le mot secret ?",
+    type:"text", answers:["T1JHQU5JU0U="], /* ORGANISE */
+    hint:"Cherche l'icône en forme d'avion en papier en haut à droite, ou l'onglet Communication puis Discussions."
+  }
+];
+const FINAL = "QUdFTkRB"; /* AGENDA */
+const ORDER = ["edt","devoirs","competences","viescolaire","carnet","messagerie"];
+
+/* ===== État ===== */
+const KEY = "escape-pronote-6b-v1";
+let state = {team:"", start:0, hints:[], done:[], finished:0, vf:{}};
+try{ const s = JSON.parse(localStorage.getItem(KEY)); if(s && typeof s==="object") state = Object.assign(state,s); }catch(e){}
+const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} };
+
+const $ = id => document.getElementById(id);
+const check = (val, list) => list.includes(enc(norm(val)));
+
+/* ===== Rendu des missions ===== */
+function renderMissions(){
+  const box = $("missions"); box.innerHTML = "";
+  MISSIONS.forEach((m,i)=>{
+    const el = document.createElement("article");
+    el.className = "mission" + (state.done.includes(m.id) ? " done":"");
+    el.id = "m-"+m.id;
+    let body = `<span class="num" aria-hidden="true">${i+1}</span>
+      <p class="theme">${m.theme}</p><h2>${m.title}</h2><p>${m.text}</p>`;
+    if(m.type==="text"){
+      body += `<div class="row"><input type="text" aria-label="Réponse mission ${i+1}" id="in-${m.id}" placeholder="Votre réponse"><button data-check="${m.id}">Vérifier</button></div>`;
+    } else if(m.type==="choice"){
+      body += `<div class="choices" role="radiogroup">` + m.options.map(o=>`<label><input type="radio" name="r-${m.id}" value="${o}"> ${o}</label>`).join("") + `</div>
+      <div class="row"><button data-check="${m.id}">Vérifier</button></div>`;
+    } else if(m.type==="vf"){
+      const cur = state.vf[m.id] || [];
+      body += `<div class="vf">` + m.items.map((t,k)=>`<div class="item"><span>${t}</span><span class="toggle">
+        <button type="button" data-vf="${m.id}" data-k="${k}" data-v="V" aria-pressed="${cur[k]==="V"}">Vrai</button>
+        <button type="button" data-vf="${m.id}" data-k="${k}" data-v="F" aria-pressed="${cur[k]==="F"}">Faux</button></span></div>`).join("") + `</div>
+      <div class="row"><button data-check="${m.id}">Vérifier</button></div>`;
+    }
+    const hinted = state.hints.includes(m.id);
+    body += `<div class="row"><button class="ghost" data-hint="${m.id}" ${hinted?"hidden":""}>Coup de pouce (+2 min)</button></div>
+      <div class="hint" id="h-${m.id}" ${hinted?"":"hidden"}>${m.hint}</div>
+      <div class="msg ${state.done.includes(m.id)?"ok":""}" id="msg-${m.id}" role="status">${state.done.includes(m.id)?"Mission réussie : vous gagnez la lettre "+m.letter+".":""}</div>`;
+    el.innerHTML = body;
+    box.appendChild(el);
+  });
+}
+
+/* Les lettres s'affichent dans un ordre mélangé pour que le mot soit à reconstituer */
+const DISPLAY = ["carnet","edt","messagerie","viescolaire","competences","devoirs"]; /* D A A N E G */
+function renderWordShuffled(){
+  const w = $("word"); w.innerHTML = "";
+  DISPLAY.forEach(id=>{
+    const m = MISSIONS.find(x=>x.id===id);
+    const on = state.done.includes(id);
+    const d = document.createElement("div");
+    d.className = "slot" + (on?" on":"");
+    d.textContent = on ? m.letter : "";
+    w.appendChild(d);
+  });
+  $("wordInfo").textContent = state.done.length + (state.done.length>1?" lettres":" lettre") + " sur 6" + (state.done.length===6?" : remettez-les dans le bon ordre !":"");
+  $("final").hidden = !(state.done.length===6 && !state.finished);
+}
+
+function fmt(ms){ const s=Math.max(0,Math.floor(ms/1000)); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
+function elapsed(){ if(!state.start) return 0; const end = state.finished || Date.now(); return end - state.start + state.hints.length*120000; }
+function tick(){ $("clock").textContent = fmt(elapsed()); $("hintCount").textContent = state.hints.length; }
+
+function renderAll(){
+  const started = !!state.start;
+  $("startBox").hidden = started;
+  $("bar").hidden = !started;
+  $("missions").hidden = !started;
+  $("teamName").textContent = state.team;
+  renderMissions(); renderWordShuffled(); tick();
+  if(state.finished){ showWin(); }
+}
+
+function showWin(){
+  $("final").hidden = true; $("win").hidden = false;
+  $("winTeam").textContent = state.team; $("winTime").textContent = fmt(elapsed());
+}
+
+/* ===== Événements ===== */
+$("startBtn").addEventListener("click",()=>{
+  const t = $("teamInput").value.trim();
+  if(!t){ $("teamInput").focus(); $("teamInput").placeholder="Écrivez d'abord le nom de l'équipe"; return; }
+  state.team = t; state.start = Date.now(); save(); renderAll();
+});
+
+document.addEventListener("click",e=>{
+  const vfBtn = e.target.closest("[data-vf]");
+  if(vfBtn){
+    const id = vfBtn.dataset.vf, k = +vfBtn.dataset.k;
+    state.vf[id] = state.vf[id] || []; state.vf[id][k] = vfBtn.dataset.v; save();
+    vfBtn.parentElement.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed", b===vfBtn));
+    return;
+  }
+  const hBtn = e.target.closest("[data-hint]");
+  if(hBtn){
+    const id = hBtn.dataset.hint;
+    if(!state.hints.includes(id)){ state.hints.push(id); save(); }
+    $("h-"+id).hidden = false; hBtn.hidden = true; tick(); return;
+  }
+  const cBtn = e.target.closest("[data-check]");
+  if(cBtn){
+    const id = cBtn.dataset.check, m = MISSIONS.find(x=>x.id===id), msg = $("msg-"+id);
+    if(state.done.includes(id)) return;
+    let val = "";
+    if(m.type==="text") val = $("in-"+id).value;
+    else if(m.type==="choice"){ const r = document.querySelector(`input[name="r-${id}"]:checked`); val = r ? r.value : ""; }
+    else if(m.type==="vf"){ const cur = state.vf[id]||[]; if(cur.filter(Boolean).length < m.items.length){ msg.className="msg ko"; msg.textContent="Répondez aux 4 phrases avant de vérifier."; return; } val = cur.join(""); }
+    if(!norm(val)){ msg.className="msg ko"; msg.textContent="Écrivez ou choisissez une réponse avant de vérifier."; return; }
+    if(check(val, m.answers)){
+      state.done.push(id); save();
+      $("m-"+id).classList.add("done");
+      msg.className="msg ok"; msg.textContent="Mission réussie : vous gagnez la lettre "+m.letter+".";
+      renderWordShuffled();
+    } else {
+      msg.className="msg ko"; msg.textContent="Ce n'est pas la bonne réponse. Retournez vérifier dans PRONOTE.";
+    }
+  }
+});
+
+$("finalBtn").addEventListener("click",()=>{
+  const v = $("finalInput").value;
+  if(enc(norm(v))===FINAL){ state.finished = Date.now(); save(); showWin(); tick(); }
+  else { $("finalMsg").className="msg ko"; $("finalMsg").textContent="Pas encore. Indice : c'est un objet qui reste toujours dans ton cartable."; }
+});
+
+$("resetBtn").addEventListener("click",()=>{
+  if(confirm("Effacer la progression de cette équipe et recommencer ?")){
+    state = {team:"", start:0, hints:[], done:[], finished:0, vf:{}}; save();
+    $("win").hidden = true; $("teamInput").value=""; renderAll(); window.scrollTo(0,0);
+  }
+});
+
+setInterval(()=>{ if(state.start && !state.finished) tick(); },1000);
+renderAll();
+</script>
+</body>
+</html>
