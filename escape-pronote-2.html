@@ -98,6 +98,15 @@ button:focus-visible,input:focus-visible,label:focus-within{outline:3px solid va
 .win h2{font-size:2rem}
 .win ol{padding-left:1.3rem}
 .start{margin:1.2rem 0}
+.pop{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:1rem;background:rgba(20,20,40,.55)}
+.pop[hidden]{display:none !important}
+.pop-box{max-width:24rem;width:100%;background:var(--paper);border:3px solid var(--margin);border-radius:16px;padding:1.4rem 1.3rem;text-align:center;animation:shake .45s}
+.pop-box h2{color:var(--margin);font-size:1.7rem;margin:.2rem 0 .5rem}
+.pop-big{font-size:3rem;line-height:1}
+.pop-box button{margin-top:.8rem;border-color:var(--margin);background:var(--margin)}
+.pop-box button:disabled{opacity:.55;cursor:wait}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+@media (prefers-reduced-motion:reduce){.pop-box{animation:none}}
 .foot{margin-top:2.5rem;font-size:.9rem}
 @media (max-width:520px){
   .wrap{padding-left:3.8rem;padding-right:.7rem}
@@ -113,7 +122,7 @@ button:focus-visible,input:focus-visible,label:focus-within{outline:3px solid va
   <div class="intro">
     <p>Inès a été malade toute une semaine. Lundi, elle revient au collège sans savoir ce qu'elle a manqué : les devoirs, les messages, son absence, ses nouveaux cours. Aidez-la à tout rattraper grâce à PRONOTE.</p>
     <p>Votre équipe doit réussir les 7 missions. Chaque mission réussie vous donne une lettre. Avec les 7 lettres, vous trouverez l'outil qui a sauvé Inès.</p>
-    <p class="muted">Ordinateur 1 : PRONOTE, connecté avec le compte d'un élève du groupe. Ordinateur 2 : cette page. Les missions se font dans l'ordre que vous voulez. Un coup de pouce ajoute 2 minutes à votre temps.</p>
+    <p class="muted">Ordinateur 1 : PRONOTE, connecté avec le compte d'un élève du groupe. Ordinateur 2 : cette page. Les missions se font dans l'ordre que vous voulez. Un coup de pouce ajoute 30 secondes à votre temps. Attention : chaque mauvaise réponse ajoute 10 secondes. Cherchez avant de répondre !</p>
     <p class="muted">Les rôles : le pilote cherche dans PRONOTE (ordinateur 1), le copilote l'aide et lit ce qu'il voit, le secrétaire tape les réponses ici (ordinateur 2), le lecteur lit les missions à voix haute, le gardien du temps décide des coups de pouce. Changez de rôle toutes les 2 missions.</p>
   </div>
 
@@ -128,6 +137,7 @@ button:focus-visible,input:focus-visible,label:focus-within{outline:3px solid va
     <span class="team">Équipe : <strong id="teamName"></strong></span>
     <span>Temps : <strong id="clock">00:00</strong></span>
     <span>Coups de pouce : <strong id="hintCount">0</strong></span>
+    <span>Erreurs : <strong id="wrongCount">0</strong></span>
   </div>
 
   <div class="word" id="word" aria-label="Lettres trouvées"></div>
@@ -147,7 +157,8 @@ button:focus-visible,input:focus-visible,label:focus-within{outline:3px solid va
 
   <section class="final win" id="win" hidden>
     <h2>Inès a tout rattrapé !</h2>
-    <p>Bravo <strong id="winTeam"></strong> : vous avez terminé en <strong id="winTime"></strong>.</p>
+    <p>Bravo <strong id="winTeam"></strong> : vous avez terminé en <strong id="winTime"></strong>, pénalités comprises.</p>
+    <p class="muted" id="winDetail"></p>
     <p>La réponse était PRONOTE. Quand on est absent, on y retrouve les devoirs, les cours et les messages. Mais il faut aussi demander à un camarade ou au professeur, et recopier dans son agenda.</p>
     <p class="hand" style="font-size:1.3rem">En attendant les autres équipes, discutez de ces questions :</p>
     <ol>
@@ -158,6 +169,16 @@ button:focus-visible,input:focus-visible,label:focus-within{outline:3px solid va
     </ol>
     <p>Levez la main pour montrer cet écran au professeur.</p>
   </section>
+
+  <div class="pop" id="pop" hidden role="alertdialog" aria-modal="true" aria-labelledby="popTitle">
+    <div class="pop-box">
+      <div class="pop-big" aria-hidden="true">⏱️</div>
+      <h2 id="popTitle">+10 secondes de pénalité !</h2>
+      <p>Ce n'est pas la bonne réponse. Répondre au hasard vous fait perdre du temps.</p>
+      <p><strong>Retournez chercher dans PRONOTE avant de répondre.</strong></p>
+      <button id="popBtn" disabled>Compris (3)</button>
+    </div>
+  </div>
 
   <p class="foot muted">Collège Yves du Manoir – 6B – Heure de vie de classe. <button class="ghost" id="resetBtn" style="padding:.2rem .6rem;font-size:.85rem">Recommencer</button></p>
 </main>
@@ -223,7 +244,7 @@ const ORDER = ["edt","devoirs","competences","viescolaire","carnet","messagerie"
 
 /* ===== État ===== */
 const KEY = "escape-pronote-6b-v2";
-let state = {team:"", start:0, hints:[], done:[], finished:0, vf:{}};
+let state = {team:"", start:0, hints:[], done:[], finished:0, vf:{}, wrong:0};
 try{ const s = JSON.parse(localStorage.getItem(KEY)); if(s && typeof s==="object") state = Object.assign(state,s); }catch(e){}
 const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} };
 
@@ -252,7 +273,7 @@ function renderMissions(){
       <div class="row"><button data-check="${m.id}">Vérifier</button></div>`;
     }
     const hinted = state.hints.includes(m.id);
-    body += `<div class="row"><button class="ghost" data-hint="${m.id}" ${hinted?"hidden":""}>Coup de pouce (+2 min)</button></div>
+    body += `<div class="row"><button class="ghost" data-hint="${m.id}" ${hinted?"hidden":""}>Coup de pouce (+30 s)</button></div>
       <div class="hint" id="h-${m.id}" ${hinted?"":"hidden"}>${m.hint}</div>
       <div class="msg ${state.done.includes(m.id)?"ok":""}" id="msg-${m.id}" role="status">${state.done.includes(m.id)?"Mission réussie : vous gagnez la lettre "+m.letter+".":""}</div>`;
     el.innerHTML = body;
@@ -277,8 +298,8 @@ function renderWordShuffled(){
 }
 
 function fmt(ms){ const s=Math.max(0,Math.floor(ms/1000)); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
-function elapsed(){ if(!state.start) return 0; const end = state.finished || Date.now(); return end - state.start + state.hints.length*120000; }
-function tick(){ $("clock").textContent = fmt(elapsed()); $("hintCount").textContent = state.hints.length; }
+function elapsed(){ if(!state.start) return 0; const end = state.finished || Date.now(); return end - state.start + state.hints.length*30000 + (state.wrong||0)*10000; }
+function tick(){ $("clock").textContent = fmt(elapsed()); $("hintCount").textContent = state.hints.length; $("wrongCount").textContent = state.wrong||0; }
 
 function renderAll(){
   const started = !!state.start;
@@ -293,6 +314,8 @@ function renderAll(){
 function showWin(){
   $("final").hidden = true; $("win").hidden = false;
   $("winTeam").textContent = state.team; $("winTime").textContent = fmt(elapsed());
+  const w = state.wrong||0, h = state.hints.length;
+  $("winDetail").textContent = "Dont " + w + " erreur" + (w>1?"s":"") + " (+" + (w*10) + " s) et " + h + " coup" + (h>1?"s":"") + " de pouce (+" + (h*30) + " s).";
 }
 
 /* ===== Événements ===== */
@@ -331,7 +354,7 @@ document.addEventListener("click",e=>{
       msg.className="msg ok"; msg.textContent="Mission réussie : vous gagnez la lettre "+m.letter+".";
       renderWordShuffled();
     } else {
-      msg.className="msg ko"; msg.textContent="Ce n'est pas la bonne réponse. Retournez vérifier dans PRONOTE.";
+      msg.className="msg ko"; msg.textContent="Ce n'est pas la bonne réponse. Retournez vérifier dans PRONOTE."; penalty();
     }
   }
 });
@@ -339,15 +362,24 @@ document.addEventListener("click",e=>{
 $("finalBtn").addEventListener("click",()=>{
   const v = $("finalInput").value;
   if(enc(norm(v))===FINAL){ state.finished = Date.now(); save(); showWin(); tick(); }
-  else { $("finalMsg").className="msg ko"; $("finalMsg").textContent="Pas encore. Indice : c'est le nom de l'outil que vous utilisez depuis le début."; }
+  else { penalty(); $("finalMsg").className="msg ko"; $("finalMsg").textContent="Pas encore. Indice : c'est le nom de l'outil que vous utilisez depuis le début."; }
 });
 
 $("resetBtn").addEventListener("click",()=>{
   if(confirm("Effacer la progression de cette équipe et recommencer ?")){
-    state = {team:"", start:0, hints:[], done:[], finished:0, vf:{}}; save();
+    state = {team:"", start:0, hints:[], done:[], finished:0, vf:{}, wrong:0}; save();
     $("win").hidden = true; $("teamInput").value=""; renderAll(); window.scrollTo(0,0);
   }
 });
+
+function penalty(){
+  state.wrong = (state.wrong||0) + 1; save(); tick();
+  const pop = $("pop"), btn = $("popBtn");
+  pop.hidden = false; btn.disabled = true;
+  let n = 3; btn.textContent = "Compris (" + n + ")";
+  const t = setInterval(()=>{ n--; if(n<=0){ clearInterval(t); btn.disabled=false; btn.textContent="Compris"; btn.focus(); } else btn.textContent = "Compris (" + n + ")"; },1000);
+}
+$("popBtn").addEventListener("click",()=>{ $("pop").hidden = true; });
 
 setInterval(()=>{ if(state.start && !state.finished) tick(); },1000);
 renderAll();
