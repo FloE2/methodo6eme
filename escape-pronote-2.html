@@ -191,9 +191,9 @@ const norm = s => (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUppe
 const MISSIONS = [
   {
     id:"edt", theme:"Mon emploi du temps", title:"Semaine A ou semaine B ?", letter:"P",
-    text:"Certains cours n'ont lieu qu'une semaine sur deux. Dans ton emploi du temps PRONOTE, trouve une semaine A : quel cours as-tu le mardi de 14h35 à 15h30 ?",
-    type:"choice", options:["Arts plastiques","Histoire-géographie","Anglais","Pas de cours"], answers:["SElTVE9JUkVHRU9HUkFQSElF"],
-    hint:"Change de semaine avec les flèches au-dessus de l'emploi du temps. Le numéro de la semaine et la lettre A ou B sont indiqués en haut."
+    text:"Certains cours n'ont lieu qu'une semaine sur deux, et parfois un cours est déplacé. Dans ton emploi du temps PRONOTE, trouve une semaine A : quel cours as-tu le mardi de 14h35 à 15h30 ?",
+    type:"choice", options:["Arts plastiques","Histoire-géographie","Physique-chimie","Pas de cours"], answers:["SElTVE9JUkVHRU9HUkFQSElF","UEhZU0lRVUVDSElNSUU="],
+    hint:"Change de semaine avec les flèches au-dessus de l'emploi du temps. Le numéro de la semaine et la lettre A ou B sont indiqués en haut. Un cours déplacé apparaît avec une mention spéciale."
   },
   {
     id:"devoirs", theme:"Mes devoirs", title:"Le travail manqué", letter:"R",
