@@ -343,8 +343,10 @@
   .pss-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .pss-b { border: 1.5px solid #dbe4ee; border-radius: 9px; padding: 7px 9px; break-inside: avoid; }
   .pss-b h2 { font-size: 11.5pt; font-weight: 700; color: #fff; background: var(--blue); border-radius: 6px; padding: 4px 8px; margin-bottom: 5px; }
-  .pss-kw { display: flex; gap: 6px; font-size: 9.7pt; line-height: 1.28; padding: 2.5px 0; border-bottom: 1px dotted #dbe4ee; }
+  .pss-kw { display: flex; gap: 6px; font-size: 9.2pt; line-height: 1.22; padding: 1.6px 0; border-bottom: 1px dotted #dbe4ee; }
   .pss-kw:last-child { border-bottom: none; }
+  .pss-kw .n { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: #172431; color: #fff; font-size: 7.5pt; line-height: 14px; text-align: center; margin-right: 3px; }
+  .pss-when { font-size: 8.4pt; line-height: 1.25; color: #c0392b; background: #fff4f2; border-radius: 5px; padding: 1.5px 6px; margin-bottom: 2px; }
   .pss-kw .k { font-weight: 700; white-space: nowrap; }
   .pss-kw .m { color: #5c6b7a; }
   .pss-kw .m::before { content: '→ '; color: var(--amber); font-weight: 700; }
@@ -1044,9 +1046,23 @@ function buildPrintQ() {
     </div>
     <div class="ps-consigne">${CONSIGNE}</div>${secs}`;
 }
+/* dans la fiche imprimée, les étapes numérotées apparaissent dans l'ordre 1, 2, 3… */
+function stepOrder(nodes) {
+  const st = nodes.filter(n => n.step).sort((a, b) => a.step - b.step);
+  let k = 0;
+  return nodes.map(n => n.step ? st[k++] : n);
+}
 function buildPrintS() {
-  const blocks = MAPS.map((m, i) => `<div class="pss-b"><h2>${m.icon} ${i + 1}. ${m.title}</h2>${
-    m.nodes.map(n => `<div class="pss-kw"><span class="k">${n.ic} ${n.t}</span><span class="m">${n.mini}</span>${n.mem ? `<span class="v">${memStr(n.mem)}</span>` : ''}</div>`).join('')
+  const WHEN = [
+    "Pour chaque leçon, dans l'ordre : 1 → 2 → 3.",
+    "Quand j'apprends ma leçon et quand je fabrique ma fiche.",
+    "Avant chaque séance de travail, je vérifie ces 5 points.",
+    "Le lendemain de la leçon. Dans l'ordre : 1 → 5.",
+    "",
+    "À chaque révision (carte 5). Je commence au 1.",
+  ];
+  const blocks = MAPS.map((m, i) => `<div class="pss-b"><h2>${m.icon} ${i + 1}. ${m.title}</h2>${WHEN[i] ? `<div class="pss-when">🗓️ <b>Quand ?</b> ${WHEN[i]}</div>` : ''}${
+    stepOrder(m.nodes).map(n => `<div class="pss-kw"><span class="k">${n.step ? `<span class="n">${n.step}</span>` : ''}${n.ic} ${n.t}</span><span class="m">${n.mini}</span>${n.mem ? `<span class="v">${memStr(n.mem)}</span>` : ''}</div>`).join('')
   }</div>`).join('');
   document.getElementById('printS').innerHTML = `
     <div class="ps-head">
