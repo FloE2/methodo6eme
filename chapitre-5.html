@@ -191,6 +191,44 @@
   .mem-legend { display: flex; gap: 2vw; justify-content: center; flex-wrap: wrap; margin-top: 4vh; }
   .mem-legend div { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2vh 2vw; text-align: center; font-size: clamp(18px, 1.7vw, 30px); }
   .mem-legend div span { display: block; font-size: 2em; }
+  /* ---- 6 mises en page différentes ---- */
+  .map.L-stairs { background-color: #fff; background-image: radial-gradient(#d5dde6 1.3px, transparent 1.4px); background-size: 22px 22px; }
+  .map.L-doors  { background: #f6f2ff; }
+  .map.L-plant  { background: #eef9f1; }
+  .map.L-road   { background: #fff8e8; }
+  .map.L-cycle  { background: #fff2f1; }
+  .map.L-card   { background-color: #fbfdff; background-image: linear-gradient(#e3ecf7 1px, transparent 1px), linear-gradient(90deg, #e3ecf7 1px, transparent 1px); background-size: 26px 26px; }
+  .m-title { position: absolute; z-index: 3; font-family: var(--marker); text-transform: uppercase; color: var(--ink); font-size: clamp(20px, 2.1vw, 40px); line-height: 1.05; white-space: nowrap; }
+  .m-title .ti { margin-right: .3em; }
+  .m-title svg { position: absolute; left: -2%; bottom: -.45em; width: 104%; height: .5em; overflow: visible; }
+  .m-title svg path { fill: none; stroke-width: 4; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+  .m-free { position: absolute; transform: translate(-50%, -50%); z-index: 3; font-family: var(--hand); color: var(--ink); text-align: center; pointer-events: none; }
+  .m-node .shape svg path { fill: var(--tint, none); }
+  .m-node.c0 { --tint: #e8efff; } .m-node.c1 { --tint: #ffe9e7; } .m-node.c2 { --tint: #fff4d2; }
+  .m-node .shape.oval-s svg path { fill: none; }
+  .m-node .shape.sign-s svg path, .m-node .shape.bubble-s svg path { fill: #fff; }
+  .L-cycle .m-node .shape.bubble-s svg path { fill: var(--tint); }
+  /* plante : tout en vert */
+  .L-plant .m-node path { stroke: #3a9a5b !important; fill: #ddf3e3; }
+  .L-plant .m-node .lab, .L-plant .m-node .mini { color: #23703f !important; }
+  .L-plant .m-node.flower path { stroke: #e8b730 !important; fill: #fff4d2; }
+  .L-plant .m-node.flower .lab, .L-plant .m-node.flower .mini { color: #a77a06 !important; }
+  /* portes : nœud sans forme */
+  .L-doors .m-node.indoor .oval { padding: .3em .4em; }
+  .L-doors .m-node.indoor .ni { font-size: clamp(30px, 3vw, 54px); }
+  /* post-it */
+  .m-node.postit { background: #fff3a8; padding: 1.4vh 1vw 1.2vh; box-shadow: 0 8px 18px rgba(23,36,49,.13); border-radius: 3px; min-width: 13%; }
+  .m-node.postit.c0 { background: #dbe8ff; } .m-node.postit.c1 { background: #ffdcdc; } .m-node.postit.c2 { background: #fff1a6; }
+  .m-node.postit::before { content: ''; position: absolute; top: -10px; left: 50%; width: 46%; height: 20px; transform: translateX(-50%) rotate(-3deg); background: rgba(255,255,255,.65); border: 1px solid rgba(0,0,0,.05); }
+  .m-node.postit .oval { padding: .2em .3em; }
+  .m-node.postit.tilt-a { animation-name: popA; } .m-node.postit.tilt-b { animation-name: popB; }
+  @keyframes popA { from { opacity: 0; transform: translate(-50%, -50%) rotate(-3deg) scale(.6); } to { opacity: 1; transform: translate(-50%, -50%) rotate(-3deg); } }
+  @keyframes popB { from { opacity: 0; transform: translate(-50%, -50%) rotate(2.5deg) scale(.6); } to { opacity: 1; transform: translate(-50%, -50%) rotate(2.5deg); } }
+  .m-node.postit:hover, .m-node.postit.on { box-shadow: 0 14px 26px rgba(23,36,49,.22); }
+  .mcard.k0 { background: #fff; background-image: radial-gradient(#dfe5ec 1.2px, transparent 1.3px); background-size: 16px 16px; }
+  .mcard.k1 { background: #f6f2ff; } .mcard.k2 { background: #eef9f1; } .mcard.k3 { background: #fff8e8; } .mcard.k4 { background: #fff2f1; }
+  .mcard.k5 { background-color: #fbfdff; background-image: linear-gradient(#e6eef8 1px, transparent 1px), linear-gradient(90deg, #e6eef8 1px, transparent 1px); background-size: 16px 16px; }
+  .mcard .mc-shape { font-family: var(--hand); font-size: 14px; color: var(--text-secondary); margin: -6px 0 8px; }
   /* cartes de la grille, assorties */
   .mcard .mc-t { font-family: var(--marker); font-weight: 400; text-transform: uppercase; font-size: 15px; letter-spacing: .02em; }
   .mcard:nth-child(3n+1) .mc-t { color: var(--hb); } .mcard:nth-child(3n+2) .mc-t { color: var(--hr); } .mcard:nth-child(3n) .mc-t { color: #c9960f; }
@@ -567,10 +605,11 @@ const memStr = m => (m || '').split('').map(c => MEM[c]).join(' ');
 document.getElementById('sIntro').innerHTML = SYNTH_INTRO;
 document.getElementById('sLegend').innerHTML = 'Les mémoires utilisées : ' + LEGEND;
 document.getElementById('sCards').innerHTML = MAPS.map((m, i) => `
-  <div class="mcard" onclick="openProj('s', ${i + 1})">
+  <div class="mcard k${i}" onclick="openProj('s', ${i + 1})">
     <div class="mc-n">Carte ${i + 1}</div>
     <div class="mc-ic">${m.icon}</div>
     <div class="mc-t">${m.title}</div>
+    <div class="mc-shape">${['🪜 l\'escalier', '🚪 les portes', '🪴 la plante', '🛣️ la route', '🎯 la cible', '📝 la fiche annotée'][i]}</div>
     <div class="chips">${m.nodes.map(n => `<span class="chip">${n.ic} ${n.t}</span>`).join('')}</div>
     <div class="mc-go">Ouvrir la carte mentale →</div>
   </div>`).join('');
@@ -626,91 +665,258 @@ function buildQSlides() {
   });
   return slides;
 }
-/* ---------- Carte mentale dessinée ---------- */
+/* ================= 6 mises en page de cartes mentales ================= */
 const HC = ['#3d6fd9', '#e5534b', '#e8b730'];
+const INK = '#1d2747';
 const OVAL = 'M14,62 C4,30 40,6 70,8 C112,10 126,40 112,64 C98,86 40,92 18,74 C6,64 10,40 34,24';
-const CIRCLE = 'M50,6 C78,4 97,26 95,52 C93,80 70,96 46,94 C20,92 4,72 6,48 C8,24 26,8 54,9 M40,8 C70,2 99,22 97,50 C95,74 80,92 56,96';
+const SHAPES = {
+  oval: OVAL,
+  bubble: 'M63,6 C100,4 122,26 120,50 C118,76 92,92 60,90 C28,88 6,72 6,48 C6,22 30,6 66,7',
+  leaf: 'M4,48 C28,2 98,0 122,48 C98,94 28,94 4,48 Z',
+  sign: 'M6,10 C40,6 90,8 120,9 C122,40 121,70 119,88 C80,90 40,91 7,88 C5,60 5,35 6,10 Z',
+};
+const UNDER = 'M2,30 C30,10 60,26 100,14 C130,6 170,22 198,12';
 const SPARK = (x, y, c, s) => `<g transform="translate(${x} ${y}) scale(${s})" stroke="${c}" stroke-width="2.4" stroke-linecap="round"><path d="M0,-10V10M-10,0H10M-7,-7L7,7M-7,7L7,-7"/></g>`;
+const titleHTML = (m, x, y, color, align) => `<div class="m-title" style="left:${x}%;top:${y}%;${align === 'center' ? 'transform:translateX(-50%)' : ''}"><span class="ti">${m.icon}</span>${m.title}<svg viewBox="0 0 200 36" preserveAspectRatio="none"><path d="${UNDER}" stroke="${color}"/></svg></div>`;
 
-const PX = n => 50 + (n.x - 50) * .9, PY = n => 15 + (n.y - 9) * .86;
+/* Chaque mise en page : positions des mots-clés (%), forme, décor, flèches */
+const LAYOUTS = {
+  stairs: { name: "l'escalier",
+    pos: { piege: [15, 44], comp: [22, 77], mem: [46, 57], test: [70, 37], cle: [87, 21] },
+    shape: () => 'oval',
+    extra: m => titleHTML(m, 4, 5, HC[0]) + `<div class="m-free" style="left:37%;top:38%;font-size:clamp(14px,1.15vw,21px);color:#c0392b">je tourne en rond…</div>`,
+    draw(c) {
+      const { W, H, P, hand, nb } = c;
+      const steps = [[9, 35, 89, 1], [35, 57, 69, 2], [57, 83, 49, 0]];
+      steps.forEach(([a, b, t, ci]) => {
+        const [x0, y0] = P(a, t), [x1] = P(b, t);
+        c.deco += hand(`M${x0},${H + 10} L${x0},${y0} L${x1},${y0} L${x1},${H + 10}`, INK, 2.2, ['#ffe9e7', '#fff4d2', '#e8efff'][[1, 2, 0].indexOf(ci)] || '#fff');
+      });
+      /* boucle « relire » barrée */
+      const [lx, ly] = P(37, 27), r = Math.min(W, H) * .045;
+      c.deco += `<path d="M${lx - r},${ly} a${r},${r} 0 1,1 ${2 * r},0 a${r},${r} 0 1,1 ${-2 * r * .9},0 a${r * .8},${r * .8} 0 1,1 ${1.6 * r},0" fill="none" stroke="#e5534b" stroke-width="3" stroke-linecap="round"/>`;
+      c.deco += `<path d="M${lx - r * 1.3},${ly - r * 1.3} L${lx + r * 1.3},${ly + r * 1.3} M${lx + r * 1.3},${ly - r * 1.3} L${lx - r * 1.3},${ly + r * 1.3}" stroke="#e5534b" stroke-width="5" stroke-linecap="round"/>`;
+      c.arrowBox(nb('comp'), nb('mem'), HC[2], 1, 'puis');
+      c.arrowBox(nb('mem'), nb('test'), HC[0], 1, 'puis');
+      c.arrowBox(nb('test'), nb('cle'), HC[1], 0, 'je me demande');
+      c.arrowBox(nb('piege'), nb('comp'), '#3a9a5b', 1, 'à la place :', false, 140);
+    } },
+
+  doors: { name: 'les portes',
+    pos: { v: [20, 37], a: [50, 37], k: [80, 37], mix: [50, 86], pref: [84, 86] },
+    shape: n => ['v', 'a', 'k'].includes(n.id) ? 'none' : (n.id === 'pref' ? 'bubble' : 'oval'),
+    nodeClass: n => ['v', 'a', 'k'].includes(n.id) ? 'indoor' : '',
+    extra: m => titleHTML(m, 50, 3, '#8a63d2', 'center'),
+    draw(c) {
+      const { P, hand } = c;
+      [[20, 0], [50, 1], [80, 2]].forEach(([x, ci]) => {
+        const [x0, y0] = P(x - 11, 13), [x1, y1] = P(x + 11, 62), r = (x1 - x0) / 2;
+        const d = `M${x0},${y1} L${x0},${y0 + r} A${r},${r} 0 0 1 ${x1},${y0 + r} L${x1},${y1}`;
+        c.deco += hand(d + ' Z', HC[ci], 3.2, ['#e8efff', '#ffe9e7', '#fff4d2'][ci]);
+        const [kx, ky] = P(x + 7.5, 47);
+        c.deco += `<circle cx="${kx}" cy="${ky}" r="7" fill="${HC[ci]}"/><path d="M${x0 - 14},${y1} L${x1 + 14},${y1}" stroke="${INK}" stroke-width="3.5" stroke-linecap="round"/>`;
+      });
+      ['v', 'a', 'k'].forEach((id, i) => { const [x, y] = c.P([20, 50, 80][i], 64); c.arrowPts(x, y + 8, ...c.edgePt(c.nb('mix'), x, y), HC[i], i + 1, '', false, 999, true); });
+      c.arrowBox(c.nb('pref'), c.nb('mix'), '#e8b730', 0, 'sans oublier', true);
+      c.sparks([[.06, .2], [.94, .2], [.06, .7], [.55, .74], [.94, .62]]);
+    } },
+
+  plant: { name: 'la plante',
+    pos: { att: [50, 12], tel: [21, 31], lieu: [79, 31], pause: [22, 60], dodo: [78, 60] },
+    shape: n => n.id === 'att' ? 'bubble' : 'leaf',
+    nodeClass: n => n.id === 'att' ? 'flower' : '',
+    extra: m => `<div class="m-free" style="left:50%;top:89%;font-family:var(--marker);text-transform:uppercase;color:#fff;font-size:clamp(14px,1.35vw,26px);line-height:1.05">${m.icon} ${m.title}</div>`,
+    draw(c) {
+      const { P, hand, W, H } = c;
+      const G = '#3a9a5b';
+      const [sx, sy] = P(50, 79);
+      const [tx, ty] = P(50, 20);
+      c.deco += `<path d="M${sx},${sy} C${sx - 40},${sy - (sy - ty) * .35} ${sx + 40},${sy - (sy - ty) * .65} ${tx},${ty}" fill="none" stroke="${G}" stroke-width="9" stroke-linecap="round"/>`;
+      [['tel', 50, 38], ['lieu', 50, 36], ['pause', 50, 66], ['dodo', 50, 64]].forEach(([id, x, y]) => {
+        const [bx, by] = P(x, y), B = c.nb(id), [ex, ey] = c.edgePt(B, bx, by);
+        c.deco += `<path d="M${bx},${by} Q${(bx + ex) / 2},${Math.min(by, ey) - 30} ${ex},${ey}" fill="none" stroke="${G}" stroke-width="5" stroke-linecap="round"/>`;
+      });
+      const [p0x, p0y] = P(35, 78), [p1x] = P(65, 78), [q0x, q1y] = P(39, 99), [q1x] = P(61, 99);
+      c.deco += hand(`M${p0x},${p0y} L${p1x},${p0y} L${q1x},${q1y} L${q0x},${q1y} Z`, '#9c4a25', 3, '#d9774b');
+      c.deco += hand(`M${p0x - 12},${p0y - 14} L${p1x + 12},${p0y - 14} L${p1x + 12},${p0y + 6} L${p0x - 12},${p0y + 6} Z`, '#9c4a25', 3, '#c96a40');
+      c.arrowBox(c.nb('tel'), c.nb('att'), '#e5534b', 0, 'vole', true);
+      c.arrowBox(c.nb('lieu'), c.nb('att'), '#3a9a5b', 1, 'protège', true);
+      c.deco += `<text x="${P(8, 0)[0]}" y="${P(0, 92)[1]}" font-family="Patrick Hand" font-size="${Math.max(15, W * .013)}" fill="${G}">je grandis si…</text>`;
+      c.sparks([[.06, .1], [.94, .1], [.35, .5], [.65, .5], [.93, .9]]);
+    } },
+
+  road: { name: 'la route',
+    pos: { j0: [13, 60], j1: [38, 42], j3: [62, 62], veille: [87, 42], petit: [25, 24], oubli: [52, 15] },
+    shape: n => ['petit', 'oubli'].includes(n.id) ? 'oval' : 'sign',
+    extra: m => titleHTML(m, 4, 5, HC[2]),
+    draw(c) {
+      const { P, W, H } = c;
+      const pts = [[-3, 84], [13, 80], [38, 66], [62, 82], [87, 66], [104, 74]].map(([x, y]) => P(x, y));
+      let d = `M${pts[0][0]},${pts[0][1]}`;
+      for (let i = 1; i < pts.length; i++) { const [ax, ay] = pts[i - 1], [bx, by] = pts[i]; d += ` C${(ax + bx) / 2},${ay} ${(ax + bx) / 2},${by} ${bx},${by}`; }
+      c.deco += `<path d="${d}" fill="none" stroke="#c9cfd8" stroke-width="${Math.max(38, H * .07)}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="18 16"/>`;
+      ['j0', 'j1', 'j3', 'veille'].forEach((id, i) => {
+        const [px, py] = pts[i + 1], B = c.nb(id);
+        c.deco += `<path d="M${px},${py} L${B.x},${B.y + B.b + 6}" stroke="#8a6a3d" stroke-width="7" stroke-linecap="round"/>`;
+      });
+      /* mini courbe de l'oubli */
+      const [gx0, gy0] = P(64, 7), [gx1, gy1] = P(96, 31), gw = gx1 - gx0, gh = gy1 - gy0;
+      c.deco += `<path d="M${gx0},${gy0} L${gx0},${gy1} L${gx1},${gy1}" fill="none" stroke="${INK}" stroke-width="2.5" stroke-linecap="round"/>`;
+      const X = f => gx0 + gw * f, Y = f => gy1 - gh * f;
+      c.deco += `<path d="M${X(.02)},${Y(.95)} C${X(.08)},${Y(.4)} ${X(.14)},${Y(.3)} ${X(.22)},${Y(.28)} L${X(.22)},${Y(.9)} C${X(.3)},${Y(.6)} ${X(.4)},${Y(.55)} ${X(.5)},${Y(.52)} L${X(.5)},${Y(.92)} C${X(.62)},${Y(.78)} ${X(.75)},${Y(.74)} ${X(.98)},${Y(.72)}" fill="none" stroke="#e5534b" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+      const fs = Math.max(13, W * .011);
+      c.deco += `<text x="${X(.24)}" y="${Y(.98)}" font-family="Patrick Hand" font-size="${fs}" fill="#3a9a5b">↑ je révise</text><text x="${X(.98)}" y="${gy1 + fs + 2}" text-anchor="end" font-family="Patrick Hand" font-size="${fs}" fill="${INK}" opacity=".7">les jours →</text>`;
+      c.arrowPts(...c.edgePt(c.nb('oubli'), X(.15), Y(.5)), X(.0) - 6, Y(.5), HC[1], 1, '', false, 999, true);
+      c.deco += `<text x="${pts[4][0]}" y="${pts[4][1] + H * .13}" text-anchor="middle" font-family="Permanent Marker" font-size="${Math.max(14, W * .012)}" fill="${INK}">LE CONTRÔLE 🎉</text>`;
+      c.sparks([[.94, .5], [.5, .52], [.03, .4], [.75, .95], [.3, .95]]);
+    } },
+
+  cycle: { name: 'la cible et le cycle',
+    pos: null, /* calculées sur une ellipse */
+    shape: () => 'bubble',
+    extra: m => `<div class="m-free" style="left:50%;top:52%;font-family:var(--marker);text-transform:uppercase;font-size:clamp(13px,1.3vw,25px);line-height:1.05;width:min(12vw,18vh)"><span style="font-size:1.3em">${m.icon}</span><br>${m.title}</div>`,
+    draw(c) {
+      const { P, W, H } = c;
+      const [cx, cy] = P(50, 52), R = Math.min(W, H) * .2;
+      [[1, '#e5534b'], [.87, '#fff'], [.75, '#e5534b'], [.63, '#fff']].forEach(([f, col]) => { c.deco += `<circle cx="${cx}" cy="${cy}" r="${R * f}" fill="${col}" stroke="${INK}" stroke-width="2"/>`; });
+      const rx = W * .33, ry = H * .35, order = c.cycleIds;
+      for (let i = 0; i < order.length; i++) {
+        const a0 = c.angles[i], a1 = c.angles[(i + 1) % order.length] + (i === order.length - 1 ? 360 : 0);
+        const g = 19, pts = [];
+        for (let t = a0 + g; t <= a1 - g; t += 3) pts.push([cx + rx * Math.cos(t * Math.PI / 180), cy + ry * Math.sin(t * Math.PI / 180)]);
+        if (pts.length < 2) continue;
+        const d = 'M' + pts.map(p => p.join(',')).join(' L');
+        const [ex, ey] = pts[pts.length - 1], [px, py] = pts[pts.length - 2];
+        let tx = ex - px, ty = ey - py; const tl = Math.hypot(tx, ty); tx /= tl; ty /= tl;
+        c.arrows += `<path d="${d}" stroke="${HC[i % 3]}" stroke-width="9" opacity=".9" transform="translate(3 4)"/><path d="${d}" stroke="${INK}" stroke-width="3.6"/>` + c.head(ex, ey, tx, ty);
+      }
+      const mid = c.cycleMid;
+      c.deco += `<text x="${cx}" y="${cy + R + 34}" text-anchor="middle" font-family="Patrick Hand" font-size="${Math.max(15, W * .013)}" fill="${INK}" opacity=".7">↻ et je recommence !</text>`;
+      c.arrowBox(c.nb('muscle'), { x: cx + R * .72, y: cy - R * .72, a: 1, b: 1 }, HC[2], 1, 'pourquoi ça marche ?', true);
+      c.sparks([[.05, .08], [.95, .08], [.05, .55], [.95, .62]]);
+    } },
+
+  card: { name: 'la fiche annotée',
+    pos: { tit: [13, 20], kw: [13, 52], dos: [14, 84], choix: [87, 20], sch: [87, 84], forme: [87, 52] },
+    shape: () => 'none',
+    nodeClass: (n, k) => 'postit ' + (k % 2 ? 'tilt-b' : 'tilt-a'),
+    extra: m => `<div class="m-free" style="left:50%;top:21%;font-family:var(--marker);text-transform:uppercase;font-size:clamp(17px,1.7vw,32px);transform:translate(-50%,-50%) rotate(-1.5deg)">${m.icon} ${m.title}</div>`,
+    draw(c) {
+      const { P, W, H, hand } = c;
+      const [x0, y0] = P(30, 10), [x1, y1] = P(70, 92), fold = Math.min(W, H) * .07;
+      c.deco += `<g transform="rotate(-1.5 ${(x0 + x1) / 2} ${(y0 + y1) / 2})">`;
+      c.deco += `<path d="M${x0 + 6},${y0 + 8} L${x1 + 6},${y0 + 8} L${x1 + 6},${y1 + 8} L${x0 + 6},${y1 + 8} Z" fill="rgba(23,36,49,.08)"/>`;
+      c.deco += `<path d="M${x0},${y0} L${x1},${y0} L${x1},${y1 - fold} L${x1 - fold},${y1} L${x0},${y1} Z" fill="#fff" stroke="${INK}" stroke-width="2.5"/>`;
+      c.deco += `<path d="M${x1},${y1 - fold} L${x1 - fold},${y1 - fold} L${x1 - fold},${y1} Z" fill="#dbe8ff" stroke="${INK}" stroke-width="2.5"/>`;
+      c.deco += `<path d="M${x0},${P(0, 28)[1]} L${x1},${P(0, 28)[1]}" stroke="#e5534b" stroke-width="2"/>`;
+      const fs = Math.max(13, W * .0115);
+      const lines = ['🔑 mot-clé = définition', '🔑 mot-clé = définition', '📅 date importante', '⭐ règle à retenir'];
+      lines.forEach((t, i) => {
+        const y = P(0, 36 + i * 7)[1];
+        c.deco += `<path d="M${x0 + 18},${y + 6} L${x1 - 18},${y + 6}" stroke="#bcd0ea" stroke-width="1.5"/><text x="${x0 + 26}" y="${y}" font-family="Patrick Hand" font-size="${fs}" fill="#3d6fd9">${t}</text>`;
+      });
+      const [bx0, by0] = P(46, 66), [bx1, by1] = P(64, 84);
+      c.deco += hand(`M${bx0},${by0} L${bx1},${by0} L${bx1},${by1} L${bx0},${by1} Z`, '#e8b730', 2.5, '#fffaf0');
+      const mx = (bx0 + bx1) / 2, my = (by0 + by1) / 2, s = Math.min(bx1 - bx0, by1 - by0) * .22;
+      c.deco += `<circle cx="${mx - s * 1.3}" cy="${my}" r="${s * .7}" fill="none" stroke="#e5534b" stroke-width="2.5"/><path d="M${mx - s * .5},${my} L${mx + s * .7},${my}" stroke="${INK}" stroke-width="2.5"/><rect x="${mx + s * .8}" y="${my - s * .6}" width="${s * 1.2}" height="${s * 1.2}" fill="none" stroke="#3d6fd9" stroke-width="2.5"/>`;
+      c.deco += `<text x="${x0 + 26}" y="${P(0, 76)[1]}" font-family="Patrick Hand" font-size="${fs}" fill="${INK}" opacity=".55">mon schéma →</text></g>`;
+      const T = { tit: [36, 21], kw: [32, 42], dos: [68, 89], choix: [66, 32], sch: [64, 76], forme: [70.5, 50] };
+      Object.entries(T).forEach(([id, [x, y]], k) => { const [tx, ty] = P(x, y); c.arrowPts(...c.edgePt(c.nb(id), tx, ty), tx, ty, HC[k % 3], k, '', false, 999, true); });
+    } },
+};
+const MAP_LAYOUT = ['stairs', 'doors', 'plant', 'road', 'cycle', 'card'];
+
+function placeNodes(m, i) {
+  const L = LAYOUTS[MAP_LAYOUT[i]];
+  if (L.pos) return m.nodes.map(n => L.pos[n.id] || [n.x, n.y]);
+  /* cycle : les mots-clés autour d'une ellipse, sauf « muscle » dans le coin */
+  const ring = m.nodes.filter(n => n.id !== 'muscle');
+  const angs = ring.map((_, k) => -90 + k * 360 / ring.length);
+  L._angles = angs; L._ids = ring.map(n => n.id);
+  return m.nodes.map(n => {
+    if (n.id === 'muscle') return [88, 14];
+    const a = angs[ring.indexOf(n)] * Math.PI / 180;
+    return [50 + 33 * Math.cos(a), 52 + 35 * Math.sin(a)];
+  });
+}
+
 function mapHTML(m, i) {
-  const nodes = m.nodes.map((n, k) => `
-    <div class="m-node c${k % 3}" data-i="${k}" tabindex="0" style="left:${PX(n)}%;top:${PY(n)}%;animation-delay:${.08 * k + .1}s">
+  const key = MAP_LAYOUT[i], L = LAYOUTS[key], pos = placeNodes(m, i);
+  const nodes = m.nodes.map((n, k) => {
+    const sh = L.shape(n), [x, y] = pos[k];
+    const svg = sh === 'none' ? '' : `<svg viewBox="0 0 126 96" preserveAspectRatio="none"><path d="${SHAPES[sh]}"/></svg>`;
+    return `
+    <div class="m-node c${k % 3} ${L.nodeClass ? L.nodeClass(n, k) : ''}" data-i="${k}" data-x="${x}" data-y="${y}" tabindex="0" style="left:${x}%;top:${y}%;animation-delay:${.08 * k + .1}s">
       <div class="ni">${n.ic}</div>
-      <div class="oval"><svg viewBox="0 0 126 96" preserveAspectRatio="none"><path d="${OVAL}"/></svg>
-        <div class="lab">${n.t}</div></div>
+      <div class="oval shape ${sh}-s">${svg}<div class="lab">${n.t}</div></div>
       <div class="mini">${n.mini}</div>
       ${n.mem ? `<div class="mem">${memStr(n.mem)}</div>` : ''}
-    </div>`).join('');
+    </div>`;
+  }).join('');
   return `
     <div class="map-head"><div class="sl-kicker">Carte ${i + 1} / ${MAPS.length}</div>
       <div class="map-hint">✏️ Passe la souris ou clique sur un mot-clé pour le découvrir</div></div>
-    <div class="map" data-m="${i}">
+    <div class="map L-${key}" data-m="${i}">
       <svg class="deco"></svg><svg class="arrows"></svg>
-      <div class="m-center" style="left:${m.cx}%;top:${m.cy}%">
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${CIRCLE}"/></svg>
-        <span class="ci">${m.icon}</span><span class="ct">${m.title}</span></div>
+      ${L.extra(m)}
       <div class="lbls"></div>
       ${nodes}
       <div class="m-pop hidden"></div>
     </div>`;
 }
 
-/* Dessine flèches, mots de liaison et décor en pixels réels */
 function drawMap(map) {
-  const m = MAPS[+map.dataset.m], W = map.clientWidth, H = map.clientHeight;
+  const i = +map.dataset.m, m = MAPS[i], L = LAYOUTS[MAP_LAYOUT[i]], W = map.clientWidth, H = map.clientHeight;
   if (!W) return;
   const box = el => ({ x: el.offsetLeft, y: el.offsetTop, a: el.offsetWidth / 2, b: el.offsetHeight / 2 });
-  const C = map.querySelector('.m-center'), cb = box(C); cb.a *= .92; cb.b *= .92;
   const els = [...map.querySelectorAll('.m-node')];
+  const idx = {}; m.nodes.forEach((n, k) => idx[n.id] = k);
   const edge = (bx, dx, dy) => 1 / Math.sqrt((dx / bx.a) ** 2 + (dy / bx.b) ** 2);
-  let paths = '', lbls = ''; const lblBoxes = [];
-  const arrow = (A, B, color, k, label, dashed) => {
-    let dx = B.x - A.x, dy = B.y - A.y; const L = Math.hypot(dx, dy); dx /= L; dy /= L;
-    let s = edge(A, dx, dy) + 22, e = edge(B, dx, dy) + 22;
-    if (L - s - e < 60) { const sq = (60 - (L - s - e)) / 2; s = Math.max(edge(A, dx, dy) + 4, s - sq); e = Math.max(edge(B, dx, dy) - 6, e - sq); }
-    const gap = L - s - e; if (gap < 20) return;
-    const maxL = dashed ? 9999 : 190; if (gap > maxL) { s += (gap - maxL) * .45; e += (gap - maxL) * .55; }
-    const x1 = A.x + dx * s, y1 = A.y + dy * s, x2 = B.x - dx * e, y2 = B.y - dy * e;
-    const bend = (k % 2 ? 1 : -1) * Math.min(45, (L - s - e) * .2);
+  const lblBoxes = [];
+  const c = { W, H, deco: '', arrows: '', lbls: '', angles: L._angles, cycleIds: L._ids };
+  c.P = (x, y) => [x * W / 100, y * H / 100];
+  c.nb = id => box(els[idx[id]]);
+  c.hand = (d, stroke, w, fill) => `<path d="${d}" fill="${fill || 'none'}" stroke="${stroke}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${stroke}" stroke-width="${w * .6}" opacity=".45" transform="translate(2.5 2)" stroke-linecap="round"/>`;
+  c.head = (x, y, tx, ty) => { const h = 15, w = .55; return `<path d="M${x - h * (tx - w * ty)},${y - h * (ty + w * tx)} L${x},${y} L${x - h * (tx + w * ty)},${y - h * (ty - w * tx)}" stroke="${INK}" stroke-width="3.6"/>`; };
+  c.edgePt = (B, tx, ty) => { let dx = tx - B.x, dy = ty - B.y; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l; const e = edge(B, dx, dy) + 10; return [B.x + dx * e, B.y + dy * e]; };
+  c.arrowPts = (x1, y1, x2, y2, color, k, label, dashed, maxL, noShorten) => {
+    let dx = x2 - x1, dy = y2 - y1; const L0 = Math.hypot(dx, dy); if (L0 < 20) return; dx /= L0; dy /= L0;
+    const ml = maxL || (dashed ? 9999 : 200);
+    if (!noShorten && L0 > ml) { const cut = (L0 - ml) / 2; x1 += dx * cut; y1 += dy * cut; x2 -= dx * cut; y2 -= dy * cut; }
+    const len = Math.hypot(x2 - x1, y2 - y1);
+    const bend = (k % 2 ? 1 : -1) * Math.min(45, len * .2);
     const qx = (x1 + x2) / 2 - dy * bend, qy = (y1 + y2) / 2 + dx * bend;
     const d = `M${x1},${y1} Q${qx},${qy} ${x2},${y2}`;
     let tx = x2 - qx, ty = y2 - qy; const tl = Math.hypot(tx, ty); tx /= tl; ty /= tl;
-    const h = 15, w = .55;
-    const head = `M${x2 - h * (tx - w * ty)},${y2 - h * (ty + w * tx)} L${x2},${y2} L${x2 - h * (tx + w * ty)},${y2 - h * (ty - w * tx)}`;
-    if (dashed) {
-      paths += `<path d="${d}" stroke="${color}" stroke-width="3.5" stroke-dasharray="2 10"/>`;
-    } else {
-      paths += `<path d="${d}" stroke="${color}" stroke-width="9" opacity=".9" transform="translate(3 4)"/>`;
-      paths += `<path d="${d}" stroke="${'#1d2747'}" stroke-width="3.6"/><path d="${head}" stroke="#1d2747" stroke-width="3.6"/>`;
-    }
+    if (dashed) c.arrows += `<path d="${d}" stroke="${color}" stroke-width="3.5" stroke-dasharray="2 10"/>`;
+    else c.arrows += `<path d="${d}" stroke="${color}" stroke-width="9" opacity=".9" transform="translate(3 4)"/><path d="${d}" stroke="${INK}" stroke-width="3.6"/>` + c.head(x2, y2, tx, ty);
     if (label) {
       const mx = .25 * x1 + .5 * qx + .25 * x2, my = .25 * y1 + .5 * qy + .25 * y2;
       const o = 18 + Math.abs(dy) * label.length * 4.6 + Math.abs(dx) * 6;
-      const c1 = [mx - dy * o, my + dx * o], c2 = [mx + dy * o, my - dx * o];
-      const far = p => Math.hypot(p[0] - cb.x, p[1] - cb.y);
-      const [lx, ly] = dashed ? (far(c1) > far(c2) ? c1 : c2) : ((bend > 0) ? c1 : c2);
-      lbls += `<div class="m-lbl${dashed ? ' link' : ''}" style="left:${lx}px;top:${ly}px">${label}</div>`;
+      const [lx, ly] = bend > 0 ? [mx - dy * o, my + dx * o] : [mx + dy * o, my - dx * o];
+      c.lbls += `<div class="m-lbl${dashed ? ' link' : ''}" style="left:${lx}px;top:${ly}px">${label}</div>`;
       lblBoxes.push({ x: lx, y: ly, a: label.length * 4.5 + 6, b: 12 });
     }
   };
-  m.nodes.forEach((n, k) => { if (n.spoke !== null) arrow(cb, box(els[k]), HC[k % 3], k, n.spoke, false); });
-  const idx = {}; m.nodes.forEach((n, k) => idx[n.id] = k);
-  (m.links || []).forEach(([f, t, l], j) => arrow(box(els[idx[f]]), box(els[idx[t]]), '#e8b730', j + 1, l, true));
-  map.querySelector('svg.arrows').setAttribute('viewBox', `0 0 ${W} ${H}`);
-  map.querySelector('svg.arrows').innerHTML = paths;
-  map.querySelector('.lbls').innerHTML = lbls;
-
-  /* décor : coups de pinceau dans les coins + étoiles */
-  const sp = [[.33, .2, 0, 1], [.68, .26, 1, .8], [.05, .5, 2, 1.1], [.95, .52, 0, .9], [.36, .76, 2, .8], [.64, .7, 1, 1], [.22, .45, 1, .7], [.78, .45, 2, .7], [.5, .05, 1, .7], [.03, .1, 0, .8]];
-  const busy = [cb, ...els.map(box), ...lblBoxes];
-  const free = (x, y) => busy.every(b => Math.abs(x - b.x) > b.a + 22 || Math.abs(y - b.y) > b.b + 22);
-  let deco = sp.filter(([x, y]) => free(x * W, y * H)).map(([x, y, c, s]) => SPARK(x * W, y * H, HC[c], s)).join('');
-  deco += `<path d="M${W - 150},${-10} C${W - 120},${40} ${W - 60},${-5} ${W + 10},${55} M${W - 40},${95} C${W - 20},${75} ${W},${85} ${W + 20},${70}" stroke="${HC[2]}" stroke-width="22" stroke-linecap="round" fill="none" opacity=".9"/>`;
-  deco += `<path d="M-20,${H - 80} L80,${H - 55} M-20,${H - 50} L110,${H - 18} M-10,${H - 18} L80,${H + 8}" stroke="${HC[0]}" stroke-width="15" stroke-linecap="round" fill="none" opacity=".85"/>`;
-  deco += `<path d="M${W - 90},${H - 105} L${W - 10},${H - 112} M${W - 80},${H - 70} L${W - 15},${H - 40} M${W - 105},${H - 35} L${W - 85},${H + 10}" stroke="${HC[1]}" stroke-width="9" stroke-linecap="round" fill="none" opacity=".85"/>`;
-  map.querySelector('svg.deco').setAttribute('viewBox', `0 0 ${W} ${H}`);
-  map.querySelector('svg.deco').innerHTML = deco;
+  c.arrowBox = (A, B, color, k, label, dashed, maxL) => {
+    let dx = B.x - A.x, dy = B.y - A.y; const l = Math.hypot(dx, dy); dx /= l; dy /= l;
+    let s = edge(A, dx, dy) + 16, e = edge(B, dx, dy) + 16;
+    if (l - s - e < 40) { s -= 10; e -= 10; }
+    c.arrowPts(A.x + dx * s, A.y + dy * s, B.x - dx * e, B.y - dy * e, color, k, label, dashed, maxL);
+  };
+  c.sparks = list => {
+    const busy = [...els.map(box), ...lblBoxes];
+    const free = (x, y) => busy.every(b => Math.abs(x - b.x) > b.a + 22 || Math.abs(y - b.y) > b.b + 22);
+    list.forEach(([x, y], j) => { if (free(x * W, y * H)) c.deco += SPARK(x * W, y * H, HC[j % 3], .7 + (j % 3) * .2); });
+  };
+  c.corners = () => {
+    c.deco += `<path d="M${W - 150},${-10} C${W - 120},${40} ${W - 60},${-5} ${W + 10},${55} M${W - 40},${95} C${W - 20},${75} ${W},${85} ${W + 20},${70}" stroke="${HC[2]}" stroke-width="22" stroke-linecap="round" fill="none" opacity=".9"/>`;
+    c.deco += `<path d="M${W - 90},${H - 105} L${W - 10},${H - 112} M${W - 80},${H - 70} L${W - 15},${H - 40}" stroke="${HC[1]}" stroke-width="9" stroke-linecap="round" fill="none" opacity=".85"/>`;
+  };
+  L.draw(c);
+  if (MAP_LAYOUT[i] === 'stairs') c.sparks([[.06, .2], [.33, .2], [.68, .12], [.94, .55], [.04, .9], [.9, .8]]);
+  ['deco', 'arrows'].forEach(k => { const s = map.querySelector('svg.' + k); s.setAttribute('viewBox', `0 0 ${W} ${H}`); s.innerHTML = c[k]; });
+  map.querySelector('.lbls').innerHTML = c.lbls;
 }
 
 function initMaps(root) {
@@ -720,14 +926,14 @@ function initMaps(root) {
     if (document.fonts) document.fonts.ready.then(() => drawMap(map));
     let pinned = null;
     const show = el => {
-      const k = +el.dataset.i, n = m.nodes[k];
+      const k = +el.dataset.i, n = m.nodes[k], nx = +el.dataset.x, ny = +el.dataset.y;
       const mem = n.mem ? `<div class="pm">${n.mem.split('').map(c => MEM[c] + ' ' + MEM_NAME[c]).join(' · ')}</div>` : '';
       pop.innerHTML = `<div class="pt">${n.ic} ${n.t}</div>${n.d}${mem}`;
       pop.style.setProperty('--pc', HC[k % 3]);
       pop.classList.remove('hidden');
       const H = map.clientHeight, top = el.offsetTop, h = el.offsetHeight;
-      pop.style.left = Math.max(19, Math.min(81, PX(n))) + '%';
-      if (PY(n) > 50) { pop.style.top = ''; pop.style.bottom = (H - top + h / 2 + 14) + 'px'; }
+      pop.style.left = Math.max(19, Math.min(81, nx)) + '%';
+      if (ny > 50) { pop.style.top = ''; pop.style.bottom = (H - top + h / 2 + 14) + 'px'; }
       else { pop.style.bottom = ''; pop.style.top = (top + h / 2 + 14) + 'px'; }
       map.querySelectorAll('.m-node').forEach(x => x.classList.toggle('on', x === el));
     };
