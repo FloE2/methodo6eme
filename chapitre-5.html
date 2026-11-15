@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapitre 5 · Apprendre une leçon — Heure Bleue 6ème B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #eef3f8;
+    --surface: #ffffff;
+    --border: #dbe4ee;
+    --border-light: #e9eff5;
+    --text-primary: #172431;
+    --text-secondary: #5c6b7a;
+    --text-muted: #a2afba;
+    --blue: #2d6ca8;
+    --blue-light: #e5eff9;
+    --amber: #d98e2b;
+    --amber-light: #fbf1e2;
+    --green: #1d9e75;
+    --green-light: #e8f5ef;
+    --red: #c0392b;
+    --font: 'DM Sans', 'DejaVu Sans', sans-serif;
+    --mono: 'DM Mono', 'DejaVu Sans Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background-color: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
+    color: var(--text-muted); text-decoration: none; margin-bottom: 1.5rem;
+  }
+  .back-link:hover { color: var(--blue); }
+
+  .chapter-head {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 26px; margin-bottom: 1.75rem;
+  }
+  .chapter-head .badge {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--blue); margin-bottom: 8px;
+  }
+  .chapter-head h1 { font-size: 26px; font-weight: 500; margin-bottom: 10px; }
+  .chapter-head p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+  .mode-note {
+    margin-top: 14px; background: var(--amber-light); color: #8a5c14;
+    border-radius: 8px; padding: 10px 14px; font-size: 12.5px; line-height: 1.5;
+  }
+
+  .section-lbl {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-muted);
+    display: flex; align-items: center; gap: 10px; margin: 2rem 0 1rem;
+  }
+  .section-lbl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ACTIONS */
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1rem; }
+  .act-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font); font-size: 13px; font-weight: 500;
+    background: var(--surface); color: var(--blue);
+    border: 1.5px solid var(--blue); border-radius: 9px;
+    padding: 9px 16px; cursor: pointer; text-decoration: none;
+    transition: background .15s, color .15s;
+  }
+  .act-btn:hover { background: var(--blue); color: #fff; }
+  .act-btn.primary { background: var(--blue); color: #fff; }
+  .act-btn.primary:hover { background: #235682; }
+
+  /* QUESTIONNAIRE */
+  .q-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px 24px; margin-bottom: 12px;
+  }
+  .q-card h3 { font-size: 16px; font-weight: 500; margin-bottom: 12px; }
+  .q-card h3 .n { font-family: var(--mono); font-size: 11px; color: var(--blue); margin-right: 8px; }
+  .q-card ol { padding-left: 22px; }
+  .q-card li { font-size: 14px; line-height: 1.5; margin-bottom: 8px; color: var(--text-primary); }
+  .q-card li::marker { font-family: var(--mono); color: var(--text-muted); font-size: 12px; }
+  .q-checks { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 6px; font-size: 13px; color: var(--text-secondary); }
+
+  .consigne {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--blue); border-radius: 0 10px 10px 0;
+    padding: 14px 18px; font-size: 14px; color: var(--text-secondary);
+    line-height: 1.55; margin-bottom: 14px;
+  }
+  .consigne strong { color: var(--text-primary); }
+
+  /* SYNTHESE : grille de cartes */
+  .s-intro {
+    background: var(--blue-light); border-radius: 14px; padding: 18px 22px;
+    margin-bottom: 12px; font-size: 14.5px; line-height: 1.6;
+  }
+  .s-intro strong { color: var(--blue); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; padding: 0 4px; }
+  .legend b { color: var(--text-primary); font-weight: 500; }
+  .reveal-box {
+    background: var(--surface); border: 1.5px dashed var(--border);
+    border-radius: 14px; padding: 26px; text-align: center;
+  }
+  .reveal-box p { font-size: 13.5px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.5; }
+
+  .mcards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 720px) { .mcards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 460px) { .mcards { grid-template-columns: 1fr; } }
+  .mcard {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 16px 14px; cursor: pointer; display: flex; flex-direction: column;
+    transition: box-shadow .2s, transform .2s, border-color .2s;
+  }
+  .mcard:hover { box-shadow: 0 10px 26px rgba(23,36,49,0.09); transform: translateY(-2px); border-color: var(--blue); }
+  .mcard .mc-n { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--blue); }
+  .mcard .mc-ic { font-size: 30px; margin: 6px 0 4px; }
+  .mcard .mc-t { font-size: 15.5px; font-weight: 700; line-height: 1.25; margin-bottom: 10px; }
+  .mcard .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+  .mcard .chip { font-size: 11.5px; background: var(--amber-light); color: #8a5c14; border-radius: 6px; padding: 3px 7px; }
+  .mcard .mc-go { margin-top: auto; font-size: 12.5px; font-weight: 700; color: var(--blue); }
+
+  /* CARTE MENTALE — style « dessiné à la main » (polices incluses dans /fonts, OFL) */
+  @font-face { font-family: 'Patrick Hand'; src: url('fonts/patrick-hand.woff2') format('woff2'); font-display: swap; }
+  @font-face { font-family: 'Permanent Marker'; src: url('fonts/permanent-marker.woff2') format('woff2'); font-display: swap; }
+  :root { --hb: #3d6fd9; --hr: #e5534b; --hy: #e8b730; --ink: #1d2747; --hand: 'Patrick Hand', 'Comic Sans MS', cursive; --marker: 'Permanent Marker', 'Patrick Hand', cursive; }
+  .slide.map-slide { max-width: 1500px; }
+  .map-head { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 1.2vh; }
+  .map-head .sl-kicker { margin: 0; }
+  .map-hint { font-family: var(--hand); font-size: clamp(15px, 1.2vw, 21px); color: var(--text-muted); }
+  .map {
+    position: relative; width: 100%; height: calc(100vh - 215px); min-height: 460px;
+    background: #fff; border-radius: 30px; box-shadow: 0 18px 50px rgba(23,36,49,.10); overflow: hidden;
+  }
+  .map > svg.deco, .map > svg.arrows { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .map .arrows path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .m-lbl {
+    position: absolute; transform: translate(-50%, -50%) rotate(-4deg); white-space: nowrap;
+    font-family: var(--hand); font-size: clamp(14px, 1.15vw, 21px); color: var(--ink); opacity: .75;
+    pointer-events: none; z-index: 2;
+  }
+  .m-lbl.link { color: #b5850f; opacity: 1; }
+  .m-center {
+    position: absolute; transform: translate(-50%, -50%); z-index: 3;
+    --cs: min(22vw, 36vh); width: var(--cs); height: var(--cs); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; padding: 6%;
+  }
+  .m-center svg { position: absolute; inset: -4%; width: 108%; height: 108%; overflow: visible; }
+  .m-center svg path { fill: none; stroke: var(--hb); stroke-width: 3; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+  .m-center .ci { font-size: calc(var(--cs) * .2); line-height: 1; margin-bottom: .2em; position: relative; }
+  .m-center .ct { font-family: var(--marker); text-transform: uppercase; color: var(--ink); font-size: calc(var(--cs) * .1); line-height: 1.08; position: relative; }
+  .m-node {
+    position: absolute; transform: translate(-50%, -50%); text-align: center; z-index: 4;
+    max-width: 22%; cursor: pointer; opacity: 0; animation: pop .4s ease forwards;
+  }
+  .m-node .oval { position: relative; display: inline-block; padding: .7em 1.4em .65em; transition: transform .2s; }
+  .m-node .oval svg { position: absolute; inset: -6% -5%; width: 110%; height: 112%; overflow: visible; }
+  .m-node .oval svg path { fill: none; stroke-width: 2.6; stroke-linecap: round; vector-effect: non-scaling-stroke; transition: stroke-width .2s; }
+  .m-node .lab { position: relative; font-family: var(--marker); text-transform: uppercase; font-size: clamp(14px, 1.35vw, 25px); line-height: 1.1; letter-spacing: .02em; }
+  @media (max-width: 1400px) { .m-node .lab { font-size: 1.2vw; } .m-node .mini { font-size: 1.15vw; } }
+  .m-node .ni { font-size: clamp(22px, 2vw, 36px); line-height: 1; margin-bottom: .1em; }
+  .m-node .mini { font-family: var(--hand); font-size: clamp(15px, 1.25vw, 23px); line-height: 1.15; margin-top: .25em; }
+  .m-node .mem { font-size: clamp(13px, 1vw, 18px); margin-top: .2em; letter-spacing: .15em; }
+  .m-node.c0 .lab, .m-node.c0 .mini { color: var(--hb); } .m-node.c0 path { stroke: var(--hb); }
+  .m-node.c1 .lab, .m-node.c1 .mini { color: var(--hr); } .m-node.c1 path { stroke: var(--hr); }
+  .m-node.c2 .lab, .m-node.c2 .mini { color: #c9960f; } .m-node.c2 path { stroke: var(--hy); }
+  .m-node:hover .oval, .m-node.on .oval { transform: scale(1.08) rotate(-2deg); }
+  .m-node:hover path, .m-node.on path { stroke-width: 4.5; }
+  @keyframes pop { from { opacity: 0; transform: translate(-50%, -50%) scale(.6); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+  .m-pop {
+    position: absolute; z-index: 10; width: min(34%, 470px); transform: translateX(-50%) rotate(-1deg);
+    background: #fff; color: var(--ink); border: 2.5px solid var(--ink); border-radius: 18px;
+    padding: 1.6vh 1.3vw; font-size: clamp(15px, 1.3vw, 23px); line-height: 1.4;
+    box-shadow: 7px 7px 0 var(--pc, var(--hy)); pointer-events: none;
+  }
+  .m-pop .pt { font-family: var(--marker); text-transform: uppercase; color: var(--pc, var(--hb)); margin-bottom: .3em; font-size: 1.05em; }
+  .m-pop .pm { margin-top: .5em; font-size: .82em; color: var(--text-secondary); }
+  .mem-legend { display: flex; gap: 2vw; justify-content: center; flex-wrap: wrap; margin-top: 4vh; }
+  .mem-legend div { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2vh 2vw; text-align: center; font-size: clamp(18px, 1.7vw, 30px); }
+  .mem-legend div span { display: block; font-size: 2em; }
+  /* cartes de la grille, assorties */
+  .mcard .mc-t { font-family: var(--marker); font-weight: 400; text-transform: uppercase; font-size: 15px; letter-spacing: .02em; }
+  .mcard:nth-child(3n+1) .mc-t { color: var(--hb); } .mcard:nth-child(3n+2) .mc-t { color: var(--hr); } .mcard:nth-child(3n) .mc-t { color: #c9960f; }
+
+  /* RECAP CHECKLIST */
+  .recap-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; }
+  .recap-card h2 { font-size: 18px; font-weight: 500; margin-bottom: 4px; }
+  .recap-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 18px; }
+  .check-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border-light); cursor: pointer; user-select: none; }
+  .check-item:last-child { border-bottom: none; }
+  .check-box { width: 19px; height: 19px; border-radius: 5px; border: 1.5px solid var(--border); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent; transition: background .15s, border-color .15s; }
+  .check-item.checked .check-box { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .check-item.checked .check-text { color: var(--text-muted); text-decoration: line-through; }
+  .check-text { font-size: 13.5px; line-height: 1.4; }
+  .finish-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.75rem; gap: 12px; flex-wrap: wrap; }
+  .finish-hint { font-size: 12px; color: var(--text-muted); }
+  .btn { font-family: var(--font); font-size: 13.5px; font-weight: 500; background: var(--blue); color: #fff; border: none; border-radius: 9px; padding: 11px 22px; cursor: pointer; }
+  .btn:hover { background: #235682; }
+
+  .hidden { display: none !important; }
+  .foot { text-align: center; padding: 2.5rem 0 0; font-family: var(--mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.05em; }
+
+  /* ============ PROJECTION ============ */
+  .proj {
+    position: fixed; inset: 0; z-index: 2000; background: var(--bg);
+    display: flex; flex-direction: column;
+  }
+  .proj-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 12px 24px; background: var(--surface); border-bottom: 1px solid var(--border);
+    font-family: var(--mono); font-size: 13px; color: var(--text-muted);
+  }
+  .proj-bar .pb-l { letter-spacing: .08em; text-transform: uppercase; }
+  .proj-bar .pb-r { display: flex; gap: 8px; align-items: center; }
+  .pbtn {
+    font-family: var(--font); font-size: 14px; font-weight: 500; cursor: pointer;
+    background: var(--surface); color: var(--text-secondary);
+    border: 1px solid var(--border); border-radius: 8px; padding: 7px 14px;
+  }
+  .pbtn:hover { border-color: var(--blue); color: var(--blue); }
+  .timer { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--blue); min-width: 84px; text-align: center; }
+  .timer.ending { color: var(--red); }
+
+  .proj-stage { flex: 1; display: flex; justify-content: center; padding: 3vh 5vw; overflow: auto; }
+  .slide { width: 100%; max-width: 1400px; margin: auto 0; }
+  .slide.s .sl-title { font-size: clamp(28px, 3.2vw, 56px); margin-bottom: 2vh; }
+  .slide.s .sl-lead { font-size: clamp(18px, 1.7vw, 30px); margin-bottom: 2.5vh; }
+  .slide.s .sl-points li { font-size: clamp(19px, 1.85vw, 32px); padding: 1vh 0 1vh 1.6em; }
+  .slide.s .sl-tip { font-size: clamp(18px, 1.7vw, 29px); margin-top: 2.5vh; }
+  .slide.s .c-x { font-size: clamp(16px, 1.45vw, 26px); }
+  .sl-kicker { font-family: var(--mono); font-size: clamp(14px, 1.3vw, 22px); letter-spacing: .1em; text-transform: uppercase; color: var(--blue); margin-bottom: 1.2vh; }
+  .sl-title { font-size: clamp(32px, 4vw, 68px); font-weight: 700; line-height: 1.1; margin-bottom: 3vh; letter-spacing: -0.01em; }
+  .sl-sub { font-size: clamp(20px, 2vw, 34px); color: var(--text-secondary); line-height: 1.45; }
+  .sl-q { list-style: none; counter-reset: none; }
+  .sl-q li { font-size: clamp(22px, 2.2vw, 38px); line-height: 1.35; padding: 1.5vh 0 1.5vh 3.2em; position: relative; border-bottom: 1px solid var(--border); }
+  .sl-q li:last-child { border-bottom: none; }
+  .sl-q li .qn { position: absolute; left: 0; top: 1.5vh; font-family: var(--mono); color: var(--blue); font-weight: 500; }
+  .sl-q li .qc { display: block; font-size: .72em; color: var(--text-secondary); margin-top: .3em; }
+  .sl-points { list-style: none; }
+  .sl-points li { font-size: clamp(22px, 2.2vw, 38px); line-height: 1.35; padding: 1.3vh 0 1.3vh 1.6em; position: relative; }
+  .sl-points li::before { content: '→'; position: absolute; left: 0; color: var(--amber); font-weight: 700; }
+  .sl-lead { font-size: clamp(22px, 2.1vw, 36px); color: var(--text-secondary); line-height: 1.4; margin-bottom: 3vh; }
+  .sl-tip { margin-top: 3vh; background: var(--amber-light); color: #8a5c14; border-radius: 14px; padding: 2vh 2vw; font-size: clamp(20px, 1.9vw, 32px); line-height: 1.4; }
+  .sl-grid { display: grid; gap: 2vw; }
+  .sl-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2.5vh 1.6vw; }
+  .sl-cell .c-ic { font-size: clamp(36px, 3.5vw, 64px); }
+  .sl-cell .c-t { font-weight: 700; font-size: clamp(22px, 2.2vw, 38px); margin: 1vh 0; }
+  .sl-cell .c-x { font-size: clamp(17px, 1.6vw, 28px); color: var(--text-secondary); line-height: 1.4; }
+  .sl-cell.tlc { border-top: 6px solid var(--blue); }
+  .big-msg { font-size: clamp(30px, 3.4vw, 60px); font-weight: 500; line-height: 1.3; }
+  .big-msg strong { color: var(--blue); }
+
+  .proj-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: var(--surface); border-top: 1px solid var(--border); }
+  .dots { display: flex; gap: 6px; }
+  .dot { width: 26px; height: 5px; border-radius: 4px; background: var(--border-light); }
+  .dot.on { background: var(--blue); }
+  .nav-btn { font-family: var(--font); font-size: 18px; font-weight: 500; background: var(--blue); color: #fff; border: none; border-radius: 10px; padding: 10px 26px; cursor: pointer; }
+  .nav-btn:disabled { opacity: .3; cursor: default; }
+
+  /* ============ PRINT SHEETS ============ */
+  .print-sheet { display: none; }
+
+  @media print {
+    @page { size: A4 portrait; margin: 14mm 14mm 14mm 14mm; }
+    body { background: #fff; padding: 0; }
+    .wrap, .proj { display: none !important; }
+    body.print-q #printQ, body.print-s #printS { display: block; }
+    .print-sheet { color: #172431; font-size: 11pt; }
+    .print-sheet * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  /* commun aux deux fiches imprimées */
+  .ps-head { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--blue); padding-bottom: 6px; margin-bottom: 10px; }
+  .ps-head .ps-k { font-family: var(--mono); font-size: 8pt; letter-spacing: .1em; text-transform: uppercase; color: var(--blue); }
+  .ps-head h1 { font-size: 17pt; font-weight: 700; }
+  .ps-head .ps-name { font-size: 10pt; color: #5c6b7a; text-align: right; line-height: 1.8; }
+  .ps-consigne { background: var(--blue-light); border-radius: 6px; padding: 7px 10px; font-size: 9.5pt; line-height: 1.45; margin-bottom: 8px; }
+  .ps-sec { break-inside: avoid; margin-top: 9px; }
+  .ps-sec h2 { font-size: 11.5pt; font-weight: 700; color: var(--blue); margin-bottom: 3px; }
+  .ps-q { break-inside: avoid; margin: 5px 0 2px; }
+  .ps-q .t { font-size: 10pt; line-height: 1.35; }
+  .ps-q .t b { font-family: var(--mono); color: var(--blue); margin-right: 4px; }
+  .ps-line { border-bottom: 1px dotted #9aa7b3; height: 7.2mm; }
+  .ps-checks { font-size: 9.5pt; margin: 3px 0 1px 14px; display: flex; flex-wrap: wrap; gap: 2px 16px; }
+
+  .pss-intro { font-size: 9.5pt; line-height: 1.4; background: var(--blue-light); border-radius: 6px; padding: 6px 10px; margin-bottom: 5px; }
+  .pss-leg { font-size: 9.5pt; color: #5c6b7a; margin-bottom: 8px; display: flex; justify-content: center; gap: 22px; }
+  .pss-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pss-b { border: 1.5px solid #dbe4ee; border-radius: 9px; padding: 7px 9px; break-inside: avoid; }
+  .pss-b h2 { font-size: 11.5pt; font-weight: 700; color: #fff; background: var(--blue); border-radius: 6px; padding: 4px 8px; margin-bottom: 5px; }
+  .pss-kw { display: flex; gap: 6px; font-size: 9.7pt; line-height: 1.28; padding: 2.5px 0; border-bottom: 1px dotted #dbe4ee; }
+  .pss-kw:last-child { border-bottom: none; }
+  .pss-kw .k { font-weight: 700; white-space: nowrap; }
+  .pss-kw .m { color: #5c6b7a; }
+  .pss-kw .m::before { content: '→ '; color: var(--amber); font-weight: 700; }
+  .pss-kw .v { margin-left: auto; white-space: nowrap; font-size: 8.5pt; }
+  .pss-defi { border: 2px solid var(--blue); border-radius: 9px; padding: 6px 10px; margin-top: 8px; break-inside: avoid; }
+  .pss-defi h2 { font-size: 10.5pt; color: var(--blue); margin-bottom: 3px; }
+  .pss-defi .row { font-size: 9.5pt; display: flex; gap: 6px; margin: 3px 0; align-items: flex-end; }
+  .pss-defi .row span { white-space: nowrap; }
+  .pss-defi .row i { flex: 1; border-bottom: 1px dotted #9aa7b3; height: 5.5mm; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a href="index.html" class="back-link">← Retour au sommaire</a>
+
+  <div class="chapter-head">
+    <div class="badge">Chapitre 5</div>
+    <h1>📖 Apprendre une leçon</h1>
+    <p>Comment fais-tu, toi, pour apprendre une leçon ? Aujourd'hui, on commence par réfléchir chacun de son côté. Ensuite, on compare nos façons de faire, et on découvre ce que l'on sait du fonctionnement de la mémoire, pour que chacun puisse tester ce qui marche le mieux pour lui.</p>
+    <div class="mode-note">✍️ <strong>Étape 1 : seul, à l'écrit, environ 20 minutes.</strong> Il n'y a pas de bonne ou de mauvaise réponse. Ce qui compte, c'est TA façon de faire.</div>
+  </div>
+
+  <!-- ÉTAPE 1 -->
+  <div class="section-lbl">Étape 1 · Et moi, comment j'apprends ?</div>
+  <div class="actions">
+    <button class="act-btn primary" onclick="openProj('q')">📽️ Projeter le questionnaire</button>
+    <a class="act-btn" href="ch5-questionnaire-apprendre.pdf" download>⬇️ Télécharger le PDF</a>
+    <button class="act-btn" onclick="printSheet('q')">🖨️ Imprimer</button>
+  </div>
+  <div class="consigne" id="qConsigne"></div>
+  <div id="qList"></div>
+
+  <!-- ÉTAPE 2 -->
+  <div class="section-lbl">Étape 2 · Ce qu'on retient : apprendre, ça s'apprend</div>
+  <div class="reveal-box" id="sLocked">
+    <p>La synthèse est masquée pour ne pas influencer les réponses.<br>On la découvre ensemble <strong>après</strong> la mise en commun.</p>
+    <button class="act-btn primary" onclick="unlockSynth()">🔓 Afficher la synthèse</button>
+  </div>
+  <div id="sWrap" class="hidden">
+    <div class="actions">
+      <button class="act-btn primary" onclick="openProj('s')">📽️ Projeter la synthèse</button>
+      <a class="act-btn" href="ch5-synthese-apprendre.pdf" download>⬇️ Télécharger le PDF</a>
+      <button class="act-btn" onclick="printSheet('s')">🖨️ Imprimer</button>
+    </div>
+    <div class="s-intro" id="sIntro"></div>
+    <div class="legend" id="sLegend"></div>
+    <div class="mcards" id="sCards"></div>
+
+    <div class="section-lbl">Étape 3 · Mon défi de la semaine</div>
+    <div class="recap-card">
+      <h2>Je deviens le chercheur de mon propre cerveau 🔬</h2>
+      <div class="recap-sub">Coche au fur et à mesure. Ta progression est enregistrée sur cet ordinateur.</div>
+      <div id="checkList"></div>
+      <div class="finish-row">
+        <div class="finish-hint" id="checkCount">0 / 0 cochées</div>
+        <button class="btn" onclick="finishChapter()">Terminer le chapitre</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">Heure Bleue · 6ème B · Professeur principal</div>
+</div>
+
+<!-- PROJECTION -->
+<div class="proj hidden" id="proj">
+  <div class="proj-bar">
+    <div class="pb-l" id="projLabel">Projection</div>
+    <div class="pb-r">
+      <span class="timer hidden" id="timer">20:00</span>
+      <button class="pbtn" id="timerBtn" onclick="toggleTimer()">⏱ Lancer 20 min</button>
+      <button class="pbtn" onclick="toggleFS()">⛶ Plein écran</button>
+      <button class="pbtn" onclick="closeProj()">✕ Fermer</button>
+    </div>
+  </div>
+  <div class="proj-stage"><div class="slide" id="slide"></div></div>
+  <div class="proj-nav">
+    <button class="nav-btn" id="prevBtn" onclick="go(-1)">←</button>
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn" id="nextBtn" onclick="go(1)">→</button>
+  </div>
+</div>
+
+<!-- FICHES IMPRIMABLES -->
+<div class="print-sheet" id="printQ"></div>
+<div class="print-sheet" id="printS"></div>
+
+<script>
+/* =========================================================
+   CONTENU — modifier ici, tout le reste se met à jour
+   (page, projection, impression)
+   ========================================================= */
+const CONSIGNE = "Il n'y a <strong>pas de bonne ou de mauvaise réponse</strong>. Réponds le plus honnêtement possible, avec tes mots : c'est <strong>ta façon à toi</strong> de faire qui nous intéresse. Durée : environ 20 minutes.";
+
+const QUESTIONS = [
+  { icon: '🕐', title: 'Quand est-ce que j\'apprends ?', qs: [
+    { t: "À quel moment de la journée apprends-tu tes leçons (en rentrant, après le goûter, le soir, le matin avant de partir…) ?", lines: 1 },
+    { t: "Combien de temps avant un contrôle commences-tu à réviser ?", lines: 1 },
+    { t: "Combien de temps passes-tu en général sur une leçon ? Est-ce que tu fais des pauses ?", lines: 1 },
+  ]},
+  { icon: '📍', title: 'Où et avec quoi ?', qs: [
+    { t: "Où t'installes-tu pour apprendre ? Décris l'endroit.", lines: 1 },
+    { t: "Qu'y a-t-il autour de toi quand tu apprends (téléphone, télévision, musique, frères et sœurs…) ?", lines: 1 },
+    { t: "Où est ton téléphone pendant que tu apprends ? Est-ce qu'il te dérange, d'après toi ?", lines: 1 },
+  ]},
+  { icon: '🛠️', title: 'Comment je fais concrètement ?', qs: [
+    { t: "Raconte, étape par étape, ce que tu fais quand tu dois apprendre une leçon, comme si tu l'expliquais à un camarade.", lines: 3 },
+    { t: "Est-ce que tu lis ta leçon dans ta tête ou à voix haute ? Est-ce que tu la réécris ? Est-ce que tu fais des dessins, des schémas ou des couleurs ?", lines: 1 },
+    { t: "Est-ce que quelqu'un t'aide ou t'interroge ? Qui ? Comment ça se passe ?", lines: 1 },
+    { t: "Comment sais-tu que tu connais ta leçon ? À quel moment te dis-tu « c'est bon, je la sais » ?", lines: 1 },
+  ]},
+  { icon: '🧠', title: 'Ma mémoire', qs: [
+    { t: "Pense à quelque chose que tu as appris et que tu n'as jamais oublié (une leçon, une chanson, une règle de jeu…). Pourquoi, à ton avis, l'as-tu si bien retenu ?", lines: 2 },
+    { t: "Quand tu essaies de te souvenir de ta leçon pendant un contrôle, qu'est-ce qui te revient en premier ?", lines: 0,
+      checks: ["l'image de la page (couleurs, place sur la feuille)", "la voix du professeur ou ta propre voix", "les gestes, ce que tu as écrit ou fait", "autre chose : ……………"] },
+    { t: "Te souviens-tu mieux de ce que tu VOIS, de ce que tu ENTENDS ou de ce que tu FAIS ? Donne un exemple.", lines: 2 },
+  ]},
+  { icon: '💬', title: 'Mon ressenti', qs: [
+    { t: "Qu'est-ce qui est le plus difficile pour toi quand tu apprends une leçon ?", lines: 2 },
+    { t: "Raconte une fois où tu avais bien appris et où le contrôle s'est bien passé. Qu'avais-tu fait de différent ?", lines: 2 },
+    { t: "As-tu déjà fait une fiche de révision ? Si oui, comment était-elle ? Si non, à quoi penses-tu que ça sert ?", lines: 2 },
+  ]},
+  { icon: '🎯', title: 'Pour finir', qs: [
+    { t: "Si tu devais donner UN SEUL conseil à un camarade pour apprendre une leçon, lequel ce serait ?", lines: 2 },
+  ]},
+];
+
+const SYNTH_INTRO = "Vous avez tous répondu différemment, et <strong>c'est normal</strong> : il n'existe pas une seule bonne méthode pour apprendre. Mais le cerveau a quelques règles de fonctionnement qui valent pour tout le monde. À partir de ces règles, <strong>c'est à toi de tester</strong> et de trouver ce qui marche le mieux pour toi.";
+
+/* Mémoires : 👁️ v = visuelle · 👂 a = auditive · ✋ k = du corps (kinesthésique) */
+const MEM = { v: '👁️', a: '👂', k: '✋' };
+const MEM_NAME = { v: 'mémoire visuelle', a: 'mémoire auditive', k: 'mémoire du corps' };
+
+/* Chaque carte : un centre, des mots-clés placés en % (x, y),
+   spoke = petit mot sur le trait depuis le centre (null = pas de trait),
+   links = liens entre deux mots-clés [de, vers, mot du lien]. */
+const MAPS = [
+  { icon: '🔁', title: "Apprendre ≠ relire", cx: 50, cy: 45,
+    nodes: [
+      { id: 'piege', ic: '🙈', t: 'Le piège', mini: '« Je l\'ai lue, donc je la sais »', x: 16, y: 15, spoke: 'attention !',
+        d: "Relire rend la leçon familière : on la reconnaît. Mais reconnaître, ce n'est pas savoir la redire. C'est une illusion de savoir." },
+      { id: 'comp', ic: '💡', t: 'Comprendre', mem: 'a', mini: 'je l\'explique avec mes mots', x: 16, y: 80, spoke: '1',
+        d: "Je reformule avec mes mots, comme si je l'expliquais à un camarade. Si je bloque, je note ma question pour le prochain cours." },
+      { id: 'mem', ic: '🧠', t: 'Mémoriser', mem: 'vak', mini: 'je fais entrer l\'essentiel', x: 50, y: 88, spoke: '2',
+        d: "Mots-clés, définitions, schémas, dates : je repère l'important et je le fais entrer, en plusieurs fois." },
+      { id: 'test', ic: '✅', t: 'Me tester', mem: 'a', mini: 'cahier fermé : est-ce que ça ressort ?', x: 84, y: 80, spoke: '3',
+        d: "Je ferme le cahier et je vérifie que la leçon ressort, dans ma tête, à voix haute ou par écrit." },
+      { id: 'cle', ic: '🔑', t: 'La question clé', mini: 'je peux le redire sans regarder ?', x: 84, y: 15, spoke: null,
+        d: "« Est-ce que je peux le redire SANS regarder ? » Oui : je sais. Non : je retourne à l'étape Mémoriser." },
+    ],
+    links: [['comp', 'mem', 'puis'], ['mem', 'test', 'puis'], ['test', 'cle', 'je me demande']] },
+
+  { icon: "🚪", title: "Les portes de ma mémoire", cx: 50, cy: 53,
+    nodes: [
+      { id: 'v', ic: '👁️', t: 'Je vois', mem: 'v', mini: 'couleurs, schémas, carte mentale', x: 14, y: 18, spoke: 'par les yeux',
+        d: "Mémoire visuelle : couleurs, surligneur, schémas, carte mentale. Je ferme les yeux et je revois la page dans ma tête." },
+      { id: 'a', ic: '👂', t: "J'entends", mem: 'a', mini: 'réciter à voix haute, expliquer', x: 50, y: 9, spoke: 'par les oreilles',
+        d: "Mémoire auditive : je récite à voix haute, je m'enregistre et je me réécoute, j'explique à quelqu'un, j'invente un petit refrain." },
+      { id: 'k', ic: '✋', t: 'Je fais', mem: 'k', mini: 'réécrire, fabriquer, bouger', x: 86, y: 18, spoke: 'par le corps',
+        d: "Mémoire du corps : je réécris, je fabrique ma fiche, je marche en récitant, je fais des gestes, je refais les exercices." },
+      { id: 'mix', ic: '🔀', t: 'Je mélange', mem: 'vak', mini: '3 portes = je retiens mieux', x: 25, y: 85, spoke: 'le secret',
+        d: "Lire + dire à voix haute + écrire : trois chemins vers la même information. Plus j'ouvre de portes, mieux je retiens." },
+      { id: 'pref', ic: '⭐', t: 'Ma porte préférée', mini: 'à découvrir en testant', x: 75, y: 85, spoke: 'à découvrir',
+        d: "On a souvent une porte où l'on se sent plus à l'aise. On la découvre en essayant… sans oublier les deux autres !" },
+    ],
+    links: [['pref', 'mix', 'sans oublier']] },
+
+  { icon: '🌱', title: "Les bonnes conditions", cx: 50, cy: 55,
+    nodes: [
+      { id: 'att', ic: '🎯', t: 'Mon attention', mini: 'une seule chose à la fois', x: 50, y: 10, spoke: 'le plus précieux',
+        d: "Être concentré, c'est viser un seul but. Le cerveau ne sait pas vraiment faire deux choses en même temps." },
+      { id: 'tel', ic: '📵', t: 'Le téléphone', mini: 'dans une autre pièce', x: 14, y: 26, spoke: '',
+        d: "Même posé à côté de moi et silencieux, il attire une partie de mon attention. Le mieux : dans une autre pièce." },
+      { id: 'lieu', ic: '🤫', t: 'Mon endroit', mini: 'calme et rangé', x: 86, y: 26, spoke: '',
+        d: "Pas de télé allumée, juste ce dont j'ai besoin sur la table. Toujours au même endroit, c'est encore mieux." },
+      { id: 'pause', ic: '⏱️', t: '30 min + pause', mem: 'k', mini: '30 min de travail → 5 min de pause', x: 20, y: 86, spoke: 'mon rythme',
+        d: "Je travaille environ 30 minutes, puis 5 minutes de pause : je bouge, je bois de l'eau. Pas d'écran pendant la pause !" },
+      { id: 'dodo', ic: '😴', t: 'Le sommeil', mini: 'le cerveau range la nuit', x: 80, y: 86, spoke: 'la nuit',
+        d: "Pendant que je dors, mon cerveau trie et range ce que j'ai appris dans la journée. Bien dormir, c'est aussi apprendre." },
+    ],
+    links: [['tel', 'att', 'vole'], ['lieu', 'att', 'protège']] },
+
+  { icon: '📆', title: "Le temps, mon allié", cx: 50, cy: 42,
+    nodes: [
+      { id: 'oubli', ic: '📉', t: "L'oubli", mini: 'va très vite sans révision', x: 15, y: 14, spoke: 'mon ennemi',
+        d: "Sans révision, on oublie une grande partie d'une leçon en quelques jours. Chaque révision fait remonter le souvenir, et on oublie de moins en moins vite." },
+      { id: 'petit', ic: '🧩', t: 'Petites séances', mini: 'mieux qu\'une grosse la veille', x: 85, y: 14, spoke: 'mon arme',
+        d: "Plusieurs petites révisions espacées valent bien mieux qu'une longue séance la veille au soir." },
+      { id: 'j0', ic: '🌙', t: 'Le soir même', mini: '5 min : relire, comprendre', x: 12, y: 82, spoke: 'je commence',
+        d: "5 minutes suffisent : je relis la leçon du jour et je vérifie que je l'ai comprise." },
+      { id: 'j1', ic: '☀️', t: 'Le lendemain', mem: 'a', mini: 'je me teste sans regarder', x: 37, y: 82, spoke: null,
+        d: "Je ferme le cahier et j'essaie de redire la leçon. Ce qui manque, je le revois." },
+      { id: 'j3', ic: '🗂️', t: 'Quelques jours', mem: 'v', mini: 'après : je revois avec ma fiche', x: 63, y: 82, spoke: null,
+        d: "Je reprends ma fiche de révision et je me pose les questions écrites au dos." },
+      { id: 'veille', ic: '🏁', t: 'La veille', mini: 'je vérifie, je ne découvre pas', x: 88, y: 82, spoke: null,
+        d: "La veille du contrôle, je vérifie que je suis prêt. Ce n'est pas le moment de tout découvrir !" },
+    ],
+    links: [['j0', 'j1', 'puis'], ['j1', 'j3', 'puis'], ['j3', 'veille', 'puis']] },
+
+  { icon: '🎯', title: "Se tester", cx: 50, cy: 50,
+    nodes: [
+      { id: 'ferme', ic: '📕', t: 'Cahier fermé', mem: 'a', mini: 'je récite', x: 14, y: 18, spoke: 'je récite',
+        d: "Je ferme mon cahier et je récite dans ma tête ou, encore mieux, à voix haute." },
+      { id: 'quest', ic: '❓', t: 'Mes questions', mem: 'ak', mini: 'je m\'interroge moi-même', x: 50, y: 9, spoke: 'je me demande',
+        d: "Je transforme la leçon en questions (Qui ? Quoi ? Pourquoi ?) et j'y réponds sans regarder." },
+      { id: 'qq1', ic: '🙋', t: 'Quelqu\'un', mem: 'a', mini: 'm\'interroge', x: 86, y: 18, spoke: 'on m\'aide',
+        d: "Un parent, un frère, une sœur, un camarade me pose des questions. Je peux aussi lui expliquer la leçon." },
+      { id: 'exo', ic: '✏️', t: 'Les exercices', mem: 'k', mini: 'je les refais sans la correction', x: 14, y: 82, spoke: 'je refais',
+        d: "Je refais les exercices corrigés en classe, sans regarder la correction, puis je compare." },
+      { id: 'err', ic: '🔍', t: "L'erreur", mini: 'un indice, pas un échec', x: 50, y: 91, spoke: null,
+        d: "Me tromper en m'entraînant, c'est une bonne nouvelle : l'erreur me montre exactement ce que je dois revoir." },
+      { id: 'muscle', ic: '💪', t: 'Un muscle', mini: 'chercher = renforcer', x: 86, y: 82, spoke: 'pourquoi ?',
+        d: "Chaque effort pour retrouver un souvenir le rend plus solide, comme un muscle qu'on entraîne." },
+    ],
+    links: [['exo', 'err', 'me montre']] },
+
+  { icon: '🗂️', title: "Ma fiche de révision", cx: 50, cy: 50,
+    nodes: [
+      { id: 'tit', ic: '🏷️', t: 'Titre', mini: 'la leçon + la matière', x: 14, y: 18, spoke: 'en haut',
+        d: "En haut de la fiche : le titre de la leçon et la matière, bien visibles." },
+      { id: 'kw', ic: '🔑', t: 'Mots-clés', mem: 'k', mini: 'définitions par cœur', x: 50, y: 9, spoke: 'l\'essentiel',
+        d: "Les mots-clés, les définitions, les dates à connaître par cœur. Je les écris moi-même, à la main." },
+      { id: 'sch', ic: '🖼️', t: 'Un schéma', mem: 'v', mini: 'dessin, exemple, couleurs', x: 86, y: 18, spoke: 'une image',
+        d: "Un schéma, un petit dessin ou un exemple qui m'aide à me souvenir. Les couleurs aident ma mémoire visuelle." },
+      { id: 'dos', ic: '❓', t: 'Au dos', mem: 'a', mini: '3 à 5 questions', x: 14, y: 82, spoke: 'pour me tester',
+        d: "Au dos, j'écris 3 à 5 questions. Je m'en sers pour me tester, seul ou avec quelqu'un." },
+      { id: 'choix', ic: '✂️', t: 'Je choisis', mini: 'la fabriquer = déjà apprendre', x: 50, y: 91, spoke: 'le secret',
+        d: "Pour faire ma fiche, je dois choisir ce qui est important. Ce tri, c'est déjà apprendre !" },
+      { id: 'forme', ic: '🎨', t: 'Ma forme', mem: 'vk', mini: 'bristol, carte mentale, recto-verso', x: 86, y: 82, spoke: 'à moi de voir',
+        d: "Carte bristol, carte mentale, questions au recto et réponses au verso… J'essaie plusieurs formes et je garde celle qui me va." },
+    ],
+    links: [] },
+];
+
+const DEFI = [
+  "J'ai choisi une leçon sur laquelle je vais tester une nouvelle méthode cette semaine",
+  "Quand j'apprends, mon téléphone est dans une autre pièce",
+  "Je travaille par tranches de 30 minutes, avec une vraie pause",
+  "Je ferme mon cahier et je me teste au lieu de seulement relire",
+  "J'ai fabriqué ma première fiche de révision",
+  "J'ai noté ce qui a le mieux marché pour moi",
+];
+
+/* =========================================================
+   RENDU PAGE
+   ========================================================= */
+const esc = s => s; // contenu interne de confiance (HTML autorisé)
+let qNum = 0;
+document.getElementById('qConsigne').innerHTML = CONSIGNE;
+document.getElementById('qList').innerHTML = QUESTIONS.map((sec, i) => {
+  const start = qNum + 1;
+  const items = sec.qs.map(q => {
+    qNum++;
+    const ch = q.checks ? `<div class="q-checks">${q.checks.map(c => `<span>☐ ${c}</span>`).join('')}</div>` : '';
+    return `<li>${q.t}${ch}</li>`;
+  }).join('');
+  return `<div class="q-card"><h3><span class="n">${String(i+1).padStart(2,'0')}</span>${sec.icon} ${sec.title}</h3><ol start="${start}">${items}</ol></div>`;
+}).join('');
+
+const LEGEND = Object.keys(MEM).map(k => `<span>${MEM[k]} <b>${MEM_NAME[k]}</b></span>`).join('');
+const memStr = m => (m || '').split('').map(c => MEM[c]).join(' ');
+document.getElementById('sIntro').innerHTML = SYNTH_INTRO;
+document.getElementById('sLegend').innerHTML = 'Les mémoires utilisées : ' + LEGEND;
+document.getElementById('sCards').innerHTML = MAPS.map((m, i) => `
+  <div class="mcard" onclick="openProj('s', ${i + 1})">
+    <div class="mc-n">Carte ${i + 1}</div>
+    <div class="mc-ic">${m.icon}</div>
+    <div class="mc-t">${m.title}</div>
+    <div class="chips">${m.nodes.map(n => `<span class="chip">${n.ic} ${n.t}</span>`).join('')}</div>
+    <div class="mc-go">Ouvrir la carte mentale →</div>
+  </div>`).join('');
+
+/* Synthèse masquée par défaut */
+const SYNTH_KEY = 'hvc_ch5_synth_open_v1';
+function unlockSynth() {
+  document.getElementById('sLocked').classList.add('hidden');
+  document.getElementById('sWrap').classList.remove('hidden');
+  try { localStorage.setItem(SYNTH_KEY, '1'); } catch(e) {}
+}
+try { if (localStorage.getItem(SYNTH_KEY) === '1') unlockSynth(); } catch(e) {}
+
+/* =========================================================
+   CHECKLIST DÉFI
+   ========================================================= */
+const CHECK_KEY = 'hvc_ch5_checks_v1';
+document.getElementById('checkList').innerHTML = DEFI.map((d, i) =>
+  `<div class="check-item" data-id="d${i}"><div class="check-box">✓</div><div class="check-text">${d}</div></div>`).join('');
+function loadChecks() { try { const r = localStorage.getItem(CHECK_KEY); return r ? JSON.parse(r) : {}; } catch(e) { return {}; } }
+function saveChecks(c) { try { localStorage.setItem(CHECK_KEY, JSON.stringify(c)); } catch(e) {} }
+let checks = loadChecks();
+function renderChecks() {
+  document.querySelectorAll('.check-item').forEach(el => el.classList.toggle('checked', !!checks[el.dataset.id]));
+  const done = Object.values(checks).filter(Boolean).length;
+  document.getElementById('checkCount').textContent = done + ' / ' + DEFI.length + ' cochées';
+}
+document.querySelectorAll('.check-item').forEach(el => el.addEventListener('click', () => {
+  checks[el.dataset.id] = !checks[el.dataset.id]; saveChecks(checks); renderChecks();
+}));
+renderChecks();
+function finishChapter() {
+  try { localStorage.removeItem(SYNTH_KEY); } catch(e) {}
+  window.location.href = 'index.html?done=5';
+}
+
+/* =========================================================
+   PROJECTION
+   ========================================================= */
+function buildQSlides() {
+  const slides = [`
+    <div class="sl-kicker">Chapitre 5 · Étape 1</div>
+    <div class="sl-title">✍️ Et moi, comment j'apprends ?</div>
+    <div class="sl-sub">Seul, à l'écrit, environ 20 minutes.<br><br>${CONSIGNE.replace(' Durée : environ 20 minutes.', '')}</div>`];
+  let n = 0;
+  QUESTIONS.forEach((sec, i) => {
+    const lis = sec.qs.map(q => {
+      n++;
+      const ch = q.checks ? `<span class="qc">${q.checks.map(c => '☐ ' + c).join('&nbsp;&nbsp;·&nbsp;&nbsp;')}</span>` : '';
+      return `<li><span class="qn">${n}.</span>${q.t}${ch}</li>`;
+    }).join('');
+    slides.push(`<div class="sl-kicker">Partie ${i+1} / ${QUESTIONS.length}</div><div class="sl-title">${sec.icon} ${sec.title}</div><ol class="sl-q">${lis}</ol>`);
+  });
+  return slides;
+}
+/* ---------- Carte mentale dessinée ---------- */
+const HC = ['#3d6fd9', '#e5534b', '#e8b730'];
+const OVAL = 'M14,62 C4,30 40,6 70,8 C112,10 126,40 112,64 C98,86 40,92 18,74 C6,64 10,40 34,24';
+const CIRCLE = 'M50,6 C78,4 97,26 95,52 C93,80 70,96 46,94 C20,92 4,72 6,48 C8,24 26,8 54,9 M40,8 C70,2 99,22 97,50 C95,74 80,92 56,96';
+const SPARK = (x, y, c, s) => `<g transform="translate(${x} ${y}) scale(${s})" stroke="${c}" stroke-width="2.4" stroke-linecap="round"><path d="M0,-10V10M-10,0H10M-7,-7L7,7M-7,7L7,-7"/></g>`;
+
+const PX = n => 50 + (n.x - 50) * .9, PY = n => 15 + (n.y - 9) * .86;
+function mapHTML(m, i) {
+  const nodes = m.nodes.map((n, k) => `
+    <div class="m-node c${k % 3}" data-i="${k}" tabindex="0" style="left:${PX(n)}%;top:${PY(n)}%;animation-delay:${.08 * k + .1}s">
+      <div class="ni">${n.ic}</div>
+      <div class="oval"><svg viewBox="0 0 126 96" preserveAspectRatio="none"><path d="${OVAL}"/></svg>
+        <div class="lab">${n.t}</div></div>
+      <div class="mini">${n.mini}</div>
+      ${n.mem ? `<div class="mem">${memStr(n.mem)}</div>` : ''}
+    </div>`).join('');
+  return `
+    <div class="map-head"><div class="sl-kicker">Carte ${i + 1} / ${MAPS.length}</div>
+      <div class="map-hint">✏️ Passe la souris ou clique sur un mot-clé pour le découvrir</div></div>
+    <div class="map" data-m="${i}">
+      <svg class="deco"></svg><svg class="arrows"></svg>
+      <div class="m-center" style="left:${m.cx}%;top:${m.cy}%">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${CIRCLE}"/></svg>
+        <span class="ci">${m.icon}</span><span class="ct">${m.title}</span></div>
+      <div class="lbls"></div>
+      ${nodes}
+      <div class="m-pop hidden"></div>
+    </div>`;
+}
+
+/* Dessine flèches, mots de liaison et décor en pixels réels */
+function drawMap(map) {
+  const m = MAPS[+map.dataset.m], W = map.clientWidth, H = map.clientHeight;
+  if (!W) return;
+  const box = el => ({ x: el.offsetLeft, y: el.offsetTop, a: el.offsetWidth / 2, b: el.offsetHeight / 2 });
+  const C = map.querySelector('.m-center'), cb = box(C); cb.a *= .92; cb.b *= .92;
+  const els = [...map.querySelectorAll('.m-node')];
+  const edge = (bx, dx, dy) => 1 / Math.sqrt((dx / bx.a) ** 2 + (dy / bx.b) ** 2);
+  let paths = '', lbls = ''; const lblBoxes = [];
+  const arrow = (A, B, color, k, label, dashed) => {
+    let dx = B.x - A.x, dy = B.y - A.y; const L = Math.hypot(dx, dy); dx /= L; dy /= L;
+    let s = edge(A, dx, dy) + 22, e = edge(B, dx, dy) + 22;
+    if (L - s - e < 60) { const sq = (60 - (L - s - e)) / 2; s = Math.max(edge(A, dx, dy) + 4, s - sq); e = Math.max(edge(B, dx, dy) - 6, e - sq); }
+    const gap = L - s - e; if (gap < 20) return;
+    const maxL = dashed ? 9999 : 190; if (gap > maxL) { s += (gap - maxL) * .45; e += (gap - maxL) * .55; }
+    const x1 = A.x + dx * s, y1 = A.y + dy * s, x2 = B.x - dx * e, y2 = B.y - dy * e;
+    const bend = (k % 2 ? 1 : -1) * Math.min(45, (L - s - e) * .2);
+    const qx = (x1 + x2) / 2 - dy * bend, qy = (y1 + y2) / 2 + dx * bend;
+    const d = `M${x1},${y1} Q${qx},${qy} ${x2},${y2}`;
+    let tx = x2 - qx, ty = y2 - qy; const tl = Math.hypot(tx, ty); tx /= tl; ty /= tl;
+    const h = 15, w = .55;
+    const head = `M${x2 - h * (tx - w * ty)},${y2 - h * (ty + w * tx)} L${x2},${y2} L${x2 - h * (tx + w * ty)},${y2 - h * (ty - w * tx)}`;
+    if (dashed) {
+      paths += `<path d="${d}" stroke="${color}" stroke-width="3.5" stroke-dasharray="2 10"/>`;
+    } else {
+      paths += `<path d="${d}" stroke="${color}" stroke-width="9" opacity=".9" transform="translate(3 4)"/>`;
+      paths += `<path d="${d}" stroke="${'#1d2747'}" stroke-width="3.6"/><path d="${head}" stroke="#1d2747" stroke-width="3.6"/>`;
+    }
+    if (label) {
+      const mx = .25 * x1 + .5 * qx + .25 * x2, my = .25 * y1 + .5 * qy + .25 * y2;
+      const o = 18 + Math.abs(dy) * label.length * 4.6 + Math.abs(dx) * 6;
+      const c1 = [mx - dy * o, my + dx * o], c2 = [mx + dy * o, my - dx * o];
+      const far = p => Math.hypot(p[0] - cb.x, p[1] - cb.y);
+      const [lx, ly] = dashed ? (far(c1) > far(c2) ? c1 : c2) : ((bend > 0) ? c1 : c2);
+      lbls += `<div class="m-lbl${dashed ? ' link' : ''}" style="left:${lx}px;top:${ly}px">${label}</div>`;
+      lblBoxes.push({ x: lx, y: ly, a: label.length * 4.5 + 6, b: 12 });
+    }
+  };
+  m.nodes.forEach((n, k) => { if (n.spoke !== null) arrow(cb, box(els[k]), HC[k % 3], k, n.spoke, false); });
+  const idx = {}; m.nodes.forEach((n, k) => idx[n.id] = k);
+  (m.links || []).forEach(([f, t, l], j) => arrow(box(els[idx[f]]), box(els[idx[t]]), '#e8b730', j + 1, l, true));
+  map.querySelector('svg.arrows').setAttribute('viewBox', `0 0 ${W} ${H}`);
+  map.querySelector('svg.arrows').innerHTML = paths;
+  map.querySelector('.lbls').innerHTML = lbls;
+
+  /* décor : coups de pinceau dans les coins + étoiles */
+  const sp = [[.33, .2, 0, 1], [.68, .26, 1, .8], [.05, .5, 2, 1.1], [.95, .52, 0, .9], [.36, .76, 2, .8], [.64, .7, 1, 1], [.22, .45, 1, .7], [.78, .45, 2, .7], [.5, .05, 1, .7], [.03, .1, 0, .8]];
+  const busy = [cb, ...els.map(box), ...lblBoxes];
+  const free = (x, y) => busy.every(b => Math.abs(x - b.x) > b.a + 22 || Math.abs(y - b.y) > b.b + 22);
+  let deco = sp.filter(([x, y]) => free(x * W, y * H)).map(([x, y, c, s]) => SPARK(x * W, y * H, HC[c], s)).join('');
+  deco += `<path d="M${W - 150},${-10} C${W - 120},${40} ${W - 60},${-5} ${W + 10},${55} M${W - 40},${95} C${W - 20},${75} ${W},${85} ${W + 20},${70}" stroke="${HC[2]}" stroke-width="22" stroke-linecap="round" fill="none" opacity=".9"/>`;
+  deco += `<path d="M-20,${H - 80} L80,${H - 55} M-20,${H - 50} L110,${H - 18} M-10,${H - 18} L80,${H + 8}" stroke="${HC[0]}" stroke-width="15" stroke-linecap="round" fill="none" opacity=".85"/>`;
+  deco += `<path d="M${W - 90},${H - 105} L${W - 10},${H - 112} M${W - 80},${H - 70} L${W - 15},${H - 40} M${W - 105},${H - 35} L${W - 85},${H + 10}" stroke="${HC[1]}" stroke-width="9" stroke-linecap="round" fill="none" opacity=".85"/>`;
+  map.querySelector('svg.deco').setAttribute('viewBox', `0 0 ${W} ${H}`);
+  map.querySelector('svg.deco').innerHTML = deco;
+}
+
+function initMaps(root) {
+  root.querySelectorAll('.map').forEach(map => {
+    const m = MAPS[+map.dataset.m], pop = map.querySelector('.m-pop');
+    drawMap(map);
+    if (document.fonts) document.fonts.ready.then(() => drawMap(map));
+    let pinned = null;
+    const show = el => {
+      const k = +el.dataset.i, n = m.nodes[k];
+      const mem = n.mem ? `<div class="pm">${n.mem.split('').map(c => MEM[c] + ' ' + MEM_NAME[c]).join(' · ')}</div>` : '';
+      pop.innerHTML = `<div class="pt">${n.ic} ${n.t}</div>${n.d}${mem}`;
+      pop.style.setProperty('--pc', HC[k % 3]);
+      pop.classList.remove('hidden');
+      const H = map.clientHeight, top = el.offsetTop, h = el.offsetHeight;
+      pop.style.left = Math.max(19, Math.min(81, PX(n))) + '%';
+      if (PY(n) > 50) { pop.style.top = ''; pop.style.bottom = (H - top + h / 2 + 14) + 'px'; }
+      else { pop.style.bottom = ''; pop.style.top = (top + h / 2 + 14) + 'px'; }
+      map.querySelectorAll('.m-node').forEach(x => x.classList.toggle('on', x === el));
+    };
+    const hide = () => { pop.classList.add('hidden'); map.querySelectorAll('.m-node').forEach(x => x.classList.remove('on')); };
+    map.querySelectorAll('.m-node').forEach(el => {
+      el.addEventListener('mouseenter', () => show(el));
+      el.addEventListener('mouseleave', () => { pinned ? show(pinned) : hide(); });
+      el.addEventListener('click', e => { e.stopPropagation(); if (pinned === el) { pinned = null; hide(); } else { pinned = el; show(el); } });
+    });
+    map.addEventListener('click', () => { pinned = null; hide(); });
+  });
+}
+window.addEventListener('resize', () => document.querySelectorAll('.map').forEach(drawMap));
+
+function buildSSlides() {
+  const slides = [`
+    <div class="sl-kicker">Chapitre 5 · Étape 2</div>
+    <div class="sl-title">🧠 Apprendre, ça s'apprend</div>
+    <div class="big-msg">${SYNTH_INTRO}</div>
+    <div class="mem-legend">${Object.keys(MEM).map(k => `<div><span>${MEM[k]}</span>${MEM_NAME[k]}</div>`).join('')}</div>`];
+  MAPS.forEach((m, i) => slides.push(mapHTML(m, i)));
+  slides.push(`
+    <div class="sl-kicker">À toi de jouer</div>
+    <div class="sl-title">🔬 Mon défi de la semaine</div>
+    <div class="big-msg">Choisis <strong>une leçon</strong>. Teste <strong>une méthode que tu n'utilises jamais</strong>. Observe : est-ce que tu as mieux retenu ?<br><br>Tu deviens le chercheur de ton propre cerveau.</div>`);
+  return slides;
+}
+
+let slides = [], cur = 0, mode = 'q';
+function openProj(m, start) {
+  mode = m; cur = start || 0;
+  slides = m === 'q' ? buildQSlides() : buildSSlides();
+  document.getElementById('projLabel').textContent = m === 'q' ? 'Chapitre 5 · Questionnaire' : 'Chapitre 5 · Synthèse';
+  document.getElementById('timerBtn').classList.toggle('hidden', m !== 'q');
+  document.getElementById('timer').classList.toggle('hidden', !(m === 'q' && timerRunning));
+  document.getElementById('dots').innerHTML = slides.map(() => '<div class="dot"></div>').join('');
+  document.getElementById('proj').classList.remove('hidden');
+  render();
+}
+function closeProj() {
+  document.getElementById('proj').classList.add('hidden');
+  if (document.fullscreenElement) document.exitFullscreen();
+}
+function render() {
+  const sl = document.getElementById('slide'); sl.innerHTML = slides[cur]; sl.className = 'slide ' + mode + (sl.querySelector('.map') ? ' map-slide' : ''); sl.parentElement.scrollTop = 0; initMaps(sl);
+  document.querySelectorAll('#dots .dot').forEach((d, i) => d.classList.toggle('on', i <= cur));
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').disabled = cur === slides.length - 1;
+}
+function go(d) { cur = Math.max(0, Math.min(slides.length - 1, cur + d)); render(); }
+function toggleFS() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+  else document.exitFullscreen();
+}
+document.addEventListener('keydown', e => {
+  if (document.getElementById('proj').classList.contains('hidden')) return;
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+  if (e.key === 'Escape' && !document.fullscreenElement) closeProj();
+});
+
+/* Minuteur 20 min */
+let timerRunning = false, timerEnd = 0, timerInt = null;
+function toggleTimer() {
+  const t = document.getElementById('timer'), b = document.getElementById('timerBtn');
+  if (timerRunning) {
+    clearInterval(timerInt); timerRunning = false;
+    t.classList.add('hidden'); t.classList.remove('ending'); b.textContent = '⏱ Lancer 20 min';
+    return;
+  }
+  timerRunning = true; timerEnd = Date.now() + 20 * 60 * 1000;
+  t.classList.remove('hidden'); b.textContent = '⏹ Arrêter';
+  const tick = () => {
+    const left = Math.max(0, Math.round((timerEnd - Date.now()) / 1000));
+    t.textContent = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0');
+    t.classList.toggle('ending', left <= 120);
+    if (left === 0) clearInterval(timerInt);
+  };
+  tick(); timerInt = setInterval(tick, 1000);
+}
+
+/* =========================================================
+   FICHES IMPRIMABLES
+   ========================================================= */
+function buildPrintQ() {
+  let n = 0;
+  const secs = QUESTIONS.map(sec => {
+    const qs = sec.qs.map(q => {
+      n++;
+      const ch = q.checks ? `<div class="ps-checks">${q.checks.map(c => `<span>☐ ${c}</span>`).join('')}</div>` : '';
+      const lines = '<div class="ps-line"></div>'.repeat(q.lines);
+      return `<div class="ps-q"><div class="t"><b>${n}.</b>${q.t}</div>${ch}${lines}</div>`;
+    }).join('');
+    return `<div class="ps-sec"><h2>${sec.icon} ${sec.title}</h2>${qs}</div>`;
+  }).join('');
+  document.getElementById('printQ').innerHTML = `
+    <div class="ps-head">
+      <div><div class="ps-k">Heure de vie de classe · 6ème B · Chapitre 5</div><h1>Et moi, comment j'apprends mes leçons ?</h1></div>
+      <div class="ps-name">Prénom : ……………………………<br>Date : ………………</div>
+    </div>
+    <div class="ps-consigne">${CONSIGNE}</div>${secs}`;
+}
+function buildPrintS() {
+  const blocks = MAPS.map((m, i) => `<div class="pss-b"><h2>${m.icon} ${i + 1}. ${m.title}</h2>${
+    m.nodes.map(n => `<div class="pss-kw"><span class="k">${n.ic} ${n.t}</span><span class="m">${n.mini}</span>${n.mem ? `<span class="v">${memStr(n.mem)}</span>` : ''}</div>`).join('')
+  }</div>`).join('');
+  document.getElementById('printS').innerHTML = `
+    <div class="ps-head">
+      <div><div class="ps-k">Heure de vie de classe · 6ème B · Chapitre 5</div><h1>🧠 Apprendre, ça s'apprend !</h1></div>
+      <div class="ps-name">Prénom : ……………………………</div>
+    </div>
+    <div class="pss-intro">${SYNTH_INTRO}</div>
+    <div class="pss-leg">${LEGEND}</div>
+    <div class="pss-grid">${blocks}</div>
+    <div class="pss-defi">
+      <h2>🔬 Mon défi de la semaine : je deviens le chercheur de mon propre cerveau</h2>
+      <div class="row"><span>La leçon choisie :</span><i></i></div>
+      <div class="row"><span>La nouvelle méthode que je teste :</span><i></i></div>
+      <div class="row"><span>Ce que j'ai remarqué :</span><i></i></div>
+      <div class="row"><span>Ma porte préférée :</span>&nbsp;☐ 👁️ Je vois &nbsp;&nbsp;☐ 👂 J'entends &nbsp;&nbsp;☐ ✋ Je fais &nbsp;&nbsp;☐ Un mélange</div>
+    </div>`;
+}
+buildPrintQ(); buildPrintS();
+
+function printSheet(which) {
+  document.body.classList.remove('print-q', 'print-s');
+  document.body.classList.add('print-' + which);
+  window.print();
+}
+window.addEventListener('afterprint', () => document.body.classList.remove('print-q', 'print-s'));
+
+/* ?print=q ou ?print=s : utilisé pour générer les PDF */
+const pp = new URLSearchParams(location.search).get('print');
+if (pp === 'q' || pp === 's') document.body.classList.add('print-' + pp);
+</script>
+</body>
+</html>

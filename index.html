@@ -265,11 +265,12 @@
         <div class="chips"><span class="chip b">Escape game</span><span class="chip">Checklist</span></div>
       </div>
 
-      <div class="card soon">
+      <div class="card has-link" id="card-5" data-href="chapitre-5.html" onclick="openChapter(this)">
+        <div class="card-check-icon">✓</div>
         <div class="card-num">Chapitre 5</div>
         <div class="card-title">📖 Apprendre une leçon</div>
-        <div class="card-detail">Faire une fiche de révision efficace et mémoriser durablement.</div>
-        <div class="chips"><span class="chip">Bientôt</span></div>
+        <div class="card-detail">Réfléchir à sa façon d'apprendre, découvrir comment fonctionne la mémoire et faire sa fiche de révision.</div>
+        <div class="chips"><span class="chip b">Questionnaire</span><span class="chip b">Synthèse</span><span class="chip">Défi</span></div>
       </div>
     </div>
   </div>
@@ -295,13 +296,15 @@
       '1': 'hvc_ch1_checks_v2',
       '2': 'hvc_ch2_checks_v1',
       '3': 'hvc_ch3_election_v1',
-      '4': 'hvc_ch4_checks_v1'
+      '4': 'hvc_ch4_checks_v1',
+      '5': 'hvc_ch5_checks_v1'
     };
     const CHAPTER_HREFS = {
       '1': 'chapitre-1.html',
       '2': 'chapitre-2.html',
       '3': 'election-delegues.html',
-      '4': 'chapitre-4.html'
+      '4': 'chapitre-4.html',
+      '5': 'chapitre-5.html'
     };
 
     function loadState() {
@@ -373,6 +376,9 @@
       if (checkKey) { try { localStorage.removeItem(checkKey); } catch(e) {} }
       if (chapId === '4') {
         try { localStorage.removeItem('escape-pronote-6b-v1'); localStorage.removeItem('escape-pronote-6b-v2'); } catch(e) {}
+      }
+      if (chapId === '5') {
+        try { localStorage.removeItem('hvc_ch5_synth_open_v1'); } catch(e) {}
       }
 
       updateProgress();
