@@ -223,14 +223,15 @@
   .m-node.postit { background: #fff3a8; padding: 1.4vh 1vw 1.2vh; box-shadow: 0 8px 18px rgba(23,36,49,.13); border-radius: 3px; min-width: 13%; }
   .m-node.postit.c0 { background: #dbe8ff; } .m-node.postit.c1 { background: #ffdcdc; } .m-node.postit.c2 { background: #fff1a6; }
   .m-node.postit::before { content: ''; position: absolute; top: -10px; left: 50%; width: 46%; height: 20px; transform: translateX(-50%) rotate(-3deg); background: rgba(255,255,255,.65); border: 1px solid rgba(0,0,0,.05); }
-  .m-node.postit .oval { padding: .2em .3em; }
+  .m-node.postit .oval { padding: .2em .3em; position: static; }
+  .m-node.postit .step { left: -.7em; top: -.7em; }
   .m-node.postit.tilt-a { animation-name: popA; } .m-node.postit.tilt-b { animation-name: popB; }
   @keyframes popA { from { opacity: 0; transform: translate(-50%, -50%) rotate(-3deg) scale(.6); } to { opacity: 1; transform: translate(-50%, -50%) rotate(-3deg); } }
   @keyframes popB { from { opacity: 0; transform: translate(-50%, -50%) rotate(2.5deg) scale(.6); } to { opacity: 1; transform: translate(-50%, -50%) rotate(2.5deg); } }
   .m-node.postit:hover, .m-node.postit.on { box-shadow: 0 14px 26px rgba(23,36,49,.22); }
   .mcard.k0 { background: #fff; background-image: radial-gradient(#dfe5ec 1.2px, transparent 1.3px); background-size: 16px 16px; }
-  .mcard.k1 { background: #f6f2ff; } .mcard.k2 { background: #eef9f1; } .mcard.k3 { background: #fff8e8; } .mcard.k4 { background: #fff2f1; }
-  .mcard.k5 { background-color: #fbfdff; background-image: linear-gradient(#e6eef8 1px, transparent 1px), linear-gradient(90deg, #e6eef8 1px, transparent 1px); background-size: 16px 16px; }
+  .mcard.k1 { background: #f6f2ff; } .mcard.k2 { background: #eef9f1; } .mcard.k4 { background: #fff8e8; } .mcard.k5 { background: #fff2f1; }
+  .mcard.k3 { background-color: #fbfdff; background-image: linear-gradient(#e6eef8 1px, transparent 1px), linear-gradient(90deg, #e6eef8 1px, transparent 1px); background-size: 16px 16px; }
   .mcard .mc-shape { font-family: var(--hand); font-size: 14px; color: var(--text-secondary); margin: -6px 0 8px; }
   /* cartes de la grille, assorties */
   .mcard .mc-t { font-family: var(--marker); font-weight: 400; text-transform: uppercase; font-size: 15px; letter-spacing: .02em; }
@@ -485,12 +486,12 @@ const MAPS = [
     nodes: [
       { id: 'piege', ic: '🙈', t: 'Le piège', mini: '« Je l\'ai lue, donc je la sais »', x: 16, y: 15, spoke: 'attention !',
         d: "Relire rend la leçon familière : on la reconnaît. Mais reconnaître, ce n'est pas savoir la redire. C'est une illusion de savoir." },
-      { id: 'comp', ic: '💡', t: 'Comprendre', mem: 'a', mini: 'je l\'explique avec mes mots', x: 16, y: 80, spoke: '1',
+      { id: 'comp', step: 1, ic: '💡', t: 'Comprendre', mem: 'a', mini: 'je l\'explique avec mes mots', x: 16, y: 80, spoke: '1',
         d: "Je reformule avec mes mots, comme si je l'expliquais à un camarade. Si je bloque, je note ma question pour le prochain cours." },
-      { id: 'mem', ic: '🧠', t: 'Mémoriser', mem: 'vak', mini: 'je fais entrer l\'essentiel', x: 50, y: 88, spoke: '2',
+      { id: 'mem', step: 2, ic: '🧠', t: 'Mémoriser', mem: 'vak', mini: 'je fais entrer l\'essentiel', x: 50, y: 88, spoke: '2',
         d: "Mots-clés, définitions, schémas, dates : je repère l'important et je le fais entrer, en plusieurs fois." },
-      { id: 'test', ic: '✅', t: 'Me tester', mem: 'a', mini: 'cahier fermé : est-ce que ça ressort ?', x: 84, y: 80, spoke: '3',
-        d: "Je ferme le cahier et je vérifie que la leçon ressort, dans ma tête, à voix haute ou par écrit." },
+      { id: 'test', step: 3, ic: '✅', t: 'Me tester', mem: 'a', mini: 'cahier fermé : est-ce que ça ressort ?', x: 84, y: 80, spoke: '3',
+        d: "Je ferme le cahier et je vérifie que la leçon ressort, dans ma tête, à voix haute ou par écrit. Comment faire ? → carte 6 🎯" },
       { id: 'cle', ic: '🔑', t: 'La question clé', mini: 'je peux le redire sans regarder ?', x: 84, y: 15, spoke: null,
         d: "« Est-ce que je peux le redire SANS regarder ? » Oui : je sais. Non : je retourne à l'étape Mémoriser." },
     ],
@@ -526,6 +527,23 @@ const MAPS = [
     ],
     links: [['tel', 'att', 'vole'], ['lieu', 'att', 'protège']] },
 
+  { icon: '🗂️', title: "Ma fiche de révision", cx: 50, cy: 50,
+    nodes: [
+      { id: 'tit', step: 1, ic: '🏷️', t: 'Titre', mini: 'la leçon + la matière', x: 14, y: 18, spoke: 'en haut',
+        d: "Je commence par là : en haut de la fiche, le titre de la leçon et la matière, bien visibles." },
+      { id: 'kw', step: 3, ic: '🔑', t: 'Mots-clés', mem: 'k', mini: 'définitions par cœur', x: 50, y: 9, spoke: 'l\'essentiel',
+        d: "Les mots-clés, les définitions, les dates à connaître par cœur. Je les écris moi-même, à la main." },
+      { id: 'sch', step: 4, ic: '🖼️', t: 'Un schéma', mem: 'v', mini: 'dessin, exemple, couleurs', x: 86, y: 18, spoke: 'une image',
+        d: "Un schéma, un petit dessin ou un exemple qui m'aide à me souvenir. Les couleurs aident ma mémoire visuelle." },
+      { id: 'dos', step: 5, ic: '❓', t: 'Au dos', mem: 'a', mini: '3 à 5 questions', x: 14, y: 82, spoke: 'pour me tester',
+        d: "Au dos, j'écris 3 à 5 questions. Je m'en sers pour me tester, seul ou avec quelqu'un." },
+      { id: 'choix', step: 2, ic: '✂️', t: 'Je choisis', mini: 'la fabriquer = déjà apprendre', x: 50, y: 91, spoke: 'le secret',
+        d: "Pour faire ma fiche, je dois choisir ce qui est important. Ce tri, c'est déjà apprendre !" },
+      { id: 'forme', ic: '🎨', t: 'Ma forme', mem: 'vk', mini: 'bristol, carte mentale, recto-verso', x: 86, y: 82, spoke: 'à moi de voir',
+        d: "Carte bristol, carte mentale, questions au recto et réponses au verso… J'essaie plusieurs formes et je garde celle qui me va." },
+    ],
+    links: [] },
+
   { icon: '📆', title: "Le temps, mon allié", cx: 50, cy: 42,
     nodes: [
       { id: 'oubli', ic: '📉', t: "L'oubli", mini: 'va très vite sans révision', x: 15, y: 14, spoke: 'mon ennemi',
@@ -534,12 +552,12 @@ const MAPS = [
         d: "Plusieurs petites révisions espacées valent bien mieux qu'une longue séance la veille au soir." },
       { id: 'j0', ic: '🌙', t: 'Le soir même', mini: '5 min : relire, comprendre', x: 12, y: 82, spoke: 'je commence',
         d: "5 minutes suffisent : je relis la leçon du jour et je vérifie que je l'ai comprise." },
-      { id: 'j1', ic: '☀️', t: 'Le lendemain', mem: 'a', mini: 'je me teste sans regarder', x: 37, y: 82, spoke: null,
-        d: "Je ferme le cahier et j'essaie de redire la leçon. Ce qui manque, je le revois. Comment me tester ? → carte 5 🎯" },
+      { id: 'j1', ic: '☀️', t: 'Le lendemain', mem: 'a', mini: 'je me teste, je fais ma fiche', x: 37, y: 82, spoke: null,
+        d: "Je ferme le cahier et j'essaie de redire la leçon. Ce qui manque, je le revois. Puis je fabrique ma fiche de révision (carte 4). Comment me tester ? → carte 6 🎯" },
       { id: 'j3', ic: '🗂️', t: '3 jours après', mem: 'v', mini: 'je revois avec ma fiche', x: 63, y: 82, spoke: null,
         d: "Trois jours après la leçon (ou le week-end qui suit), je reprends ma fiche de révision et je me pose les questions écrites au dos. Je le note dans mon agenda !" },
       { id: 'veille', ic: '🏁', t: 'La veille', mini: 'je vérifie, je ne découvre pas', x: 88, y: 82, spoke: null,
-        d: "La veille du contrôle, je fais un tour complet de la carte 5 pour vérifier que je suis prêt. Ce n'est pas le moment de tout découvrir !" },
+        d: "La veille du contrôle, je fais un tour complet de la carte 6 pour vérifier que je suis prêt. Ce n'est pas le moment de tout découvrir !" },
     ],
     links: [['j0', 'j1', 'puis'], ['j1', 'j3', 'puis'], ['j3', 'veille', 'puis']] },
 
@@ -560,22 +578,6 @@ const MAPS = [
     ],
     links: [['exo', 'err', 'me montre']] },
 
-  { icon: '🗂️', title: "Ma fiche de révision", cx: 50, cy: 50,
-    nodes: [
-      { id: 'tit', ic: '🏷️', t: 'Titre', mini: 'la leçon + la matière', x: 14, y: 18, spoke: 'en haut',
-        d: "En haut de la fiche : le titre de la leçon et la matière, bien visibles." },
-      { id: 'kw', ic: '🔑', t: 'Mots-clés', mem: 'k', mini: 'définitions par cœur', x: 50, y: 9, spoke: 'l\'essentiel',
-        d: "Les mots-clés, les définitions, les dates à connaître par cœur. Je les écris moi-même, à la main." },
-      { id: 'sch', ic: '🖼️', t: 'Un schéma', mem: 'v', mini: 'dessin, exemple, couleurs', x: 86, y: 18, spoke: 'une image',
-        d: "Un schéma, un petit dessin ou un exemple qui m'aide à me souvenir. Les couleurs aident ma mémoire visuelle." },
-      { id: 'dos', ic: '❓', t: 'Au dos', mem: 'a', mini: '3 à 5 questions', x: 14, y: 82, spoke: 'pour me tester',
-        d: "Au dos, j'écris 3 à 5 questions. Je m'en sers pour me tester, seul ou avec quelqu'un." },
-      { id: 'choix', ic: '✂️', t: 'Je choisis', mini: 'la fabriquer = déjà apprendre', x: 50, y: 91, spoke: 'le secret',
-        d: "Pour faire ma fiche, je dois choisir ce qui est important. Ce tri, c'est déjà apprendre !" },
-      { id: 'forme', ic: '🎨', t: 'Ma forme', mem: 'vk', mini: 'bristol, carte mentale, recto-verso', x: 86, y: 82, spoke: 'à moi de voir',
-        d: "Carte bristol, carte mentale, questions au recto et réponses au verso… J'essaie plusieurs formes et je garde celle qui me va." },
-    ],
-    links: [] },
 ];
 
 const DEFI = [
@@ -612,7 +614,7 @@ document.getElementById('sCards').innerHTML = MAPS.map((m, i) => `
     <div class="mc-n">Carte ${i + 1}</div>
     <div class="mc-ic">${m.icon}</div>
     <div class="mc-t">${m.title}</div>
-    <div class="mc-shape">${['🪜 l\'escalier', '🚪 les portes', '🪴 la plante', '🛣️ la route', '🎯 la cible', '📝 la fiche annotée'][i]}</div>
+    <div class="mc-shape">${['🪜 l\'escalier', '🚪 les portes', '🪴 la plante', '📝 la fiche annotée', '🛣️ la route', '🎯 la cible'][i]}</div>
     <div class="chips">${m.nodes.map(n => `<span class="chip">${n.ic} ${n.t}</span>`).join('')}</div>
     <div class="mc-go">Ouvrir la carte mentale →</div>
   </div>`).join('');
@@ -687,7 +689,7 @@ const LAYOUTS = {
   stairs: { name: "l'escalier",
     pos: { piege: [15, 44], comp: [22, 77], mem: [46, 57], test: [70, 37], cle: [87, 21] },
     shape: () => 'oval',
-    extra: m => titleHTML(m, 4, 5, HC[0]) + `<div class="m-free" style="left:37%;top:38%;font-size:clamp(14px,1.15vw,21px);color:#c0392b">je tourne en rond…</div>`,
+    extra: m => titleHTML(m, 4, 5, HC[0]) + `<div class="m-free" style="left:37%;top:38%;font-size:clamp(14px,1.15vw,21px);color:#c0392b">relire en boucle :<br>ça ne suffit pas !</div>`,
     draw(c) {
       const { W, H, P, hand, nb } = c;
       const steps = [[9, 35, 89, 1], [35, 57, 69, 2], [57, 83, 49, 0]];
@@ -709,7 +711,7 @@ const LAYOUTS = {
     pos: { v: [20, 37], a: [50, 37], k: [80, 37], mix: [50, 86], pref: [84, 86] },
     shape: n => ['v', 'a', 'k'].includes(n.id) ? 'none' : (n.id === 'pref' ? 'bubble' : 'oval'),
     nodeClass: n => ['v', 'a', 'k'].includes(n.id) ? 'indoor' : '',
-    extra: m => titleHTML(m, 50, 3, '#8a63d2', 'center'),
+    extra: m => titleHTML(m, 50, 3, '#8a63d2', 'center') + `<div class="m-when" style="top:auto;bottom:5%"><b>🗓️ Quand ?</b><br>Quand j'apprends ma leçon et quand je fabrique ma fiche.</div>`,
     draw(c) {
       const { P, hand } = c;
       [[20, 0], [50, 1], [80, 2]].forEach(([x, ci]) => {
@@ -721,14 +723,14 @@ const LAYOUTS = {
       });
       ['v', 'a', 'k'].forEach((id, i) => { const [x, y] = c.P([20, 50, 80][i], 64); c.arrowPts(x, y + 8, ...c.edgePt(c.nb('mix'), x, y), HC[i], i + 1, '', false, 999, true); });
       c.arrowBox(c.nb('pref'), c.nb('mix'), '#e8b730', 0, 'sans oublier', true);
-      c.sparks([[.06, .2], [.94, .2], [.06, .7], [.55, .74], [.94, .62]]);
+      c.sparks([[.06, .2], [.94, .2], [.55, .74], [.94, .62]]);
     } },
 
   plant: { name: 'la plante',
     pos: { att: [50, 12], tel: [21, 31], lieu: [79, 31], pause: [22, 60], dodo: [78, 60] },
     shape: n => n.id === 'att' ? 'bubble' : 'leaf',
     nodeClass: n => n.id === 'att' ? 'flower' : '',
-    extra: m => `<div class="m-free" style="left:50%;top:89%;font-family:var(--marker);text-transform:uppercase;color:#fff;font-size:clamp(14px,1.35vw,26px);line-height:1.05">${m.icon} ${m.title}</div>`,
+    extra: m => `<div class="m-free" style="left:50%;top:89%;font-family:var(--marker);text-transform:uppercase;color:#fff;font-size:clamp(14px,1.35vw,26px);line-height:1.05">${m.icon} ${m.title}</div>` + `<div class="m-when" style="left:auto;right:2%;top:auto;bottom:5%"><b>🗓️ Quand ?</b><br>Avant chaque séance de travail, je vérifie ces 5 points.</div>`,
     draw(c) {
       const { P, hand, W, H } = c;
       const G = '#3a9a5b';
@@ -745,7 +747,7 @@ const LAYOUTS = {
       c.arrowBox(c.nb('tel'), c.nb('att'), '#e5534b', 0, 'vole', true);
       c.arrowBox(c.nb('lieu'), c.nb('att'), '#3a9a5b', 1, 'protège', true);
       c.deco += `<text x="${P(8, 0)[0]}" y="${P(0, 92)[1]}" font-family="Patrick Hand" font-size="${Math.max(15, W * .013)}" fill="${G}">je grandis si…</text>`;
-      c.sparks([[.06, .1], [.94, .1], [.35, .5], [.65, .5], [.93, .9]]);
+      c.sparks([[.06, .1], [.94, .1], [.35, .5], [.65, .5]]);
     } },
 
   road: { name: 'la route',
@@ -778,7 +780,7 @@ const LAYOUTS = {
     pos: null, /* calculées sur une ellipse */
     shape: () => 'bubble',
     extra: m => `<div class="m-free" style="left:50%;top:52%;font-family:var(--marker);text-transform:uppercase;font-size:clamp(13px,1.3vw,25px);line-height:1.05;width:min(12vw,18vh)"><span style="font-size:1.3em">${m.icon}</span><br>${m.title}</div>`
-      + `<div class="m-when"><b>🗓️ Quand ?</b><br>À chaque révision<br>de la carte 4 :<br>☀️ le lendemain<br>🗂️ 3 jours après<br>🏁 la veille : le tour complet</div>`
+      + `<div class="m-when"><b>🗓️ Quand ?</b><br>À chaque révision<br>de la carte 5 :<br>☀️ le lendemain<br>🗂️ 3 jours après<br>🏁 la veille : le tour complet</div>`
       + `<div class="m-free" style="left:34%;top:11%;font-family:var(--marker);text-transform:uppercase;color:#e5534b;font-size:clamp(13px,1.15vw,22px);line-height:1.1;transform:translate(-50%,-50%) rotate(-4deg)">▶ je commence<br>ici ➜</div>`,
     draw(c) {
       const { P, W, H } = c;
@@ -815,9 +817,10 @@ const LAYOUTS = {
       c.deco += `<path d="M${x1},${y1 - fold} L${x1 - fold},${y1 - fold} L${x1 - fold},${y1} Z" fill="#dbe8ff" stroke="${INK}" stroke-width="2.5"/>`;
       c.deco += `<path d="M${x0},${P(0, 28)[1]} L${x1},${P(0, 28)[1]}" stroke="#e5534b" stroke-width="2"/>`;
       const fs = Math.max(13, W * .0115);
+      c.deco += `<text x="${x0 + 26}" y="${P(0, 35)[1]}" font-family="Permanent Marker" font-size="${fs * 1.05}" fill="#e5534b">🗓️ QUAND ? le lendemain de la leçon</text>`;
       const lines = ['🔑 mot-clé = définition', '🔑 mot-clé = définition', '📅 date importante', '⭐ règle à retenir'];
       lines.forEach((t, i) => {
-        const y = P(0, 36 + i * 7)[1];
+        const y = P(0, 42 + i * 6)[1];
         c.deco += `<path d="M${x0 + 18},${y + 6} L${x1 - 18},${y + 6}" stroke="#bcd0ea" stroke-width="1.5"/><text x="${x0 + 26}" y="${y}" font-family="Patrick Hand" font-size="${fs}" fill="#3d6fd9">${t}</text>`;
       });
       const [bx0, by0] = P(46, 66), [bx1, by1] = P(64, 84);
@@ -829,7 +832,7 @@ const LAYOUTS = {
       Object.entries(T).forEach(([id, [x, y]], k) => { const [tx, ty] = P(x, y); c.arrowPts(...c.edgePt(c.nb(id), tx, ty), tx, ty, HC[k % 3], k, '', false, 999, true); });
     } },
 };
-const MAP_LAYOUT = ['stairs', 'doors', 'plant', 'road', 'cycle', 'card'];
+const MAP_LAYOUT = ['stairs', 'doors', 'plant', 'card', 'road', 'cycle'];
 
 function placeNodes(m, i) {
   const L = LAYOUTS[MAP_LAYOUT[i]];
